@@ -1,7 +1,7 @@
 <template>
   <div class="home-screen" :style="`background-image:url(${(screenImage)});`">
-    <div class="home-screen-title">
-		<h3>Vuezard Quest</h3>
+    <div id="text3d" class="home-screen-title">
+		<span>{{ `${gameName}`}}</span>
     </div>
     <div class="home-screen-options">
 		<div class="home-screen-option" @click="changeScreen('gameScreen')">
@@ -25,9 +25,11 @@
 		props: [],
 		setup() {
 			const store = useStore();
-
+			const gameName = store.state.name;
+			const gameVersion = store.state.version;
 			return {
-				store,
+				gameName,
+				gameVersion
 			};
 		},
 		data() {
@@ -49,46 +51,70 @@
 	export default HomeScreen;
 </script>
 <style scoped>
+
 	.home-screen {
 		height: 100vh;
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-attachment: fixed!important;
-		overflow:hidden;
 		text-align: center;
+		overflow: hidden !important;
 	}
 
 	.home-screen-title {
-		/* margin-top: 75px;
-		color: #FFFF;
-		font-size: 5rem;
+		width: 100%;
+		margin: 0 auto 0 auto;
+		font-family: 'Lato', sans-serif;
+		line-height: 280px;
+		font-size: 11.5rem;
+		padding: 80px 50px;
+		text-align: center;
 		text-transform: uppercase;
-		font-weight: 900;
-		text-shadow: 0 2px 18px rgba(196, 191, 191, 0.26);
-		font-family: Cardo, 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
+		text-rendering: optimizeLegibility;
+	}
+
+	.home-screen-title::before {
+		content:"";
+		width: 100%;
+		height: 50vh;
 		position: absolute;
-		top: 50%;
-		right: 50%;
-		transform: translate(50%,-50%);
-		text-transform: uppercase;
-		font-family: verdana;
-		font-size: 12em;
-		font-weight: 700;
-		color: #c4c1c1;
-		text-shadow: 1px 1px 1px #919191,
-			1px 2px 1px #919191,
-			1px 3px 1px #919191,
-			1px 4px 1px #919191,
-			1px 5px 1px #919191,
-			1px 6px 1px #919191,
-			1px 7px 1px #919191,
-			1px 8px 1px #919191,
-			1px 9px 1px #919191,
-			1px 10px 1px #919191,
-		1px 18px 6px rgba(16,16,16,0.4),
-		1px 22px 10px rgba(16,16,16,0.2),
-		1px 25px 35px rgba(16,16,16,0.2),
-		1px 30px 60px rgba(16,16,16,0.4);
+		top: -200px;
+		left: 10px;
+		transform: rotate(55deg);
+		background: rgba(206,188,155,.7);
+		background: -moz-linear-gradient(left, rgba(206,188,155,.7) 0%, rgba(42,31,25,0) 65%);
+		background: -webkit-gradient(left top, right top, color-stop(0%, rgba(206,188,155,.7)), color-stop(65%, rgba(42,31,25,0)));
+		background: -webkit-linear-gradient(left, rgba(206,188,155,.7) 0%, rgba(42,31,25,0) 65%);
+		background: -o-linear-gradient(left, rgba(206,188,155,.7) 0%, rgba(42,31,25,0) 65%);
+		background: -ms-linear-gradient(left, rgba(206,188,155,.7) 0%, rgba(42,31,25,0) 65%);
+		background: linear-gradient(to right, rgba(206,188,155,.7) 0%, rgba(42,31,25,0) 65%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cebc9b', endColorstr='#2a1f19', GradientType=0.7 );
+	}
+
+	#text3d {
+		color: #70869d;
+		letter-spacing: .15em;
+		text-shadow:
+		-1px -1px 1px #efede3,
+		0px 1px 0 #2e2e2e,
+		0px 2px 0 #2c2c2c,
+		0px 3px 0 #2a2a2a,
+		0px 4px 0 #282828,
+		0px 5px 0 #262626,
+		0px 6px 0 #242424,
+		0px 7px 0 #222,
+		0px 8px 0 #202020,
+		0px 9px 0 #1e1e1e,
+		0px 10px 0 #1c1c1c,
+		0px 11px 0 #1a1a1a,
+		0px 12px 0 #181818,
+		0px 13px 0 #161616,
+		0px 14px 0 #141414,
+		0px 15px 0 #121212,
+		2px 20px 5px rgba(0, 0, 0, 0.9),
+		5px 23px 5px rgba(0, 0, 0, 0.3),
+		8px 27px 8px rgba(0, 0, 0, 0.5),
+		8px 28px 35px rgba(0, 0, 0, 0.9);
 	}
 
 	.home-screen-options {
