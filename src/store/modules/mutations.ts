@@ -32,7 +32,7 @@ export const mutations: MutationTree<IState> = {
             state.monster.currentState.mana = monsterMana - act.actionTaken.manaCost;
             state.monster.currentState.health = monsterHealth + act.actionTaken.healthIncrement;
             setTimeout(() =>{
-                state.player.currentState.activityState = ActivityStateOptions.Idle;
+                state.monster.currentState.activityState = ActivityStateOptions.Idle;
             }, act.actionTaken.timeout);
         }
     }

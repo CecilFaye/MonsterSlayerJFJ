@@ -46,7 +46,7 @@
 
 			// Properties
 			const screenImage = screenGif;
-			const service = MonsterSlayerService;
+			const service = MonsterSlayerService.default;
 			const store = useStore();
 
 			// Hooks
@@ -54,12 +54,18 @@
 
 			// Methods
 			const initializeAll = (): void => {
-				store.commit('game/initializePlayer', service.default.getDefaultPerson(PersonType.Player));
-				store.commit('game/initializeMonster', service.default.getDefaultPerson(PersonType.Monsters));
+				store.commit('game/initializePlayer', service.getDefaultPerson(PersonType.Player));
+				store.commit('game/initializeMonster', service.getDefaultPerson(PersonType.Monsters));
 			};
 
 			const action = (skill: ISkill): void => {
 				store.commit('game/action', { personType: PersonType.Player, actionTaken: skill} as IAction);
+
+				setTimeout(() => {
+					const skills: ISkill[] = store.getters['game/getSkills'](PersonType.Monsters);
+					const monsterAttack = skills.filter(skill => skill.skillType !== ActivityStateOptions.Idle)[service.randomAction(skills.length-1)];
+					store.commit('game/action', { personType: PersonType.Monsters, actionTaken:  monsterAttack} as IAction);
+				}, 2000);
 			};
 
 			// Computed

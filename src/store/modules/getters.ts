@@ -10,7 +10,7 @@ export const getters: GetterTree<IState, IRootState> = {
             case PersonType.Player: {
                 const player = state.player;
                 const idleState = {
-                    name: 'Idle',
+                    name: 'idle',
                     skillType: ActivityStateOptions.Idle,
                     image: player.image,
                 } as ISkill;
@@ -19,7 +19,7 @@ export const getters: GetterTree<IState, IRootState> = {
             case PersonType.Monsters: {
                 const monster = state.monster;
                 const idleState = {
-                    name: 'Idle',
+                    name: 'idle',
                     skillType: ActivityStateOptions.Idle,
                     image: monster.image,
                 } as ISkill;

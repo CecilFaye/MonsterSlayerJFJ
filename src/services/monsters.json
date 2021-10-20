@@ -9,6 +9,7 @@
 		"attack": {
 			"id": 1,
 			"name": "Attack",
+			"skillType": "attack",
 			"image": "../../assets/enemy/attack.gif",
 			"timeout": 1000,
 			"manaCost": 0,
@@ -20,6 +21,7 @@
 		"focus": {
 			"id": 2,
 			"name": "Focus",
+			"skillType": "focus",
 			"image": "../../assets/enemy/focus.gif",
 			"timeout": 1000,
 			"manaCost": 0,
@@ -32,6 +34,7 @@
 			{
 				"id": 3,
 				"name": "Bone-Crushing Bite",
+				"skillType": "skill1",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 10,
@@ -43,6 +46,7 @@
 			{
 				"id": 4,
 				"name": "Clouded Stream",
+				"skillType": "skill2",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 20,
@@ -54,6 +58,7 @@
 			{
 				"id": 5,
 				"name": "Dragon Element",
+				"skillType": "skill3",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 50,
@@ -74,6 +79,7 @@
 		"attack": {
 			"id": 11,
 			"name": "Attack",
+			"skillType": "attack",
 			"image": "../../assets/enemy/attack.gif",
 			"timeout": 1000,
 			"manaCost": 0,
@@ -85,6 +91,7 @@
 		"focus": {
 			"id": 12,
 			"name": "Focus",
+			"skillType": "focus",
 			"image": "../../assets/enemy/focus.gif",
 			"timeout": 1000,
 			"manaCost": 0,
@@ -97,6 +104,7 @@
 			{
 				"id": 13,
 				"name": "Thunder Clap",
+				"skillType": "skill1",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 10,
@@ -108,6 +116,7 @@
 			{
 				"id": 14,
 				"name": "Electrical Blob",
+				"skillType": "skill2",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 20,
@@ -119,6 +128,7 @@
 			{
 				"id": 15,
 				"name": "Thunderblight",
+				"skillType": "skill3",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 50,
@@ -139,6 +149,7 @@
 		"attack": {
 			"id": 21,
 			"name": "Attack",
+			"skillType": "attack",
 			"image": "../../assets/enemy/attack.gif",
 			"timeout": 1000,
 			"manaCost": 0,
@@ -150,6 +161,7 @@
 		"focus": {
 			"id": 22,
 			"name": "Focus",
+			"skillType": "focus",
 			"image": "../../assets/enemy/focus.gif",
 			"timeout": 1000,
 			"manaCost": 0,
@@ -162,6 +174,7 @@
 			{
 				"id": 23,
 				"name": "Deadly Scale",
+				"skillType": "skill1",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 10,
@@ -173,6 +186,7 @@
 			{
 				"id": 24,
 				"name": "Eclipse",
+				"skillType": "skill2",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 20,
@@ -184,6 +198,7 @@
 			{
 				"id": 25,
 				"name": "Frenzy Virus",
+				"skillType": "skill3",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 50,
@@ -204,6 +219,7 @@
 		"attack": {
 			"id": 31,
 			"name": "Attack",
+			"skillType": "attack",
 			"image": "../../assets/enemy/attack.gif",
 			"timeout": 1000,
 			"manaCost": 0,
@@ -215,6 +231,7 @@
 		"focus": {
 			"id": 32,
 			"name": "Focus",
+			"skillType": "focus",
 			"image": "../../assets/enemy/focus.gif",
 			"timeout": 1000,
 			"manaCost": 0,
@@ -227,6 +244,7 @@
 			{
 				"id": 33,
 				"name": "Snowballs",
+				"skillType": "skill1",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 10,
@@ -238,6 +256,7 @@
 			{
 				"id": 34,
 				"name": "Ice Blight",
+				"skillType": "skill2",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 20,
@@ -249,6 +268,7 @@
 			{
 				"id": 35,
 				"name": "Avalanche",
+				"skillType": "skill3",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
 				"manaCost": 50,

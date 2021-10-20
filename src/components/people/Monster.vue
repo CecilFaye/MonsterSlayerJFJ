@@ -19,7 +19,7 @@
 <script lang="ts">
 	import { ActivityStateOptions } from "@/store/types";
 	import { computed, defineComponent } from "vue";
-	import { mapState, useStore } from "vuex";
+	import { useStore } from "vuex";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const idleStance = require('../../assets/monster/idle.gif');
