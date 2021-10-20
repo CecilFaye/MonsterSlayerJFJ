@@ -1,7 +1,11 @@
+# System Files
 .DS_Store
-node_modules
+
+# compiled output
 /dist
 
+# dependencies
+/node_modules
 
 # local env files
 .env.local

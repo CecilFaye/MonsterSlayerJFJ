@@ -1,8 +1,8 @@
-import { createStore, StoreOptions } from 'vuex'
-import { RootState } from './types'
+import Vuex, { StoreOptions } from 'vuex'
+import { IRootState } from './types'
 import { game } from './modules'
 
-const store: StoreOptions<RootState> = {
+const store: StoreOptions<IRootState> = {
 	state: {
 		version: '1.0.0',
 		name: 'Vuezard Quest'
@@ -11,4 +11,4 @@ const store: StoreOptions<RootState> = {
 		game
 	}
 }
-export default createStore<RootState>(store);
+export default new Vuex.Store<IRootState>(store)

@@ -8,12 +8,14 @@
 </template>
 
 <script lang="ts">
-	import { defineComponent } from 'vue';
+	import { computed, defineComponent, inject } from 'vue';
+	import { mapState, useStore } from 'vuex';
+	import { IMonsterSlayerService } from './store/types';
+
 	import HomeScreen from '@/components/screens/HomeScreen.vue'
 	import CreditScreen from './components/screens/CreditScreen.vue'
 	import GameScreen from './components/screens/GameScreen.vue'
 	import FightResultScreen from './components/screens/FightResultScreen.vue'
-	import { mapState } from 'vuex';
 
 	const App = defineComponent({
 		name: 'App',
@@ -23,11 +25,16 @@
 			GameScreen,
 			FightResultScreen
 		},
-		computed: {
-			...mapState({
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				currentScreen: (state: any) => state.game.currentScreen
-			})
+		setup() {
+			const service = inject('serviceInstance') as IMonsterSlayerService;
+			const store = useStore();
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const currentScreen = computed(() => store.state.game.currentScreen)
+			return {
+				currentScreen,
+				service,
+				store
+			}
 		}
 	});
 

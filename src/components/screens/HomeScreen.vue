@@ -7,7 +7,7 @@
 		<div class="home-screen-option" @click="changeScreen('gameScreen')">
 			PLAY GAME
 		</div>
-		<div class="home-screen-option" @click="changeView('creditScreen')">
+		<div class="home-screen-option" @click="changeScreen('creditScreen')">
 			CREDITS
 		</div>
     </div>
@@ -16,22 +16,37 @@
 
 <script lang="ts">
 	import { defineComponent } from "vue";
+	import { mapMutations } from "vuex";
+	import { useStore } from "vuex";
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const home = require('../../assets/background/castle.gif')
 
-	const ComponentName = defineComponent({
+	const HomeScreen = defineComponent({
 		props: [],
+		setup() {
+			const store = useStore();
+
+			return {
+				store,
+			};
+		},
 		data() {
 			return {
 				screenImage: home,
 			}
 		},
-		components: {},
+		components: {
+
+		},
 		computed: {},
-		methods: {},
+		methods: {
+			...mapMutations({
+				changeScreen: 'game/changeScreen'
+			})
+		},
 		watch: {}
 	})
-	export default ComponentName;
+	export default HomeScreen;
 </script>
 <style scoped>
 	.home-screen {
