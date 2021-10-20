@@ -59,7 +59,36 @@
 	}
 
 	.home-screen-title {
-		margin-top: 75px;
+		/* margin-top: 75px;
+		color: #FFFF;
+		font-size: 5rem;
+		text-transform: uppercase;
+		font-weight: 900;
+		text-shadow: 0 2px 18px rgba(196, 191, 191, 0.26);
+		font-family: Cardo, 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; */
+		position: absolute;
+		top: 50%;
+		right: 50%;
+		transform: translate(50%,-50%);
+		text-transform: uppercase;
+		font-family: verdana;
+		font-size: 12em;
+		font-weight: 700;
+		color: #c4c1c1;
+		text-shadow: 1px 1px 1px #919191,
+			1px 2px 1px #919191,
+			1px 3px 1px #919191,
+			1px 4px 1px #919191,
+			1px 5px 1px #919191,
+			1px 6px 1px #919191,
+			1px 7px 1px #919191,
+			1px 8px 1px #919191,
+			1px 9px 1px #919191,
+			1px 10px 1px #919191,
+		1px 18px 6px rgba(16,16,16,0.4),
+		1px 22px 10px rgba(16,16,16,0.2),
+		1px 25px 35px rgba(16,16,16,0.2),
+		1px 30px 60px rgba(16,16,16,0.4);
 	}
 
 	.home-screen-options {
@@ -69,8 +98,8 @@
 	}
 
 	.home-screen-option {
-		border: 2px solid #72e3f1;
-		color: #72e3f1;
+		border: 2px solid #FFFF;
+		color: #FFFF;
 		padding: 10px;
 		font-size: 20px;
 		font-weight: 800;

@@ -31,22 +31,5 @@ export default {
             activityStateOptions: Object.keys(ActivityStateOptions).map(_ => _) as ActivityStateOptions[]
         };
         return person;
-    },
-    action(store: Store<any>, personType: PersonType, skill: ISkill): void {
-        const state = store.state;
-        const playerHealth = state.player.currentState.health;
-        const monsterHealth = state.monster.currentState.health;
-        const playerMana = state.player.currentState.mana;
-        const monsterMana = state.monster.currentState.mana;
-        if (personType === PersonType.Player) {
-            state.monster.currentState.health = monsterHealth - skill.damage;
-            state.player.currentState.mana = playerMana - skill.manaCost;
-            state.player.currentState.health = playerHealth + skill.healthIncrement;
-        } else {
-            state.player.currentState.health = playerHealth - skill.damage;
-            state.monster.currentState.mana = monsterMana - skill.manaCost;
-            state.monster.currentState.health = monsterHealth + skill.healthIncrement;
-        }
-        store.commit('game/')
     }
 }

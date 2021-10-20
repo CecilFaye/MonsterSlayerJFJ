@@ -1,6 +1,6 @@
 import { Module } from 'vuex'
 import { mutations } from './mutations'
-import { IRootState as IRootState, ActivityStateOptions, ScreenStateOptions, IState, ISkill, IPersonState } from '@/store/types'
+import { IRootState as IRootState, ActivityStateOptions, ScreenStateOptions, IState, ISkill, IPersonState, PersonType } from '@/store/types'
 import { getters } from './getters'
 
 export const state: IState = {
@@ -10,7 +10,10 @@ export const state: IState = {
 
 	// Player State
 	player: {
+        id: 1,
         name: '',
+        personType: PersonType.Player,
+        image: '',
         maxHealth: 999,
         maxMana: 999,
         attack: {},
@@ -32,6 +35,8 @@ export const state: IState = {
     monster: {
         id: 0,
         name: '',
+        personType: PersonType.Monsters,
+        image: '',
         maxHealth: 0,
         maxMana: 0,
         attack: {},

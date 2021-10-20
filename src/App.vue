@@ -28,12 +28,12 @@
 		setup() {
 			const service = inject('serviceInstance') as IMonsterSlayerService;
 			const store = useStore();
+
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const currentScreen = computed(() => store.state.game.currentScreen)
 			return {
 				currentScreen,
-				service,
-				store
+				service
 			}
 		}
 	});
