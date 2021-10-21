@@ -56,6 +56,7 @@ export interface IMonsterSlayerService {
     getDefaultPerson: (type: PersonType) => IPersonState;
     randomAction: (limit: number) => number;
     initOptions: (person: IPersonState) => IPersonState;
+    getRandomMonsters: () => IPersonState;
 }
 
 export interface IAction {

@@ -55,7 +55,6 @@
 
 			return {
 				getImage,
-				store,
 				monsterState,
 				monsterInfo,
 				monsterSkills,

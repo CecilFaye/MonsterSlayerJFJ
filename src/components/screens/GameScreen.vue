@@ -29,9 +29,10 @@
 	import { computed, defineComponent, onBeforeMount } from "vue";
 	import { ActivityStateOptions, IAction, ISkill, PersonType } from "@/store/types";
 	import { useStore } from "vuex";
-	import * as MonsterSlayerService from "@/services/monster-slayer.factory"
+	// import * as MonsterSlayerService from "@/services/monster-slayer.factory"
 	import Player from "../people/Player.vue";
 	import Monster from "../people/Monster.vue";
+	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenGif = require('../../assets/background/castle.gif');
@@ -46,10 +47,10 @@
 
 			// Properties
 			const screenImage = screenGif;
-			const service = MonsterSlayerService.default;
+			const service = useMonsterSlayerService();
 			const store = useStore();
 
-			// Hooks
+			// Lifecycle Hooks
 			onBeforeMount(() => initializeAll());
 
 			// Methods
