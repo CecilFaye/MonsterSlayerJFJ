@@ -61,7 +61,7 @@
 		overflow: hidden !important;
 	}
 
-	.home-screen-title {
+	.home-screen-title, h3 {
 		width: 100%;
 		margin: 0 auto 0 auto;
 		font-family: 'Lato', sans-serif;
@@ -73,7 +73,7 @@
 		text-rendering: optimizeLegibility;
 	}
 
-	.home-screen-title::before {
+	.home-screen-title::before, h3::before {
 		content:"";
 		width: 100%;
 		height: 50vh;

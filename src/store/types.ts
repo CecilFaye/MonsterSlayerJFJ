@@ -84,5 +84,8 @@ export enum ActivityStateOptions {
     Focus = 'focus',
     Skill1 = 'skill1',
     Skill2 = 'skill2',
-    Skill3 = 'skill3'
+    Skill3 = 'skill3',
+
+    // Failed Attack if Mana < Mana Cost
+    Failed = 'failed'
 }

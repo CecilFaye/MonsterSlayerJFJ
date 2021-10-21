@@ -1,14 +1,12 @@
 <template>
 	<div class="health-bar-container">
-        <div id="health-bar"></div>
+        <div id="health-bar" v-bind:style="{ width: health + '%', background: health < 30 ? 'red' : 'green'}"></div>
     </div>
 </template>
 
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
-    import { PersonType } from "@/store/types";
-    import { computed, defineComponent, Prop } from "vue";
+    import { computed, defineComponent } from "vue";
     import { useStore } from "vuex";
 
 	const HealthBarWidget = defineComponent({
@@ -16,20 +14,30 @@
             personType: { type: String }
         },
 		setup(props) {
-
             // Properties
-            const service = useMonsterSlayerService();
 			const store = useStore();
 
             // Computed
-			const character = computed(() => store.state.game[`${props.personType}`]);
+			const health = computed(() => {
+                const currentHealth = store.state.game[`${props.personType}`].currentState.health;
+                return currentHealth < 1 ? 0 : currentHealth;
+            });
             return {
-                character
+                health
 			}
         }
 	})
 	export default HealthBarWidget;
 </script>
 <style scoped>
-
+    .health-bar-container {
+        height: 2rem;
+        margin: 0.1rem 6rem;
+        opacity: 0.8;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.86);
+    }
+    #health-bar {
+        width: 1%;
+        height: 2rem;
+    }
 </style>

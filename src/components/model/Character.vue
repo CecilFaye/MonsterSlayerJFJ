@@ -1,5 +1,10 @@
 <template>
     <div class="person">
+		<div class="name">
+			<span class="char-name">{{personInfo.name}}</span>
+		</div>
+		<HealthBarWidget :personType="personInfo.personType"/>
+		<ManaBarWidget :personType="personInfo.personType"/>
         <div class="person-image">
             <img v-for="(skill, index) in personSkills"
 				:key="`skill-${index}`"
@@ -7,10 +12,6 @@
 				v-show="personState === skill.skillType"
 			>
         </div>
-		<div class="group-container">
-			<HealthBarWidget :personType="personInfo.personType"/>
-		</div>
-		<h3>{{personInfo.name}}</h3>
     </div>
 </template>
 
@@ -20,13 +21,15 @@
 	import { ActivityStateOptions, PersonType } from "@/store/types";
 	import HealthBarWidget from "../widget/HealthBar.vue";
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import ManaBarWidget from "../widget/ManaBar.vue";
 
 	const Character = defineComponent({
 		props: {
 			personType: { type: String }
 		},
 		components: {
-			HealthBarWidget
+			HealthBarWidget,
+			ManaBarWidget
 		},
 		setup(props) {
 			// Hooks
@@ -50,7 +53,14 @@
 	export default Character;
 </script>
 <style scoped>
-	.person {
-		height: 100%;
+	.char-name {
+		color: lightgray;
+		font-weight: 900;
+		font-size: 2rem;
 	}
+	.person {
+		display: flex;
+		flex-direction: column;
+	}
+
 </style>

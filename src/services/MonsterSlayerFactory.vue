@@ -29,7 +29,9 @@
 		[ActivityStateOptions.Focus]: heroFocusStance,
 		[ActivityStateOptions.Skill1]: heroSkillStance,
 		[ActivityStateOptions.Skill2]: heroSkillStance,
-		[ActivityStateOptions.Skill3]: heroSkillStance
+		[ActivityStateOptions.Skill3]: heroSkillStance,
+        // Assign an image for failed attack
+        [ActivityStateOptions.Failed]: heroIdleStance
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -39,7 +41,9 @@
 		[ActivityStateOptions.Focus]: monsterFocusStance,
 		[ActivityStateOptions.Skill1]: monsterSkillStance,
 		[ActivityStateOptions.Skill2]: monsterSkillStance,
-		[ActivityStateOptions.Skill3]: monsterSkillStance
+		[ActivityStateOptions.Skill3]: monsterSkillStance,
+        // Assign an image for failed attack
+        [ActivityStateOptions.Failed]: monsterIdleStance
 	};
 
     const useMonsterSlayerService = (): IMonsterSlayerService => {

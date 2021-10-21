@@ -7,33 +7,43 @@ export const mutations: MutationTree<IState> = {
     },
     initializePlayer(state, payload: IPersonState) {
         state.player = payload;
-        console.log(state.player);
     },
     initializeMonster(state, payload: IPersonState) {
         state.monster = payload;
-        console.log(state.monster);
     },
     action(state, act: IAction) {
-        const playerHealth = state.player.currentState.health;
-        const monsterHealth = state.monster.currentState.health;
-        const playerMana = state.player.currentState.mana;
-        const monsterMana = state.monster.currentState.mana;
-        if (act.personType === PersonType.Player) {
-            state.player.currentState.activityState = act.actionTaken.skillType;
-            state.monster.currentState.health = monsterHealth - act.actionTaken.damage;
-            state.player.currentState.mana = playerMana - act.actionTaken.manaCost;
-            state.player.currentState.health = playerHealth + act.actionTaken.healthIncrement;
-            setTimeout(() =>{
-                state.player.currentState.activityState = ActivityStateOptions.Idle;
-            }, act.actionTaken.timeout);
+        const actor = act.personType as PersonType;
+        const receiver = actor === PersonType.Player ? PersonType.Monsters : PersonType.Player;
+
+        const manaCost = act.actionTaken.manaCost;
+
+        const actorHealth = state[actor].currentState.health;
+        const actorMana = state[actor].currentState.mana;
+        const receiverHealth = state[receiver].currentState.health;
+        const receiverMana = state[receiver].currentState.mana;
+
+        const manaIncrement = act.actionTaken.manaIncrement;
+        const healthIncrement = act.actionTaken.healthIncrement;
+        if (actorMana > manaCost) {
+            state[actor].currentState.activityState = act.actionTaken.skillType;
+            state[receiver].currentState.health = receiverHealth - act.actionTaken.damage;
+            state[actor].currentState.mana = actorMana - act.actionTaken.manaCost;
+
+            if (healthIncrement) {
+                const healthTotal = actorHealth + act.actionTaken.healthIncrement;
+                state[actor].currentState.health =  healthTotal > 100 ? 100 : healthTotal;
+            }
+            if (manaIncrement) {
+                const manaTotal = actorMana + act.actionTaken.manaIncrement;
+                state[actor].currentState.mana = manaTotal > 100 ? 100 : manaTotal;
+            }
         } else {
-            state.monster.currentState.activityState = act.actionTaken.skillType;
-            state.player.currentState.health = playerHealth - act.actionTaken.damage;
-            state.monster.currentState.mana = monsterMana - act.actionTaken.manaCost;
-            state.monster.currentState.health = monsterHealth + act.actionTaken.healthIncrement;
-            setTimeout(() =>{
-                state.monster.currentState.activityState = ActivityStateOptions.Idle;
-            }, act.actionTaken.timeout);
+            // Failed Attack - Do nothing for now OR disabled the Button if mana < mana cost
+            //state[actor].currentState.activityState = ActivityStateOptions.Failed;
         }
+        setTimeout(() =>{
+            state[actor].currentState.activityState = ActivityStateOptions.Idle;
+        }, act.actionTaken.timeout);
+
     }
 }
