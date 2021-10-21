@@ -57,6 +57,8 @@ export interface IMonsterSlayerService {
     randomAction: (limit: number) => number;
     initOptions: (person: IPersonState) => IPersonState;
     getRandomMonsters: () => IPersonState;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getCharacterImage: (personType: PersonType, type: ActivityStateOptions) => any;
 }
 
 export interface IAction {

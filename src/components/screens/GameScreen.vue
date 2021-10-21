@@ -4,10 +4,10 @@
 		<div class="main-container">
 			<div class="people-container">
 				<div class="person-container player">
-					<Player/>
+					<Character :personType="'player'"/>
 				</div>
 				<div class="person-container monster">
-					<Monster />
+					<Character :personType="'monster'"/>
 				</div>
 			</div>
 			<div class="main-controls">
@@ -29,10 +29,8 @@
 	import { computed, defineComponent, onBeforeMount } from "vue";
 	import { ActivityStateOptions, IAction, ISkill, PersonType } from "@/store/types";
 	import { useStore } from "vuex";
-	// import * as MonsterSlayerService from "@/services/monster-slayer.factory"
-	import Player from "../people/Player.vue";
-	import Monster from "../people/Monster.vue";
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import Character from "../model/Character.vue";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenGif = require('../../assets/background/castle.gif');
@@ -40,28 +38,28 @@
 	const GameScreen = defineComponent({
 		props: [],
 		components: {
-			Player,
-			Monster
+			Character
 		},
 		setup() {
 
 			// Properties
 			const screenImage = screenGif;
+
+			// Hooks
 			const service = useMonsterSlayerService();
 			const store = useStore();
 
 			// Lifecycle Hooks
-			onBeforeMount(() => initializeAll());
-
-			// Methods
-			const initializeAll = (): void => {
+			onBeforeMount(() => {
 				store.commit('game/initializePlayer', service.getDefaultPerson(PersonType.Player));
 				store.commit('game/initializeMonster', service.getDefaultPerson(PersonType.Monsters));
-			};
+			});
 
+			// Methods
 			const action = (skill: ISkill): void => {
 				store.commit('game/action', { personType: PersonType.Player, actionTaken: skill} as IAction);
 
+				// TODO: Transfer this to mutation or action
 				setTimeout(() => {
 					const skills: ISkill[] = store.getters['game/getSkills'](PersonType.Monsters);
 					const monsterAttack = skills.filter(skill => skill.skillType !== ActivityStateOptions.Idle)[service.randomAction(skills.length-1)];
@@ -77,7 +75,6 @@
 
 			return {
 				action,
-				service,
 				screenImage,
 				actionSkills
 			}
@@ -99,7 +96,7 @@
 		flex-direction: row;
 		align-items: flex-start;
 	}
-	.main-container, .people-container, .main-controls,
+	.people-container, .main-controls,
 	.battle-logs, .battle-controls, .person-container {
 		background: white;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
@@ -138,7 +135,6 @@
 	}
 
 	.person-container {
-		background: lightblue;
 		margin: auto 1rem;
 		height: 95%;
 		width: 450%;
