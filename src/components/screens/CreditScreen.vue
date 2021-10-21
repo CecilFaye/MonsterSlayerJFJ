@@ -5,23 +5,22 @@
 
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
+	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import { defineComponent } from "vue";
+	import { useStore } from "vuex";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenGif = require('../../assets/background/castle.gif');
 
 	const CreditScreen = defineComponent({
 		props: [],
-		data() {
-			return {
-				screenImage: screenGif,
+		setup() {
+            const service = useMonsterSlayerService();
+			const store = useStore();
+            return {
+
 			}
-		},
-		components: {},
-		mounted() {},
-		computed: {},
-		methods: {},
-		watch: {}
+        }
 	})
 	export default CreditScreen;
 </script>

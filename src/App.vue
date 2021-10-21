@@ -8,9 +8,8 @@
 </template>
 
 <script lang="ts">
-	import { computed, defineComponent, inject } from 'vue';
-	import { mapState, useStore } from 'vuex';
-	import { IMonsterSlayerService } from './store/types';
+	import { computed, defineComponent } from 'vue';
+	import { useStore } from 'vuex';
 
 	import HomeScreen from '@/components/screens/HomeScreen.vue'
 	import CreditScreen from './components/screens/CreditScreen.vue'
@@ -26,14 +25,11 @@
 			FightResultScreen
 		},
 		setup() {
-			const service = inject('serviceInstance') as IMonsterSlayerService;
 			const store = useStore();
-
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const currentScreen = computed(() => store.state.game.currentScreen)
 			return {
 				currentScreen,
-				service
 			}
 		}
 	});
@@ -45,6 +41,7 @@
 	html, body {
 		margin: 0;
 		padding: 0;
+		overflow: hidden;
 	}
 	#app {
 		font-family: 'Helvetica', Arial, sans-serif;

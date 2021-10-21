@@ -37,16 +37,11 @@
 				screenImage: home,
 			}
 		},
-		components: {
-
-		},
-		computed: {},
 		methods: {
 			...mapMutations({
 				changeScreen: 'game/changeScreen'
 			})
-		},
-		watch: {}
+		}
 	})
 	export default HomeScreen;
 </script>
@@ -61,7 +56,7 @@
 		overflow: hidden !important;
 	}
 
-	.home-screen-title, h3 {
+	.home-screen-title {
 		width: 100%;
 		margin: 0 auto 0 auto;
 		font-family: 'Lato', sans-serif;
@@ -73,7 +68,7 @@
 		text-rendering: optimizeLegibility;
 	}
 
-	.home-screen-title::before, h3::before {
+	.home-screen-title::before {
 		content:"";
 		width: 100%;
 		height: 50vh;
