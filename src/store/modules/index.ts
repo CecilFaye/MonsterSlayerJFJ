@@ -7,6 +7,7 @@ export const state: IState = {
     screenOptions: Object.keys(ScreenStateOptions).map(_ => _),
 	currentScreen: 'homeScreen',
     fightLogs: [],
+    battleStart: false,
 
 	// Player State
 	player: {
@@ -19,6 +20,7 @@ export const state: IState = {
         attack: {},
         focus: {},
         skills: [] as ISkill[],
+        turn: false,
         currentState: {
             health: 0,
             mana: 0,
@@ -42,6 +44,7 @@ export const state: IState = {
         attack: {},
         focus: {},
         skills: [] as ISkill[],
+        turn: false,
         currentState: {
             health: 0,
             mana: 0,

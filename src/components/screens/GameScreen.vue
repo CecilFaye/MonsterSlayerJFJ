@@ -1,28 +1,44 @@
 
 <template>
-	<div class="game-screen" :style="`background-image:url(${(screenImage)});`">
-		<div class="main-container">
-			<div class="people-container">
-				<div class="person-container player">
-					<Character :personType="'player'"/>
+	<div v-show="showEntrance" >
+		<img class="entrance-screen" :src="screenGif" >
+	</div>
+	<transition name="fade">
+		<div v-if="!showEntrance" class="game-screen" :style="`background-image:url(${(screenBackground)});`">
+			<div class="main-container">
+				<div class="people-container">
+					<div class="person-container player">
+						<Character :personType="'player'"/>
+					</div>
+					<div class="person-container center-images">
+						<transition name="fade">
+							<img class="versus"  v-show="battleStart" :src="`${vsGif}`">
+						</transition>
+						<transition name="fade">
+							<img style="z-index: 10000 !important; position: abosulte;" v-show="showFightImage" :src="`${fightGif}`">
+						</transition>
+					</div>
+					<div class="person-container monster">
+						<Character :personType="'monster'"/>
+					</div>
 				</div>
-				<div class="person-container monster">
-					<Character :personType="'monster'"/>
+				<div class="center-notif">
+
 				</div>
-			</div>
-			<div class="main-controls">
-				<BattleControlWidget/>
-				<div class="battle-logs">
-					<label v-for="(log, index) in logs" class='log' :key="`log-${index}`">{{ log }}</label>
+				<div class="main-controls">
+					<BattleControlWidget/>
+					<div class="battle-logs">
+						<label v-for="(log, index) in logs" class='log' :key="`log-${index}`">{{ log }}</label>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	</transition>
 </template>
 
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
-	import { defineComponent, onBeforeMount } from "vue";
+	import { computed, defineComponent, onBeforeMount, ref, watch } from "vue";
 	import { PersonType } from "@/store/types";
 	import { useStore } from "vuex";
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
@@ -30,7 +46,13 @@
 	import BattleControlWidget from "../widget/BattleControls.vue";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const screenGif = require('../../assets/background/inside-castle.jpg');
+	const screenBackground = require('../../assets/background/inside-castle.jpg');
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const screenGif = require('../../assets/background/before-fight.gif');
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const vsGif = require('../../assets/background/versus.gif');
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const fightGif = require('../../assets/background/fight.gif');
 
 	const GameScreen = defineComponent({
 		props: [],
@@ -40,7 +62,8 @@
 		},
 		setup() {
 			// Properties
-			const screenImage = screenGif;
+			const showEntrance = ref<boolean>(true);
+			const showFightImage = ref<boolean>(true);
 
 			// Hooks
 			const service = useMonsterSlayerService();
@@ -52,8 +75,32 @@
 				store.commit('game/initializeMonster', service.getDefaultPerson(PersonType.Monsters));
 			});
 
+			setTimeout(() => {
+				showEntrance.value = false;
+			},2800);
+
+			watch(() => showEntrance.value, (value: boolean, oldValue: boolean) => {
+				if (!value) {
+					setTimeout(() => {
+
+						showFightImage.value = false;
+						setTimeout(() => store.commit('game/initFirstTurn'), 1000);
+					}, 2000);
+				}
+			});
+
+			const battleStart = computed(() => {
+				return store.state.game.battleStart;
+			});
+
 			return {
-				screenImage,
+				screenBackground,
+				screenGif,
+				vsGif,
+				fightGif,
+				showEntrance,
+				showFightImage,
+				battleStart
 			}
 		}
 	})
@@ -80,6 +127,7 @@
 		background-attachment: fixed!important;
 		overflow:hidden;
 		text-align: center;
+		background: white;
 	}
 
 	button {
@@ -113,5 +161,27 @@
 		display: flex;
 		flex-direction: column;
 		min-height: fit-content;
+	}
+	.entrance-screen {
+		width: 100%;
+		width: 100%;
+	}
+
+	.fade-enter-active,
+	.fade-leave-active {
+		transition: opacity 1s ease;
+	}
+
+	.fade-enter-from,
+	.fade-leave-to {
+		opacity: 0;
+	}
+	.versus {
+		width: 100px;
+		height: 100px;
+	}
+	.center-images {
+		display: flex;
+		flex-direction: column;
 	}
 </style>

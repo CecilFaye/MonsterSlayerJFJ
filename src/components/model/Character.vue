@@ -6,6 +6,9 @@
 		<HealthBarWidget :personType="personInfo.personType"/>
 		<ManaBarWidget :personType="personInfo.personType"/>
         <div class="person-image">
+			<div class="arrow-pointer-container">
+				<img class="arrow-pointer" v-show="personInfo.turn"  :src="`${arrowDown}`">
+			</div>
             <img v-for="(skill, index) in personSkills"
 				:key="`skill-${index}`"
 				:src="`${getCharacterImage(skill.skillType)}`"
@@ -22,6 +25,9 @@
 	import HealthBarWidget from "../widget/HealthBar.vue";
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import ManaBarWidget from "../widget/ManaBar.vue";
+
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const arrowDown = require('../../assets/background/arrow-down.gif');
 
 	const Character = defineComponent({
 		props: {
@@ -44,6 +50,7 @@
 
 			return {
 				getCharacterImage,
+				arrowDown,
 				personInfo,
 				personSkills,
 				personState
@@ -62,5 +69,17 @@
 		display: flex;
 		flex-direction: column;
 	}
-
+	.person-image {
+		padding-top: 0.8rem;
+		display: flex;
+		flex-direction: column;
+	}
+	.arrow-pointer-container {
+		width: 100px;
+		height: 100px;
+		margin:auto;
+	}
+	.arrow-pointer {
+		width: 50px; height: 50px;
+	}
 </style>
