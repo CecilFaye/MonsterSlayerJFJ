@@ -11,6 +11,10 @@ export const mutations: MutationTree<IState> = {
     initializeMonster(state, payload: IPersonState) {
         state.monster = payload;
     },
+    initFirstTurn(state) {
+        state.player.turn = true;
+        state.battleStart = true;
+    },
     action(state, act: IAction) {
         const actor = act.personType as PersonType;
         const receiver = actor === PersonType.Player ? PersonType.Monsters : PersonType.Player;
@@ -61,6 +65,8 @@ export const mutations: MutationTree<IState> = {
         }
         setTimeout(() =>{
             state[actor].currentState.activityState = ActivityStateOptions.Idle;
+            state[actor].turn = false;
+            state[receiver].turn = true;
         }, act.actionTaken.timeout);
 
     }

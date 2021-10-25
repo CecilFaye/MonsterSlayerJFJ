@@ -13,6 +13,7 @@ export interface IPersonState {
     attack: ISkill;
     focus: ISkill;
     skills: ISkill[];
+    turn: boolean;
     currentState: IStatus;
 }
 
@@ -45,6 +46,7 @@ export interface IState {
     screenOptions: string[];
 	currentScreen: string;
     fightLogs: string[];
+    battleStart: boolean;
 
 	// Player State
 	player: IPersonState;

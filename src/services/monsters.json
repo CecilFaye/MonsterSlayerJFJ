@@ -37,9 +37,9 @@
 				"skillType": "skill1",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 10,
+				"manaCost": 5,
 				"icon": "",
-				"damage": 15,
+				"damage": 20,
 				"healthIncrement": 0,
 				"manaIncrement": 0
 			},
@@ -49,7 +49,7 @@
 				"skillType": "skill2",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 20,
+				"manaCost": 10,
 				"icon": "",
 				"damage": 20,
 				"healthIncrement": 0,
@@ -61,10 +61,10 @@
 				"skillType": "skill3",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 50,
+				"manaCost": 15,
 				"icon": "",
 				"damage": 50,
-				"healthIncrement": 20,
+				"healthIncrement": 0,
 				"manaIncrement": 0
 			}
 		]
@@ -107,9 +107,9 @@
 				"skillType": "skill1",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 10,
+				"manaCost": 5,
 				"icon": "",
-				"damage": 15,
+				"damage": 20,
 				"healthIncrement": 0,
 				"manaIncrement": 0
 			},
@@ -119,7 +119,7 @@
 				"skillType": "skill2",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 20,
+				"manaCost": 10,
 				"icon": "",
 				"damage": 20,
 				"healthIncrement": 0,
@@ -131,10 +131,10 @@
 				"skillType": "skill3",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 50,
+				"manaCost": 15,
 				"icon": "",
-				"damage": 50,
-				"healthIncrement": 20,
+				"damage": 40,
+				"healthIncrement": 0,
 				"manaIncrement": 0
 			}
 		]
@@ -177,9 +177,9 @@
 				"skillType": "skill1",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 10,
+				"manaCost": 5,
 				"icon": "",
-				"damage": 15,
+				"damage": 20,
 				"healthIncrement": 0,
 				"manaIncrement": 0
 			},
@@ -189,7 +189,7 @@
 				"skillType": "skill2",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 20,
+				"manaCost": 10,
 				"icon": "",
 				"damage": 20,
 				"healthIncrement": 0,
@@ -201,10 +201,10 @@
 				"skillType": "skill3",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 50,
+				"manaCost": 15,
 				"icon": "",
-				"damage": 50,
-				"healthIncrement": 20,
+				"damage": 45,
+				"healthIncrement": 0,
 				"manaIncrement": 0
 			}
 		]
@@ -247,9 +247,9 @@
 				"skillType": "skill1",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 10,
+				"manaCost": 5,
 				"icon": "",
-				"damage": 15,
+				"damage": 20,
 				"healthIncrement": 0,
 				"manaIncrement": 0
 			},
@@ -259,9 +259,9 @@
 				"skillType": "skill2",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 20,
+				"manaCost": 10,
 				"icon": "",
-				"damage": 20,
+				"damage": 25,
 				"healthIncrement": 0,
 				"manaIncrement": 0
 			},
@@ -271,9 +271,9 @@
 				"skillType": "skill3",
 				"image": "../../assets/enemy/attack.gif",
 				"timeout": 1000,
-				"manaCost": 50,
+				"manaCost": 15,
 				"icon": "",
-				"damage": 50,
+				"damage": 60,
 				"healthIncrement": 20,
 				"manaIncrement": 0
 			}

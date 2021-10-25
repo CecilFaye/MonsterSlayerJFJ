@@ -55,9 +55,11 @@
             switch(type) {
                 case PersonType.Player:
                     personState = Player as IPersonState;
+                    personState.turn = true;
                     break;
                 case PersonType.Monsters:
-                    personState = getRandomMonsters()
+                    personState = getRandomMonsters();
+                    personState.turn = false;
                     break;
             }
             return initOptions(personState);
@@ -70,6 +72,7 @@
             person.currentState = {
                 health: person.maxHealth,
                 mana: person.maxMana,
+
                 activityState: ActivityStateOptions.Idle,
                 activityStateOptions: Object.keys(ActivityStateOptions).map(_ => _) as ActivityStateOptions[]
             };

@@ -1,16 +1,18 @@
 <template>
-	<div class="battle-controls">
-        <button v-for="(skill, index) in actionSkills" :key="`log-${index}`" @click="action(skill)">
-            {{skill.name}}
-        </button>
-	</div>
+	<transition name="fade">
+		<div class="battle-controls" v-show="battleStart">
+			<button v-for="(skill, index) in actionSkills" :key="`ctrl-${index}`" @click="action(skill)" :disabled="!playerTurn">
+				{{skill.name}}
+			</button>
+		</div>
+	</transition>
 </template>
 
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
     import { ActivityStateOptions, IAction, ISkill, PersonType } from "@/store/types";
-    import { computed, defineComponent } from "vue";
+    import { computed, defineComponent, watch } from "vue";
     import { useStore } from "vuex";
 
 	const BattleControlWidget = defineComponent({
@@ -22,22 +24,33 @@
             // Methods
 			const action = (skill: ISkill): void => {
 				store.commit('game/action', { personType: PersonType.Player, actionTaken: skill} as IAction);
-
-				// TODO: Transfer this to mutation or action
-				setTimeout(() => {
-					const skills: ISkill[] = store.getters['game/getSkills'](PersonType.Monsters);
-					const monsterAttack = skills.filter(skill => skill.skillType !== ActivityStateOptions.Idle)[service.randomAction(skills.length-1)];
-					store.commit('game/action', { personType: PersonType.Monsters, actionTaken:  monsterAttack} as IAction);
-				}, 2000);
 			};
+
+			watch(() => store.state.game[`${PersonType.Monsters}`].turn, (value, oldValue) => {
+				if (value) {
+					setTimeout(() => {
+						const skills: ISkill[] = store.getters['game/getSkills'](PersonType.Monsters);
+						const monsterAttack = skills.filter(skill => skill.skillType !== ActivityStateOptions.Idle)[service.randomAction(skills.length-1)];
+						store.commit('game/action', { personType: PersonType.Monsters, actionTaken:  monsterAttack} as IAction);
+					}, 2000);
+				}
+			});
 
 			// Computed
 			const actionSkills = computed(() => {
 				const skills: ISkill[] = store.getters['game/getSkills']('player');
 				return skills.filter(skill => skill.skillType !== ActivityStateOptions.Idle);
 			});
+			const playerTurn = computed(() => {
+				return store.state.game.player.turn;
+			});
+			const battleStart = computed(() => {
+				return store.state.game.battleStart;
+			});
             return {
                 action,
+				playerTurn,
+				battleStart,
                 actionSkills
 			}
         }
