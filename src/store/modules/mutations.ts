@@ -63,7 +63,6 @@ export const mutations: MutationTree<IState> = {
             // Failed Attack - Do nothing for now OR disabled the Button if mana < mana cost
             //state[actor].currentState.activityState = ActivityStateOptions.Failed;
         }
-        state.fightLogs.unshift(state[actor].name + " used " + act.actionTaken.name + (act.actionTaken.damage > 0 ? " and dealt " + act.actionTaken.damage + " damage" : ""));
         setTimeout(() =>{
             state[actor].currentState.activityState = ActivityStateOptions.Idle;
             state[actor].turn = false;
