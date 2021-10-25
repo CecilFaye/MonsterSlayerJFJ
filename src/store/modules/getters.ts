@@ -26,8 +26,5 @@ export const getters: GetterTree<IState, IRootState> = {
                 return [ idleState, monster.attack, monster.focus, ...state.monster.skills];
             }
         }
-    },
-    getFightLogs: (state) => {
-        return state.fightLogs;
     }
 }
