@@ -67,6 +67,19 @@
 		cursor: pointer;
 		padding: 0.7rem;
 		text-transform: uppercase;
+		border-radius: 20%;
+	}
+	button:nth-of-type(2n+0) {
+		background: dodgerblue;
+	}
+	button:nth-of-type(3n+0) {
+		background: limegreen;
+	}
+	button:nth-of-type(4n+0) {
+		background: mediumblue;
+	}
+	button:nth-of-type(5n+0) {
+		background: red;
 	}
     .battle-controls {
         width: 50%;
