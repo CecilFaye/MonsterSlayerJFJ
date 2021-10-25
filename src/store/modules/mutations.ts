@@ -18,6 +18,7 @@ export const mutations: MutationTree<IState> = {
     action(state, act: IAction) {
         const actor = act.personType as PersonType;
         const receiver = actor === PersonType.Player ? PersonType.Monsters : PersonType.Player;
+        const attackerName = act.personType === PersonType.Player ? state.player.name : state.monster.name;
 
         const manaCost = act.actionTaken.manaCost;
 
@@ -32,7 +33,24 @@ export const mutations: MutationTree<IState> = {
             state[actor].currentState.activityState = act.actionTaken.skillType;
             state[receiver].currentState.health = receiverHealth - act.actionTaken.damage;
             state[actor].currentState.mana = actorMana - act.actionTaken.manaCost;
-
+            
+            if(act.actionTaken.damage != 0 && act.actionTaken.healthIncrement != 0)//Avada kedavra
+            {
+                state.fightLogs.push(attackerName +" used " + act.actionTaken.name +  " dealt " + act.actionTaken.damage +" damage and gained " +act.actionTaken.healthIncrement + " health");
+            }
+            else if(act.actionTaken.damage == 0  && act.actionTaken.manaIncrement != 0) //Focus
+            {
+                state.fightLogs.push(attackerName +" used " + act.actionTaken.name +  " gained " + act.actionTaken.manaIncrement +" mana");
+            }
+            else if(act.actionTaken.damage == 0 && act.actionTaken.healthIncrement != 0) //Anapneo
+            {
+                state.fightLogs.push(attackerName +" used " + act.actionTaken.name +  " gained " + act.actionTaken.healthIncrement +" health");
+            }
+            else //Attack, Aqua Eructo
+            {
+                state.fightLogs.push(attackerName +" used " + act.actionTaken.name +  " dealt " + act.actionTaken.damage +" damage");
+            }
+            
             if (healthIncrement) {
                 const healthTotal = actorHealth + act.actionTaken.healthIncrement;
                 state[actor].currentState.health =  healthTotal > 100 ? 100 : healthTotal;

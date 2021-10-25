@@ -27,7 +27,7 @@
 				</div>
 				<div class="main-controls">
 					<BattleControlWidget/>
-					<LogsWidget/>
+          <LogsControlWidget/>
 				</div>
 			</div>
 		</div>
@@ -42,7 +42,7 @@
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import Character from "../model/Character.vue";
 	import BattleControlWidget from "../widget/BattleControls.vue";
-	import LogsWidget from "../widget/Logs.vue";
+  import LogsControlWidget from "../widget/Logs.vue";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenBackground = require('../../assets/background/inside-castle.jpg');
@@ -58,7 +58,7 @@
 		components: {
 			Character,
 			BattleControlWidget,
-			LogsWidget
+			LogsControlWidget
 		},
 		setup() {
 			// Properties

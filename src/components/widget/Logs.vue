@@ -1,7 +1,6 @@
-
 <template>
-	<div class="logs-container">
-        <label v-for="(log, index) in logs" class='log' :key="`log-${index}`">{{ log }}</label>
+	<div class="logs-container" v-show="battleStart">
+      <p v-for="(log, index) in logs" class='log' :key="`log-${index}`">{{log}}</p>
     </div>
 </template>
 
@@ -9,31 +8,30 @@
     /* eslint-disable @typescript-eslint/no-empty-function */
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
     import { useStore } from "vuex";
-	import { defineComponent, computed } from "vue";
+    import { computed, defineComponent } from "vue";
 
 	const LogsWidget = defineComponent({
 		props: [],
 		setup() {
             const service = useMonsterSlayerService();
 			const store = useStore();
-            
+      const battleStart = computed(() => {
+				return store.state.game.battleStart;
+			});
 			const logs = computed(() => {
-				const fightLogs = store.getters['game/getFightLogs'];
+				const fightLogs = store.state.game.fightLogs;
 				const logToShow = fightLogs.length > 4 ? fightLogs.slice(0, 4) : fightLogs;
-				console.log(fightLogs.length);
-				console.log(logToShow);
 				return logToShow;
 			});
-
-			return {
-				logs
-			};
+            return {
+                logs,battleStart
+			}
         }
 	})
 	export default LogsWidget;
 </script>
 <style scoped>
-	label {
+	p {
 		margin: 5px;
 		min-width: 100px;
 		min-height: 2rem;
@@ -42,14 +40,21 @@
 		text-transform: uppercase;
 		display: block;
 		text-align: center;
-		color: white;
+		color: black;
 	}
-	label:nth-of-type(3n+0), label:nth-of-type(4n+0) {
+	p:nth-of-type(3n+0) {
 		opacity: 0.2;
 	}
+	p:nth-of-type(4n+0) {
+		opacity: 0.1;
+	}
 	.logs-container {
-        width: 50%;
-		max-width: 50%;
 		margin: 1rem;
+		background: white;
+		white-space: normal;
+		overflow-x: hidden ;
+		overflow-y: auto;
+		max-height: 200px;
+		width: 50%;
 	}
 </style>
