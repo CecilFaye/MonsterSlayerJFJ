@@ -24,7 +24,7 @@
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const gameOverGif = require('../../assets/background/GameOver2.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const victoryGif = require('../../assets/background/YouWin.gif');
+	const victoryGif = require('../../assets/background/YouWin2.gif');
 
 	const FightResultScreen = defineComponent({
 		props: [],
@@ -92,11 +92,11 @@
 		font-weight: 900;
 	}
 	.btn1 {
-		top: 100%;
+		top: 75%;
 	}
 
 	.btn2 {
-		top: 108%;
+		top: 80%;
 	}
 
 	.btn3 {
