@@ -67,23 +67,25 @@
 		cursor: pointer;
 		padding: 0.7rem;
 		text-transform: uppercase;
-		border-radius: 20%;
+
+        box-shadow: 0px 4px 5px #00000033;
+        border-radius: 30px;
 	}
 	button:nth-of-type(2n+0) {
-		background: dodgerblue;
+		background: dodgerblue 0% 0% no-repeat padding-box;
 	}
 	button:nth-of-type(3n+0) {
-		background: limegreen;
+		background: limegreen 0% 0% no-repeat padding-box;
 	}
 	button:nth-of-type(4n+0) {
-		background: mediumblue;
+		background: mediumblue 0% 0% no-repeat padding-box;
 	}
 	button:nth-of-type(5n+0) {
-		background: red;
+		background: red 0% 0% no-repeat padding-box;
 	}
     .battle-controls {
-        width: 50%;
-		max-width: 50%;
+        width: 460px;
+		max-width: 460px;
 		margin: 1rem;
 	}
 </style>

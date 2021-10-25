@@ -1,9 +1,9 @@
 <template>
 	<div id="app">
-		<HomeScreen v-show="currentScreen === 'homeScreen'"/>
-		<CreditScreen v-show="currentScreen === 'creditScreen'"/>
-		<GameScreen v-show="currentScreen === 'gameScreen'"/>
-		<FightResultScreen v-show="currentScreen === 'fightResultScreen'"/>
+		<HomeScreen v-if="currentScreen === 'homeScreen'"/>
+		<CreditScreen v-if="currentScreen === 'creditScreen'"/>
+		<GameScreen v-if="currentScreen === 'gameScreen'"/>
+		<FightResultScreen v-if="currentScreen === 'fightResultScreen'"/>
 	</div>
 </template>
 
@@ -27,7 +27,10 @@
 		setup() {
 			const store = useStore();
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const currentScreen = computed(() => store.state.game.currentScreen)
+			const currentScreen = computed(() => {
+				console.log(store.state.game.currentScreen);
+				return store.state.game.currentScreen;
+			});
 			return {
 				currentScreen,
 			}

@@ -6,7 +6,7 @@
 			<img class="displayPicture" style="z-index: 10000 !important;"  :src="`${vuezardImg}`"> <br>
 			<p>Vuezard<br><br>From the kindly old white bearded casters wearing robes with stars and moons to the battle-hardened  war-mage throwing fireballs at monsters. The royal family has always had one on hand: a wise diviner to lead  the kingdom into peace or a dangerous conjurer to dominate all of  the land under one rule. Or perhaps a divine helear? An alchemist? Or even a necromancer?<br><br> The combinations are boundless. <br><br>Let me tell you my story.</p>
 		</div>
-	
+
 		<div class="developers">
 			<p class="title">DEVELOPERS</p><br><br><br>
 			<img class="displayPicture" style="z-index: 10000 !important;"  :src="`${fayeImg}`"> <br>
@@ -24,10 +24,8 @@
 </template>
 
 <script lang="ts">
-	/* eslint-disable @typescript-eslint/no-empty-function */
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import { defineComponent } from "vue";
-	import { useStore, mapMutations } from "vuex";
+	import { mapMutations } from "vuex";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenGif = require('../../assets/background/castle.gif');
@@ -44,13 +42,6 @@
 
 	const CreditScreen = defineComponent({
 		props: [],
-		setup() {
-            const service = useMonsterSlayerService();
-			const store = useStore();
-            return {
-
-			}
-        },
 		data() {
 			return {
 				screenImage: screenGif,
@@ -79,7 +70,7 @@
 	}
 	.credit-screen .bookBackground {
 		margin-top:-40px;
-	}	
+	}
 	.credit-screen p {
 		position: absolute;
 		width:200%;
@@ -91,7 +82,7 @@
 	}
 	.credit-screen .btn {
 		position: absolute;
-		top: 85%;
+		top: 80%;
 		left: 65%;
 		transform: translate(-50%, -50%);
 		-ms-transform: translate(-50%, -50%);
@@ -104,7 +95,7 @@
 		border-radius: 5px;
 		font-family:cursive;
 		}
-	
+
 	.credit-screen .story {
 		position: absolute;
 		top: 25%;

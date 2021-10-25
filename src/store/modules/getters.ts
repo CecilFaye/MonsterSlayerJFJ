@@ -26,5 +26,8 @@ export const getters: GetterTree<IState, IRootState> = {
                 return [ idleState, monster.attack, monster.focus, ...state.monster.skills];
             }
         }
+    },
+    isWinner: (state) => (): boolean => {
+        return state.player.currentState.health < 1 ? false : true;
     }
 }

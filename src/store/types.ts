@@ -28,6 +28,7 @@ export interface ISkill {
     damage: number;
     manaIncrement: number;
     healthIncrement: number;
+    disabled: boolean;
 }
 
 export interface IStatus {

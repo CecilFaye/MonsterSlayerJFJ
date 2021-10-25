@@ -37,12 +37,11 @@
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
 	import { computed, defineComponent, onBeforeMount, ref, watch } from "vue";
-	import { PersonType } from "@/store/types";
 	import { useStore } from "vuex";
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import Character from "../model/Character.vue";
 	import BattleControlWidget from "../widget/BattleControls.vue";
-  import LogsControlWidget from "../widget/Logs.vue";
+	import LogsControlWidget from "../widget/Logs.vue";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenBackground = require('../../assets/background/inside-castle.jpg');
@@ -71,18 +70,17 @@
 
 			// Lifecycle Hooks
 			onBeforeMount(() => {
-				store.commit('game/initializePlayer', service.getDefaultPerson(PersonType.Player));
-				store.commit('game/initializeMonster', service.getDefaultPerson(PersonType.Monsters));
+				store.commit('game/reset', service);
 			});
 
 			setTimeout(() => {
 				showEntrance.value = false;
 			},2800);
 
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			watch(() => showEntrance.value, (value: boolean, oldValue: boolean) => {
 				if (!value) {
 					setTimeout(() => {
-
 						showFightImage.value = false;
 						setTimeout(() => store.commit('game/initFirstTurn'), 1000);
 					}, 2000);

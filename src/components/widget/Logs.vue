@@ -15,7 +15,7 @@
 		setup() {
             const service = useMonsterSlayerService();
 			const store = useStore();
-      const battleStart = computed(() => {
+			const battleStart = computed(() => {
 				return store.state.game.battleStart;
 			});
 			const logs = computed(() => {
@@ -40,7 +40,7 @@
 		text-transform: uppercase;
 		display: block;
 		text-align: center;
-		color: black;
+		color: whitesmoke;
 	}
 	p:nth-of-type(3n+0) {
 		opacity: 0.2;
@@ -50,11 +50,10 @@
 	}
 	.logs-container {
 		margin: 1rem;
-		background: white;
 		white-space: normal;
-		overflow-x: hidden ;
-		overflow-y: auto;
-		max-height: 200px;
-		width: 50%;
+		overflow: hidden ;
+		height: 140px;
+		width: 460px;
+		max-width: 460px;
 	}
 </style>
