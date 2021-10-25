@@ -32,9 +32,9 @@ export const mutations: MutationTree<IState> = {
         const receiverHealth = state[receiver].currentState.health;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const receiverMana = state[receiver].currentState.mana;
-
         const manaIncrement = act.actionTaken.manaIncrement;
         const healthIncrement = act.actionTaken.healthIncrement;
+
         if (actorMana > manaCost) {
             const remainingReceiverHealth = receiverHealth - act.actionTaken.damage;
             const remainingActorMana = actorMana - act.actionTaken.manaCost;
@@ -50,41 +50,45 @@ export const mutations: MutationTree<IState> = {
                 const manaTotal = actorMana + act.actionTaken.manaIncrement;
                 state[actor].currentState.mana = manaTotal > 100 ? 100 : manaTotal;
             }
+            store.commit('game/actionLog', act);
+            setTimeout(() =>{
+                if (state[receiver].currentState.health < 1) {
+                    console.log(state[receiver]);
+                    console.log(state[actor]);
+                    store.commit('game/changeScreen', ScreenStateOptions.FightResultScreen);
+                } else  {
+                    state[actor].currentState.activityState = ActivityStateOptions.Idle;
+                    state[actor].turn = false;
+                    state[receiver].turn = true;
+                }
+            }, act.actionTaken.timeout);
         } else {
-            // Failed Attack - Do nothing for now OR disabled the Button if mana < mana cost
-            //state[actor].currentState.activityState = ActivityStateOptions.Failed;
+            const attackerName = (act.personType === PersonType.Player ? state.player.name : state.monster.name).toUpperCase();
+            const skillName = act.actionTaken.name.toUpperCase();
+            state.fightLogs.unshift(attackerName +" failed to use " + skillName +  ". Not enough mana!");
+            state[actor].turn = false;
+            state[receiver].turn = true;
         }
-        store.commit('game/actionLog', act);
-        setTimeout(() =>{
-            if (state[receiver].currentState.health < 1) {
-                console.log(state[receiver]);
-                console.log(state[actor]);
-                store.commit('game/changeScreen', ScreenStateOptions.FightResultScreen);
-            } else  {
-                state[actor].currentState.activityState = ActivityStateOptions.Idle;
-                state[actor].turn = false;
-                state[receiver].turn = true;
-            }
-        }, act.actionTaken.timeout);
-
     },
     actionLog(state, act: IAction) {
-        const attackerName = act.personType === PersonType.Player ? state.player.name : state.monster.name;
+        const attackerName = (act.personType === PersonType.Player ? state.player.name : state.monster.name).toUpperCase();
+        const skillName = act.actionTaken.name.toUpperCase();
+
         if(act.actionTaken.damage != 0 && act.actionTaken.healthIncrement != 0)//Avada kedavra
         {
-            state.fightLogs.unshift(attackerName +" used " + act.actionTaken.name +  " dealt " + act.actionTaken.damage +" damage and gained " + act.actionTaken.healthIncrement + " health");
+            state.fightLogs.unshift(attackerName +" used " + skillName +  " dealt " + act.actionTaken.damage +" damage and gained " + act.actionTaken.healthIncrement + " health");
         }
         else if(act.actionTaken.damage == 0  && act.actionTaken.manaIncrement != 0) //Focus
         {
-            state.fightLogs.unshift(attackerName +" used " + act.actionTaken.name +  " gained " + act.actionTaken.manaIncrement +" mana");
+            state.fightLogs.unshift(attackerName +" used " + skillName +  " gained " + act.actionTaken.manaIncrement +" mana");
         }
         else if(act.actionTaken.damage == 0 && act.actionTaken.healthIncrement != 0) //Anapneo
         {
-            state.fightLogs.unshift(attackerName +" used " + act.actionTaken.name +  " gained " + act.actionTaken.healthIncrement +" health");
+            state.fightLogs.unshift(attackerName +" used " + skillName +  " gained " + act.actionTaken.healthIncrement +" health");
         }
         else //Attack, Aqua Eructo
         {
-            state.fightLogs.unshift(attackerName +" used " + act.actionTaken.name +  " dealt " + act.actionTaken.damage +" damage");
+            state.fightLogs.unshift(attackerName +" used " + skillName +  " dealt " + act.actionTaken.damage +" damage");
         }
     }
 }

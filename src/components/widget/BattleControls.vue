@@ -47,6 +47,7 @@
 			const battleStart = computed(() => {
 				return store.state.game.battleStart;
 			});
+
             return {
                 action,
 				playerTurn,

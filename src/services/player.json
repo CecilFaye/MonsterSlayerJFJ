@@ -60,7 +60,7 @@
             "skillType": "skill3",
             "image": "../../assets/hero/attack.gif",
             "timeout": 1000,
-            "manaCost": 15,
+            "manaCost": 25,
             "icon": "",
             "damage": 20,
             "healthIncrement": 0,

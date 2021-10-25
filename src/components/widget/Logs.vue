@@ -37,7 +37,6 @@
 		min-height: 2rem;
 		font-size: 1rem;
 		font-weight: 800;
-		text-transform: uppercase;
 		display: block;
 		text-align: center;
 		color: whitesmoke;
