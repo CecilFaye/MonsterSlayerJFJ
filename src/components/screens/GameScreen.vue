@@ -12,9 +12,7 @@
 			</div>
 			<div class="main-controls">
 				<BattleControlWidget/>
-				<div class="battle-logs">
-					<label v-for="(log, index) in logs" class='log' :key="`log-${index}`">{{ log }}</label>
-				</div>
+				<LogsControlWidget/>
 			</div>
 		</div>
 	</div>
@@ -28,6 +26,7 @@
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import Character from "../model/Character.vue";
 	import BattleControlWidget from "../widget/BattleControls.vue";
+	import LogsControlWidget from "../widget/Logs.vue";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenGif = require('../../assets/background/inside-castle.jpg');
@@ -36,7 +35,8 @@
 		props: [],
 		components: {
 			Character,
-			BattleControlWidget
+			BattleControlWidget,
+			LogsControlWidget
 		},
 		setup() {
 			// Properties
@@ -101,17 +101,5 @@
 
 	.person-container {
 		height: 95%;
-	}
-
-	.battle-logs {
-		width: 50%;
-		max-width: 50%;
-		margin: 1rem;
-	}
-
-	.battle-logs {
-		display: flex;
-		flex-direction: column;
-		min-height: fit-content;
 	}
 </style>
