@@ -15,7 +15,7 @@
 							<img class="versus"  v-show="battleStart" :src="`${vsGif}`">
 						</transition>
 						<transition name="fade">
-							<img style="z-index: 10000 !important; position: abosulte;" v-show="showFightImage" :src="`${fightGif}`">
+							<img v-show="showFightImage" :src="`${fightGif}`">
 						</transition>
 					</div>
 					<div class="person-container monster">

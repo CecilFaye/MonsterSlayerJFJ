@@ -5,15 +5,13 @@
 </template>
 
 <script lang="ts">
-    /* eslint-disable @typescript-eslint/no-empty-function */
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
-    import { useStore } from "vuex";
+
+	import { useStore } from "vuex";
     import { computed, defineComponent } from "vue";
 
 	const LogsWidget = defineComponent({
 		props: [],
 		setup() {
-            const service = useMonsterSlayerService();
 			const store = useStore();
 			const battleStart = computed(() => {
 				return store.state.game.battleStart;
