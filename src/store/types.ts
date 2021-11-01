@@ -92,3 +92,7 @@ export enum ActivityStateOptions {
     // Failed Attack if Mana < Mana Cost
     Failed = 'failed'
 }
+
+export interface StyleInterface {
+    [x: string]: string
+  }

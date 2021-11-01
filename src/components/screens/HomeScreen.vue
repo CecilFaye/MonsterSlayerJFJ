@@ -1,40 +1,57 @@
 <template>
   <div class="home-screen" :style="`background-image:url(${(screenImage)});`">
     <div id="text3d" class="home-screen-title">
-		<span>{{ `${gameName}`}}</span>
+		<!-- <span>{{ `${gameName}`}}</span> -->
+		<!-- <img class="displayPicture" style="z-index: 10000 !important;"  :src="`${vuexieLogo}`"> <br> -->
     </div>
     <div class="home-screen-options">
+		<div class="home-screen-option" @click="showModal = true">
+			LOGIN
+		</div>
 		<div class="home-screen-option" @click="changeScreen('gameScreen')">
-			PLAY GAME
+			SIGN UP
 		</div>
 		<div class="home-screen-option" @click="changeScreen('creditScreen')">
 			CREDITS
 		</div>
     </div>
   </div>
+  <appLoginModal
+    :show="showModal"
+    @closeModal="showModal = false" />
 </template>
 
 <script lang="ts">
-	import { defineComponent } from "vue";
+	import { defineComponent, ref } from "vue";
 	import { mapMutations } from "vuex";
 	import { useStore } from "vuex";
+	import Login from '../../components/screens/Login.vue';
+
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const home = require('../../assets/background/castle.gif')
+	const home = require('../../assets/background/vuexie-bg.jpg')
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const vuexieLogo = require('../../assets/background/vuexie-logo.png');
 
 	const HomeScreen = defineComponent({
+		components:{
+			appLoginModal: Login
+		},
 		props: [],
 		setup() {
 			const store = useStore();
 			const gameName = store.state.name;
 			const gameVersion = store.state.version;
+			const showModal = ref<boolean>(false);
 			return {
 				gameName,
-				gameVersion
+				gameVersion,
+				showModal
 			};
 		},
 		data() {
 			return {
 				screenImage: home,
+				vuexieLogo
 			}
 		},
 		methods: {
@@ -113,8 +130,8 @@
 	}
 
 	.home-screen-options {
-		margin: 45px auto 0 auto;
-		width: 30%;
+		margin: 215px auto 0 auto;
+		width: 28%;
 		cursor: pointer;
 	}
 
@@ -124,6 +141,7 @@
 		padding: 10px;
 		font-size: 20px;
 		font-weight: 800;
-		margin: 25px;
+		margin: 35px;
+		
 	}
 </style>

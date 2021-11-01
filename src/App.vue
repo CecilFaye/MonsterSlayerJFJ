@@ -51,4 +51,8 @@
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
+	@font-face {
+font-family: "AxieFont";
+src:url('~@/assets/KOMIKAX_.ttf') format("truetype");
+}
 </style>

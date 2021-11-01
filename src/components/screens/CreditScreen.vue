@@ -1,25 +1,29 @@
 <template>
 	<div class="credit-screen" :style="`background-image:url(${(screenImage)});`">
-		<img class="bookBackground" style="z-index: 10000 !important;"  :src="`${bookPng}`">
-		<div class="story">
-			<p class="title">Life  of a Vuezard</p><br><br><br>
-			<img class="displayPicture" style="z-index: 10000 !important;"  :src="`${vuezardImg}`"> <br>
-			<p>Vuezard<br><br>From the kindly old white bearded casters wearing robes with stars and moons to the battle-hardened  war-mage throwing fireballs at monsters. The royal family has always had one on hand: a wise diviner to lead  the kingdom into peace or a dangerous conjurer to dominate all of  the land under one rule. Or perhaps a divine helear? An alchemist? Or even a necromancer?<br><br> The combinations are boundless. <br><br>Let me tell you my story.</p>
+		<div class="childA">
+			<div class="axie-side">
+				<img class="axieImg" :src="`${sampleGif}`">
+				<!-- <label class="devName">Faye </label> -->
+			</div>
+    </div>
+    <div class="childB">
+		<div class="developers-side">
+			<button class="devButton">	
+			<img :src="`${fayeImg}`">
+			</button> 
+			<button class="devButton">
+			<img :src="`${jhennesonImg}`">
+			</button> 
+			<button class="devButton">
+			<img :src="`${joshuaImg}`">
+			</button> 
 		</div>
-
-		<div class="developers">
-			<p class="title">DEVELOPERS</p><br><br><br>
-			<img class="displayPicture" style="z-index: 10000 !important;"  :src="`${fayeImg}`"> <br>
-			<label> Faye Clemente </label><br><br>
-			<img class="displayPicture" style="z-index: 10000 !important;"  :src="`${jhennesonImg}`"><br>
-			<label>Jhenneson Torayno </label><br><br>
-			<img class="displayPicture" style="z-index: 10000 !important;"  :src="`${joshuaImg}`"> <br>
-			<label> Joshua Silvestre</label>
+		<div class="home-screen-options">
+		<div class="home-screen-option" @click="changeScreen('homeScreen')">
+			Back to Home Page
 		</div>
-
-		<button class="btn" @click="changeScreen('homeScreen')">
-			Back to Home Screen
-		</button>
+		</div>
+    </div>
 	</div>
 </template>
 
@@ -28,25 +32,27 @@
 	import { mapMutations } from "vuex";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const screenGif = require('../../assets/background/castle.gif');
+	const screenBG = require('../../assets/background/vuexie-credits.jpg');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const bookPng = require('../../assets/background/wizard-book.png');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const vuezardImg = require('../../assets/background/wizard-pic.png');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const fayeImg = require('../../assets/background/faye.png');
+	const fayeImg = require('../../assets/background/faye-vuexie.jpg');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const jhennesonImg = require('../../assets/background/jhenneson.png');
+	const jhennesonImg = require('../../assets/background/jhenesson-vuexie.jpg');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const joshuaImg = require('../../assets/background/joshua.png');
+	const joshuaImg = require('../../assets/background/joshua-vuexie.jpg');
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sampleGif = require('../../assets/background/faye-gift.gif');
 
 	const CreditScreen = defineComponent({
 		props: [],
 		data() {
 			return {
-				screenImage: screenGif,
+				screenImage: screenBG,
 				bookPng, vuezardImg,fayeImg
-				,jhennesonImg,joshuaImg
+				,jhennesonImg,joshuaImg, sampleGif
 			}
 		},
 		methods: {
@@ -64,10 +70,20 @@
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-attachment: fixed!important;
-		overflow:hidden;
 		text-align: center;
-		position: relative;
+		overflow: hidden !important;
 	}
+.childA{
+float:left;
+width:40%;
+height:100vh;
+position:absolute;
+}
+.childB {
+float:right;
+width:60%;
+height:100vh;
+}
 	.credit-screen .bookBackground {
 		margin-top:-40px;
 	}
@@ -82,17 +98,11 @@
 	}
 	.credit-screen .btn {
 		position: absolute;
-		top: 80%;
-		left: 65%;
-		transform: translate(-50%, -50%);
-		-ms-transform: translate(-50%, -50%);
-		background-color: #555;
-		color: white;
+		top: 30%;
+		left:50%;
 		font-size: 16px;
-		padding: 12px 24px;
 		border: none;
 		cursor: pointer;
-		border-radius: 5px;
 		font-family:cursive;
 		}
 
@@ -123,5 +133,54 @@
 		height: 90px;
 		margin-top:15px;
 	}
+
+	.axie-side {
+	text-align: center;
+    top: 26%;
+    left: 34%;
+    position: absolute;
+	}
+
+	.developers-side {
+	text-align: center;
+    top: 35%;
+    left: 47%;
+    position: absolute;
+	}
+	.axieImg {
+	height:350px;
+	}
+		
+	.devButton {
+		border: none;
+		cursor: pointer;
+		margin:30px;
+		}
+
+			
+	.home-screen-options {
+		margin: 215px auto 0 auto;
+		width: 20%;
+		cursor: pointer;
+		top: 60%;
+		left: 67%;
+		position: absolute;
+	}
+
+	.home-screen-option {
+		border: 2px solid #183640;
+		color: #183640;
+		padding: 8px;
+		font-size: 19px;
+		font-weight: 800;
+		margin: 35px;
+	}
+	
+	.devName {
+		font-family: "AxieFont";
+		font-size: 40px;
+		color: #6fd9d7;
+		text-shadow: 3px 0 0 #183640, 0 -3px 0 #183640, 0 3px 0 #183640, -3px 0 0 #183640;
+		}
 
 </style>
