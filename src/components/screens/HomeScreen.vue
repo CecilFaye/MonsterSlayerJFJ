@@ -5,10 +5,10 @@
 		<!-- <img class="displayPicture" style="z-index: 10000 !important;"  :src="`${vuexieLogo}`"> <br> -->
     </div>
     <div class="home-screen-options">
-		<div class="home-screen-option" @click="showModal = true">
+		<div class="home-screen-option" @click="showLoginModal = true">
 			LOGIN
 		</div>
-		<div class="home-screen-option" @click="changeScreen('gameScreen')">
+		<div class="home-screen-option" @click="showSignUpModal = true">
 			SIGN UP
 		</div>
 		<div class="home-screen-option" @click="changeScreen('creditScreen')">
@@ -17,8 +17,11 @@
     </div>
   </div>
   <appLoginModal
-    :show="showModal"
-    @closeModal="showModal = false" />
+    :show="showLoginModal"
+    @closeModal="showLoginModal = false" />
+  <appSignUpModal
+    :show="showSignUpModal"
+    @closeSignUpModal=" showSignUpModal = false" />
 </template>
 
 <script lang="ts">
@@ -26,6 +29,7 @@
 	import { mapMutations } from "vuex";
 	import { useStore } from "vuex";
 	import Login from '../../components/screens/Login.vue';
+	import SignUp from '../../components/screens/SignUp.vue';
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const home = require('../../assets/background/vuexie-bg.jpg')
@@ -34,18 +38,21 @@
 
 	const HomeScreen = defineComponent({
 		components:{
-			appLoginModal: Login
+			appLoginModal: Login,
+			appSignUpModal: SignUp
 		},
 		props: [],
 		setup() {
 			const store = useStore();
 			const gameName = store.state.name;
 			const gameVersion = store.state.version;
-			const showModal = ref<boolean>(false);
+			const showLoginModal = ref<boolean>(false);
+			const showSignUpModal = ref<boolean>(false);
 			return {
 				gameName,
 				gameVersion,
-				showModal
+				showLoginModal,
+				showSignUpModal
 			};
 		},
 		data() {
@@ -142,6 +149,5 @@
 		font-size: 20px;
 		font-weight: 800;
 		margin: 35px;
-		
 	}
 </style>
