@@ -1,8 +1,14 @@
 import { MutationTree } from 'vuex'
 import store from '..';
-import { ActivityStateOptions, IAction, IPersonState, IState, PersonType, ScreenStateOptions } from '../types';
+import { ActivityStateOptions, IAccount, IAction, ICharacter, IPersonState, IState, PersonType, ScreenStateOptions } from '../types';
 
 export const mutations: MutationTree<IState> = {
+    setAccount(state, payload: IAccount) {
+        state.account = payload;
+    },
+    setCharacter(state, payload: ICharacter) {
+        state.character = payload;
+    },
     changeScreen(state, payload: string) {
         state.currentScreen = payload;
     },

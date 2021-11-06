@@ -1,6 +1,7 @@
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
-	import { ActivityStateOptions, IMonsterSlayerService, IPersonState, PersonType } from "@/store/types";
+    import axios from "axios";
+	import { IAccount, ActivityStateOptions, ICharacter, IMonsterSlayerService, IPersonState, PersonType } from "@/store/types";
     import Monsters from '../services/monsters.json';
     import Player from '../services/player.json';
 
@@ -21,6 +22,8 @@
 	const monsterFocusStance = require('../assets/monster/focus.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const monsterSkillStance = require('../assets/monster/attack.gif');
+
+    const loginUrl = 'https://monster-slayer-api-staging.herokuapp.com';
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const playerActionImages = {
@@ -83,12 +86,33 @@
         const getCharacterImage = (personType: PersonType, type: ActivityStateOptions): any => {
             return personType === PersonType.Player ? playerActionImages[type] : monsterActionImages[type];
         };
+
+        const loginRequest = (username: string, password: string): Promise<IAccount> => {
+            return axios.post(`${loginUrl}/accounts/login`, {
+                username,
+                password
+            });
+        };
+
+        const createAccountRequest = (account: IAccount): Promise<IAccount> => {
+            return axios.post(`${loginUrl}/accounts`, account);
+        };
+
+        const getCharacterRequest = (accountId: number): Promise<ICharacter> => {
+            return axios.get(`${loginUrl}/${accountId}/character`);
+        };
+
         return {
             randomAction,
             initOptions,
             getDefaultPerson,
             getRandomMonsters,
-            getCharacterImage
+            getCharacterImage,
+
+            // Http Call
+            loginRequest,
+            createAccountRequest,
+            getCharacterRequest
         }
     }
     export default useMonsterSlayerService;
