@@ -9,21 +9,21 @@
             <template v-slot:header>
               <label class="modal-label">Fullname </label>
             </template>
-            <base-text-input v-model="fullName" 
+            <base-text-input v-model="fullName"
               :errorStyles="errorStyles" />
           </baseRowContent>
           <baseRowContent>
             <template v-slot:header>
               <label class="modal-label">Email </label>
             </template>
-            <base-text-input v-model="eMail" 
+            <base-text-input v-model="eMail"
               :errorStyles="errorStyles" />
           </baseRowContent>
           <baseRowContent>
             <template v-slot:header>
               <label class="modal-label">Username </label>
             </template>
-            <base-text-input v-model="UserName" 
+            <base-text-input v-model="UserName"
               :errorStyles="errorStyles" />
           </baseRowContent>
           <baseRowContent>
@@ -39,7 +39,7 @@
             </template>
             <base-text-input v-model="CharacterName"
               :errorStyles="errorStyles" />
-          </baseRowContent>    
+          </baseRowContent>
           <baseRowContent>
             <template v-slot:header>
                <label class="modal-label"> Character Class </label>
@@ -51,7 +51,7 @@
         <div class="home-screen-options">
 		<div class="home-screen-option" @click="changeScreen('gameScreen')">
 			Sign up
-		</div> 
+		</div>
     </div>
     <div class="home-screen-options">
       <button class="modal-signUp">Already have an account? Login here. </button>
@@ -75,7 +75,7 @@
 
     const SingUp = defineComponent({
     props: {
-    show: { 
+    show: {
         required: true } as Prop<boolean>
     },
 	components: {
@@ -112,12 +112,12 @@
       }
     })
 
-    const fullName = ref<string>(null);
-    const email = ref<string>(null);
-    const userName = ref<string>(null);
-    const password = ref<string>(null);
-    const characterName = ref<string>(null);
-    const characterClass = ref<string>(null);
+    const fullName = ref<string>('');
+    const email = ref<string>('');
+    const userName = ref<string>('');
+    const password = ref<string>('');
+    const characterName = ref<string>('');
+    const characterClass = ref<string>('');
 
     return {
       onSignUpClose,
@@ -205,7 +205,7 @@ export default SingUp;
     width: 100%;
     text-align: center;
 	}
-  
+
 .modal-container {
   width: 450px;
   background-color: white;

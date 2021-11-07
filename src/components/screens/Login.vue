@@ -9,7 +9,7 @@
             <template v-slot:header>
               <label class="modal-label">Username </label>
             </template>
-            <base-text-input v-model="userName" 
+            <base-text-input v-model="userName"
               :errorStyles="errorStyles" />
           </baseRowContent>
           <baseRowContent>
@@ -23,7 +23,7 @@
         <div class="home-screen-options">
 		<div class="home-screen-option" @click="changeScreen('gameScreen')">
 			LOGIN
-		</div> 
+		</div>
     </div>
     <div class="home-screen-options">
       <button class="modal-signUp">Don't have an account? Sign up here. </button>
@@ -83,8 +83,8 @@
       }
     })
 
-    const userName = ref<string>(null);
-    const password = ref<string>(null);
+    const userName = ref<string>('');
+    const password = ref<string>('');
 
     return {
       onModalClose,
@@ -169,7 +169,7 @@ export default Login;
     width: 100%;
     text-align: center;
 	}
-  
+
 .modal-container {
   width: 450px;
   background-color: white;

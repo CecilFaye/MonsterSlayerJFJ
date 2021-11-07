@@ -3,11 +3,17 @@ import { mutations } from './mutations'
 import { IRootState as IRootState, ActivityStateOptions, ScreenStateOptions, IState, ISkill, IPersonState, PersonType } from '@/store/types'
 import { getters } from './getters'
 
-export const state: IState = {
+export const state = {
     screenOptions: Object.keys(ScreenStateOptions).map(_ => _),
 	currentScreen: 'homeScreen',
     fightLogs: [],
     battleStart: false,
+
+    account: {},
+    character: {},
+    characterState: {},
+    // NOTE: This is to assume that there will only be 1 enemy at a given battle
+    enemyState: {},
 
 	// Player State
 	player: {
@@ -52,7 +58,7 @@ export const state: IState = {
             activityStateOptions: Object.keys(ActivityStateOptions).map(_ => _),
         }
     } as IPersonState
-}
+} as IState
 const namespaced = true
 export const game: Module<IState, IRootState> = {
     namespaced,
