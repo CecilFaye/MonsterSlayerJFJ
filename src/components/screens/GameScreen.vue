@@ -44,7 +44,7 @@
 	import LogsControlWidget from "../widget/Logs.vue";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const screenBackground = require('../../assets/background/inside-castle.jpg');
+	const screenBackground = require('../../assets/background/vuexie-battle.jpg');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenGif = require('../../assets/background/before-fight.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires

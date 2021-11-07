@@ -6,22 +6,22 @@
     import Player from '../services/player.json';
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroIdleStance = require('../assets/hero/idle.gif');
+	const heroIdleStance = require('../assets/hero/playerAqua-idle.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroAttackStance = require('../assets/hero/attack.gif');
+	const heroAttackStance = require('../assets/hero/playerBeast-attack.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroFocusStance = require('../assets/hero/focus.gif');
+	const heroFocusStance = require('../assets/hero/playerBeast-focus.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroSkillStance = require('../assets/hero/attack.gif');
+	const heroSkillStance = require('../assets/hero/playerBeast-attack.gif');
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterIdleStance = require('../assets/monster/idle.gif');
+	const monsterIdleStance = require('../assets/monster/monsterPlant-idle.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterAttackStance = require('../assets/monster/attack.gif');
+	const monsterAttackStance = require('../assets/monster/monsterPlant-attack.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterFocusStance = require('../assets/monster/focus.gif');
+	const monsterFocusStance = require('../assets/monster/monsterPlant-focus.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterSkillStance = require('../assets/monster/attack.gif');
+	const monsterSkillStance = require('../assets/monster/monsterPlant-attack.gif');
 
     const loginUrl = 'https://monster-slayer-api-staging.herokuapp.com';
 
@@ -31,7 +31,7 @@
 		[ActivityStateOptions.Attack]: heroAttackStance,
 		[ActivityStateOptions.Focus]: heroFocusStance,
 		[ActivityStateOptions.Skill1]: heroSkillStance,
-		[ActivityStateOptions.Skill2]: heroSkillStance,
+		[ActivityStateOptions.Skill2]: heroFocusStance,
 		[ActivityStateOptions.Skill3]: heroSkillStance,
         // Assign an image for failed attack
         [ActivityStateOptions.Failed]: heroIdleStance
