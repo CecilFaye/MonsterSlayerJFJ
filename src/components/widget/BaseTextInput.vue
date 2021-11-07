@@ -22,7 +22,7 @@ const BaseTextInput = defineComponent({
   emits: {
     'update:modelValue': (value: string) => value !== undefined
   },
-  setup(props: Props, context) {
+  setup(props, context) {
     const isDirty = ref<boolean>(false);
     const isInvalid = computed(() => {
       return props.modelValue === '' && isDirty.value

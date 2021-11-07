@@ -9,6 +9,12 @@ export const state = {
     fightLogs: [],
     battleStart: false,
 
+    account: {},
+    character: {},
+    characterState: {},
+    // NOTE: This is to assume that there will only be 1 enemy at a given battle
+    enemyState: {},
+
 	// Player State
 	player: {
         id: 1,

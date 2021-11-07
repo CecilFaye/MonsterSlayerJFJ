@@ -65,7 +65,7 @@ export interface IAction {
     actionTaken: ISkill;
 }
 
-export interface IStyleInterface {
+export interface StyleInterface {
     [x: string]: string
 }
 
