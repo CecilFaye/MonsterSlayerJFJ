@@ -23,6 +23,14 @@ export enum ActivityStateOptions {
     Failed = 'failed'
 }
 
+export const CharacterTypes = {
+    Saber: 1,
+    Archer: 2,
+    Lancer: 3,
+    Berserker: 4,
+    Caster: 5
+}
+
 export interface IRootState {
     version: string;
     name: string;
@@ -30,6 +38,7 @@ export interface IRootState {
 
 export interface IState {
     screenOptions: string[];
+    characterTypes: string[];
 	currentScreen: string;
     fightLogs: string[];
     battleStart: boolean;
@@ -55,6 +64,7 @@ export interface IMonsterSlayerService {
     getCharacterImage: (personType: PersonType, type: ActivityStateOptions) => any;
 
     // Http Call
+    signUp: (account: IAccount) => Promise<IAccountResponse | null>;
     loginRequest: (username: string, password: string) => Promise<IAccount>;
     createAccountRequest: (account: IAccount) => Promise<IAccount>;
     getCharacterRequest: (accountId: number) => Promise<ICharacter>;
@@ -66,33 +76,36 @@ export interface IAction {
 }
 
 export interface StyleInterface {
-    [x: string]: string
+    [x: string]: string;
 }
 
 export interface IAccount {
-    fullName: string,
-    email: string,
-    username: string,
-    password: string,
-    characterName: string,
+    fullName: string;
+    email: string;
+    username: string;
+    password: string;
+    characterName: string;
     // The character’s class type. Allowed values are 1, 2, 3, 4 and 5.
-    classType: number
+    classType: number;
 }
 
-export interface ICharacter {
-    stats: IStats,
-    equipment: IEquipment,
+export interface IAccountResponse {
+    accountId: string;
+}
 
-    _id: string,
-    name: string,
-    accountId: string,
-    level: number,
+export interface ICharacter extends IAccountResponse {
+    stats: IStats;
+    equipment: IEquipment;
 
-    dungeonAccess: INameIdPair[],
-    skills: ISkills[],
-    classType: number,
-    nextLevelExp: number,
-    totalExp: number,
+    _id: string;
+    name: string;
+    level: number;
+
+    dungeonAccess: INameIdPair[];
+    skills: ISkills[];
+    classType: number;
+    nextLevelExp: number;
+    totalExp: number;
 }
 
 export interface ICharacterState extends ICharacter {
@@ -101,42 +114,42 @@ export interface ICharacterState extends ICharacter {
 }
 
 export interface IStats {
-    health: number,
-    mana: number,
-    off: number,
-    def: number,
-    agi: number,
-    int: number,
-    luk: number
+    health: number;
+    mana: number;
+    off: number;
+    def: number;
+    agi: number;
+    int: number;
+    luk: number;
 }
 
 export interface IEquipment {
-    weapon: IItem,
-    armor: IItem
+    weapon: IItem;
+    armor: IItem;
 }
 
 export interface IItem {
-    _id: string,
-    bonus: IStats,
-    classId: number,
-    name: string,
+    _id: string;
+    bonus: IStats;
+    classId: number;
+    name: string;
     // Determines whether item is a weapon (WPN) or an armor (AMR)
-    type: string
+    type: string;
 }
 
 export interface INameIdPair {
-    _id: string,
-    name: string,
+    _id: string;
+    name: string;
 }
 
 export interface ISkills {
-    _id: string,
-    name: string,
-    classId: number,
-    damage: number,
-    target: string,
-    cost: number,
-    type: string
+    _id: string;
+    name: string;
+    classId: number;
+    damage: number;
+    target: string;
+    cost: number;
+    type: string;
 }
 
 

@@ -57,6 +57,6 @@ input {
 }
 
 .error {
-	border: 1px solid darkred;
+	border: 1px solid red;
 }
 </style>
