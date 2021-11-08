@@ -1,9 +1,5 @@
 <template>
   <div class="home-screen" :style="`background-image:url(${(screenImage)});`">
-    <!-- <div id="text3d" class="home-screen-title">
-		<span>{{ `${gameName}`}}</span>
-		<img class="displayPicture" style="z-index: 10000 !important;"  :src="`${vuexieLogo}`"> <br>
-    </div> -->
     <div class="home-screen-options">
 		<div class="home-screen-option" @click="showLoginModal = true">
 			LOGIN

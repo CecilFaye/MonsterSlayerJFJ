@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, Prop, ref } from 'vue'
+import { computed, defineComponent, Prop, ref } from 'vue';
 import { StyleInterface } from "@/store/types";
 
 interface Props {
@@ -33,12 +33,17 @@ const BaseTextInput = defineComponent({
 		errorStyles: { required: false } as Prop<StyleInterface>
 	},
 	emits: {
-		'update:modelValue': (value: string) => value !== undefined
+		'update:modelValue': (value: string) => value !== undefined,
+		'validationLogger': (value: string) => value
 	},
 	setup(props: Props, context) {
 		const errorText = ref<string>('');
 		const isDirty = ref<boolean>(false);
-		const isInvalid = computed(() =>  isValid(props.modelValue) && isDirty.value);
+		const isInvalid = computed(() =>  {
+			const hasValidValue = isValid(props.modelValue) && isDirty.value ;
+			context.emit('validationLogger', hasValidValue ? 'Error' : '');
+			return hasValidValue;
+		});
 
 		const onBlur = (event: Event) => {
 			isDirty.value = true;
@@ -50,7 +55,7 @@ const BaseTextInput = defineComponent({
 				errorText.value = 'Please enter a valid email address';
 				return !(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value));
 			} else if (!!props.charLimit && (!!value?.length && value?.length < props.charLimit)) {
-				errorText.value = `Minimum required ${props.charLimit} characters.`;
+				errorText.value = `Minimum required ${props.charLimit} characters`;
 				return true;
 			} else {
 				errorText.value = props.errorLabel;

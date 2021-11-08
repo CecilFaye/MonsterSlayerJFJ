@@ -10,6 +10,7 @@
 							<label class="modal-label">Name</label>
 						</template>
 						<base-text-input v-model="fullName"
+							@validationLogger="logValidationError($event, 'fullName')"
 							:formInputType = "InputType.text"
 							:errorLabel="'Name is required'"
 							:errorStyles="errorStyles" />
@@ -19,6 +20,7 @@
 							<label class="modal-label">Email </label>
 						</template>
 						<base-text-input v-model="email"
+							@validationLogger="logValidationError($event, 'email')"
 							:formInputType = "InputType.email"
 							:errorLabel="'Email is required'"
 							:errorStyles="errorStyles" />
@@ -28,6 +30,7 @@
 							<label class="modal-label">Username </label>
 						</template>
 						<base-text-input v-model="userName"
+							@validationLogger="logValidationError($event, 'username')"
 							:charLimit = 6
 							:formInputType = "InputType.text"
 							:errorLabel="'Username is required'"
@@ -38,6 +41,7 @@
 							<label class="modal-label"> Password </label>
 						</template>
 						<base-text-input  v-model="password" type="password"
+							@validationLogger="logValidationError($event, 'password')"
 							:charLimit = 6
 							:formInputType = "InputType.password"
 							:errorLabel="'Password Required'"
@@ -48,6 +52,7 @@
 							<label class="modal-label"> Character Name </label>
 						</template>
 						<base-text-input v-model="characterName"
+							@validationLogger="logValidationError($event, 'charname')"
 							:charLimit = 6
 							:formInputType = "InputType.text"
 							:errorLabel="'Character Name is required'"
@@ -79,7 +84,7 @@
 </template>
 
 <script lang="ts">
-	import { defineComponent, Prop, computed, ref } from "vue";
+	import { defineComponent, Prop, computed, ref, watch } from "vue";
 	import { CharacterTypes, IAccount, StyleInterface } from "@/store/types";
 	import baseTextInput, { InputType } from "../widget/BaseTextInput.vue";
 	import baseRowContent from "../widget/BaseRowContent.vue"
@@ -89,6 +94,14 @@
 	const home = require('../../assets/background/login-bg.png')
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const closeIcon = require('../../assets/background/close-icon.png');
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const validations: IValidationError[] = [];
+
+	interface IValidationError {
+		error: string;
+		name: string;
+	}
 
 	const SignUp = defineComponent({
 		props: {
@@ -112,22 +125,25 @@
 			const service = useMonsterSlayerService();
 			const onSignUpClose = () => { context.emit('closeSignUpModal') };
 			const signUpRequest = () => {
-				service.signUp({
-					fullName: fullName.value,
-					email: email.value,
-					username: userName.value,
-					password: password.value,
-					characterName: characterName.value,
-					classType: CharacterTypes['Saber']
-				} as IAccount)
-				.then((response) => {
-					if (response) {
-						alert('Registration Successful!');
-						setTimeout(() => onSignUpClose(), 3000);
-					} else {
-						alert('Registration Failed!');
-					}
-				})
+				if (!signUpNotAllowed.value) {
+					service.signUp({
+						fullName: fullName.value,
+						email: email.value,
+						username: userName.value,
+						password: password.value,
+						characterName: characterName.value,
+						classType: CharacterTypes[characterClass.value]
+					} as IAccount)
+					.then((response) => {
+						if (response) {
+							alert('Registration Successful!');
+							alert(`Signup ID: ${response.accountId}`);
+							onSignUpClose()
+						} else {
+							alert('Registration Failed!');
+						}
+					});
+				}
 			};
 
 			const characterTypes = computed(() => {
@@ -139,7 +155,8 @@
 				email.value.trim() === '' ||
 				userName.value.trim() === '' ||
 				password.value.trim() === '' ||
-				characterName.value.trim() === ''
+				characterName.value.trim() === '' ||
+				withErrors.value
 			});
 
 			const errorStyles = computed((): StyleInterface => {
@@ -155,6 +172,7 @@
 				return signUpNotAllowed.value ? 'disabled' : ''
 			});
 
+			const withErrors = ref<boolean>(false);
 			const fullName = ref<string>('');
 			const email = ref<string>('');
 			const userName = ref<string>('');
@@ -162,9 +180,30 @@
 			const characterName = ref<string>('');
 			const characterClass = ref<string>('Saber');
 
+			const logValidationError = (val: string, name: string) => {
+				const errorLog: IValidationError = validations.find(_ => _.name === name);
+				if (val) {
+					if (!errorLog) {
+						validations.push({ error: val, name: name });
+					} else {
+						errorLog.error = val;
+					}
+				} else if (errorLog) {
+					const index = validations.indexOf(errorLog);
+					if (index >= 0) {
+						validations.splice(index, 1);
+					}
+				}
+				// Need to add timeout - the click event is just too fast
+				setTimeout(() => {
+					withErrors.value = !!validations?.length
+				});
+			};
+
 			return {
 				onSignUpClose,
 				signUpRequest,
+				logValidationError,
 				InputType,
 				signUpNotAllowed,
 				disabledSignUp,
@@ -309,8 +348,8 @@
 	}
 
 	.disabled {
-		color: lightgray;
-		border-color: lightgray;
+		color: gray;
+		border-color: gray;
 		cursor:inherit;
 	}
 </style>

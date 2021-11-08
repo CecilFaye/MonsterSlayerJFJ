@@ -4,6 +4,7 @@
 	import { IAccount, ActivityStateOptions, ICharacter, IMonsterSlayerService, IPersonState, PersonType, IAccountResponse } from "@/store/types";
     import Monsters from '../services/monsters.json';
     import Player from '../services/player.json';
+import store from "@/store";
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
 	const heroIdleStance = require('../assets/hero/playerAqua-idle.gif');
@@ -82,10 +83,6 @@
             return person;
         };
 
-        // const validateForm = (account: IAccount): boolean => {
-
-        // };
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const getCharacterImage = (personType: PersonType, type: ActivityStateOptions): any => {
             return personType === PersonType.Player ? playerActionImages[type] : monsterActionImages[type];
@@ -100,19 +97,31 @@
                 });
         };
 
-        const loginRequest = (username: string, password: string): Promise<IAccount> => {
+        const loginRequest = (username: string, password: string): Promise<IAccountResponse> => {
             return axios.post(`${apiUrl}/accounts/login`, {
                 username,
                 password
+            })
+            .then(result => {
+                const account = result.data as IAccountResponse;
+                store.commit('game/setAccount', account);
+                return account;
+            })
+            .then(account => {
+                return axios.get(`${apiUrl}/accounts/${account.accountId}/character`)
+                    .then(result => {
+                        const character = result.data as ICharacter;
+                        store.commit('game/setCharacter', character);
+                        return account;
+                    })
+                    .catch(err => {
+                        return err;
+                    });
+            })
+            .catch(err => {
+                console.log(err);
+                return null;
             });
-        };
-
-        const createAccountRequest = (account: IAccount): Promise<IAccount> => {
-            return axios.post(`${apiUrl}/accounts`, account);
-        };
-
-        const getCharacterRequest = (accountId: number): Promise<ICharacter> => {
-            return axios.get(`${apiUrl}/${accountId}/character`);
         };
 
         return {
@@ -124,9 +133,7 @@
 
             // Http Call
             signUp,
-            loginRequest,
-            createAccountRequest,
-            getCharacterRequest
+            loginRequest
         }
     }
     export default useMonsterSlayerService;

@@ -1,6 +1,6 @@
 import { MutationTree } from 'vuex'
 import store from '..';
-import { ActivityStateOptions, IAccount, IAction, ICharacter, IPersonState, IState, PersonType, ScreenStateOptions } from '../types';
+import { ActivityStateOptions, IAccount, IAction, ICharacter, ICharacterState, IPersonState, IState, PersonType, ScreenStateOptions } from '../types';
 
 export const mutations: MutationTree<IState> = {
     setAccount(state, payload: IAccount) {
@@ -13,21 +13,70 @@ export const mutations: MutationTree<IState> = {
         state.currentScreen = payload;
     },
     initializePlayer(state, payload: IPersonState) {
+        // Still in use and initially from the json file
         state.player = payload;
+        state.characterState =  JSON.parse(JSON.stringify(state.character)) as ICharacterState;
+
+        // TEMPORARY: Use the same model until the monster API is available
+        const character = state.characterState;
+        state.player.name = character.name;
+        // NOTE: Change the value to 1000 coz the value from API too low
+        state.player.maxHealth = 700; //character.stats.health;
+        state.player.maxMana = 700; //character.stats.mana;
+        state.player.currentState.health = (state.player.maxHealth/state.player.maxHealth)*100;
+        state.player.currentState.mana = (character.stats.mana/character.stats.mana)*100;
+        state.player.skills.forEach((val, index) => {
+            val.name = character.skills[index].name;
+            val.manaCost = character.skills[index].cost;
+            if (character.skills[index].target === 'enemy') {
+                val.damage = character.skills[index].damage;
+                val.healthIncrement = 0;
+            } else {
+                val.damage = 0;
+                val.healthIncrement -= character.skills[index].damage;
+            }
+        });
     },
     initializeMonster(state, payload: IPersonState) {
+        // Still in use and from the json file
         state.monster = payload;
+
+        // TEMPORARY: Use player as enemy data for now - not in use
+        state.enemyState = JSON.parse(JSON.stringify(state.character)) as ICharacterState;
+
+        // TEMPORARY: Use the same model until the monster API is available
+        const character = state.enemyState;
+        // NOTE: Change the health to 1000 coz the value from API too low
+        state.monster.maxHealth = 1000; //character.stats.health;
+        state.monster.maxMana = 1000; //haracter.stats.mana;
+        state.monster.currentState.health = (state.monster.maxHealth/state.monster.maxHealth)*100;
+        state.monster.currentState.mana = (character.stats.mana/character.stats.mana)*100;
+        state.monster.skills.forEach((val, index) => {
+            val.name = character.skills[index].name;
+            val.manaCost = character.skills[index].cost;
+            if (character.skills[index].target === 'enemy') {
+                val.damage = character.skills[index].damage;
+                val.healthIncrement = 0;
+            } else {
+                val.damage = 0;
+                val.healthIncrement -= character.skills[index].damage;
+            }
+        });
     },
     initFirstTurn(state) {
         state.player.turn = true;
         state.battleStart = true;
     },
     reset(state, service) {
+
+        // TODO: Change this code once the monster API is available
         state.fightLogs = [];
         state.player.turn = false;
         state.battleStart = false;
         store.commit('game/initializePlayer', service.getDefaultPerson(PersonType.Player));
         store.commit('game/initializeMonster', service.getDefaultPerson(PersonType.Monsters));
+        alert(`Character is Loaded:  ${JSON.stringify(state.character)}`);
+
     },
     action(state, act: IAction) {
         const actor = act.personType as PersonType;
@@ -35,26 +84,38 @@ export const mutations: MutationTree<IState> = {
         const manaCost = act.actionTaken.manaCost;
         const actorHealth = state[actor].currentState.health;
         const actorMana = state[actor].currentState.mana;
+        const actorMaxHealth = state[actor].maxHealth;
+        const actorMaxMana = state[actor].maxMana;
         const receiverHealth = state[receiver].currentState.health;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const receiverMana = state[receiver].currentState.mana;
+        const receiverMaxHealth = state[receiver].maxHealth;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const receiverMaxMana = state[receiver].maxMana;
         const manaIncrement = act.actionTaken.manaIncrement;
         const healthIncrement = act.actionTaken.healthIncrement;
 
         if (actorMana > manaCost) {
-            const remainingReceiverHealth = receiverHealth - act.actionTaken.damage;
-            const remainingActorMana = actorMana - act.actionTaken.manaCost;
+            const actorActualMana = (actorMana/100)*actorMaxMana;
+            const actorActualHealth = (actorHealth/100)*actorMaxHealth;
+            const receiverActualHealth = (receiverHealth/100)*receiverMaxHealth;
+            const remainingReceiverHealth = receiverActualHealth - act.actionTaken.damage;
+            const remainingActorMana = actorActualMana - act.actionTaken.manaCost;
+            const remainingHealthPercentage = (remainingReceiverHealth/receiverMaxHealth)*100;
+            const remainingActorManaPercentage = (remainingActorMana/actorMaxMana)*100;
             state[actor].currentState.activityState = act.actionTaken.skillType;
-            state[receiver].currentState.health = remainingReceiverHealth < 0 ? 0 : remainingReceiverHealth;
-            state[actor].currentState.mana = remainingActorMana < 0 ? 0 : remainingActorMana;
+            state[receiver].currentState.health = remainingHealthPercentage < 0 ? 0 : remainingHealthPercentage;
+            state[actor].currentState.mana = remainingActorManaPercentage < 0 ? 0 : remainingActorManaPercentage;
 
             if (healthIncrement) {
-                const healthTotal = actorHealth + act.actionTaken.healthIncrement;
-                state[actor].currentState.health =  healthTotal > 100 ? 100 : healthTotal;
+                const healthTotal = actorActualHealth + act.actionTaken.healthIncrement;
+                const healthTotalPercentage = (healthTotal/actorMaxHealth)*100;
+                state[actor].currentState.health =  healthTotalPercentage > 100 ? 100 : healthTotalPercentage;
             }
             if (manaIncrement) {
-                const manaTotal = actorMana + act.actionTaken.manaIncrement;
-                state[actor].currentState.mana = manaTotal > 100 ? 100 : manaTotal;
+                const manaTotal = actorActualMana + act.actionTaken.manaIncrement;
+                const manaTotalPercentage = (manaTotal/actorMaxMana)*100;
+                state[actor].currentState.mana = manaTotalPercentage > 100 ? 100 : manaTotalPercentage;
             }
             store.commit('game/actionLog', act);
             setTimeout(() =>{

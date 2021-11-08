@@ -19,8 +19,8 @@
 						<base-password-input v-model="password" type="password" :errorStyles="errorStyles" />
 					</baseRowContent>
 				</div>
-				<div class="home-screen-options">
-					<div class="home-screen-option" @click="changeScreen('gameScreen')">
+				<div class="home-screen-options" :disabled="loginNotAllowed">
+					<div class="home-screen-option" @click="login()">
 						LOGIN
 					</div>
 				</div>
@@ -34,11 +34,13 @@
 
 <script lang="ts">
 	import { defineComponent, Prop, computed, ref } from "vue";
-	import { StyleInterface } from "@/store/types";
-	import { mapMutations } from "vuex";
+	import { IAccountResponse, StyleInterface } from "@/store/types";
+	import { useStore } from "vuex";
 	import baseTextInput from "../widget/BaseTextInput.vue";
 	import basePasswordInput from "../widget/BasePasswordInput.vue";
 	import baseRowContent from "../widget/BaseRowContent.vue"
+	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const home = require('../../assets/background/login-bg.png')
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -63,39 +65,59 @@
 				closeIcon
 			}
 		},
-		methods: {
-			...mapMutations({
-				changeScreen: 'game/changeScreen'
-			})
-		},
 		setup(props, context) {
-			const onModalClose = () => {
-				context.emit('closeModal');
-		}
+			const service = useMonsterSlayerService();
+			const store = useStore();
+			const onModalClose = () => { context.emit('closeModal') };
 
-		const errorStyles = computed((): StyleInterface => {
+			const login = () => {
+				// Need to add timeout - the click event is just too fast
+				setTimeout(() => {
+					service.loginRequest(userName.value, password.value)
+					.then((account: IAccountResponse) => {
+						if (account && !!account.accountId) {
+							alert('Login Success!');
+							store.commit('game/changeScreen', 'gameScreen');
+						} else {
+							alert('Invalid Username or Password!');
+						}
+
+					})
+					.catch(err => {
+						alert('Login Failed!');
+						console.log(err);
+					});
+				});
+			};
+
+			const errorStyles = computed((): StyleInterface => {
+				return {
+					'color' : 'darkred',
+					'font-size' : '12px',
+					'margin-top' : '5px',
+					'font-weight' : 'bold'
+				}
+			});
+
+			const loginNotAllowed = computed(() => {
+				return userName.value.trim() === '' ||
+				password.value.trim() === ''
+			});
+
+			const userName = ref<string>('');
+			const password = ref<string>('');
+
 			return {
-				'color' : 'darkred',
-				'font-size' : '12px',
-				'margin-top' : '5px',
-				'font-weight' : 'bold'
+				onModalClose,
+				userName,
+				password,
+				login,
+				errorStyles,
+				loginNotAllowed
 			}
-		})
-
-		const userName = ref<string>('');
-		const password = ref<string>('');
-
-		return {
-			onModalClose,
-			userName,
-			password,
-			errorStyles
 		}
-	}
-		})
-
-
-export default Login;
+	})
+	export default Login;
 </script>
 
 

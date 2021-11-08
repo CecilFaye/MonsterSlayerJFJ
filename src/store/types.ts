@@ -65,9 +65,7 @@ export interface IMonsterSlayerService {
 
     // Http Call
     signUp: (account: IAccount) => Promise<IAccountResponse | null>;
-    loginRequest: (username: string, password: string) => Promise<IAccount>;
-    createAccountRequest: (account: IAccount) => Promise<IAccount>;
-    getCharacterRequest: (accountId: number) => Promise<ICharacter>;
+    loginRequest: (username: string, password: string) => Promise<IAccountResponse>;
 }
 
 export interface IAction {
@@ -109,6 +107,8 @@ export interface ICharacter extends IAccountResponse {
 }
 
 export interface ICharacterState extends ICharacter {
+    turn: boolean;
+    currentState: IStatus;
     activityState: ActivityStateOptions;
     activityStateOptions: ActivityStateOptions[];
 }
