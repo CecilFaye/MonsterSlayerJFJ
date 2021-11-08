@@ -1,7 +1,7 @@
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
     import axios from "axios";
-	import { IAccount, ActivityStateOptions, ICharacter, IMonsterSlayerService, IPersonState, PersonType } from "@/store/types";
+	import { IAccount, ActivityStateOptions, ICharacter, IMonsterSlayerService, IPersonState, PersonType, IAccountResponse } from "@/store/types";
     import Monsters from '../services/monsters.json';
     import Player from '../services/player.json';
 
@@ -23,7 +23,7 @@
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const monsterSkillStance = require('../assets/monster/monsterPlant-attack.gif');
 
-    const loginUrl = 'https://monster-slayer-api-staging.herokuapp.com';
+    const apiUrl = 'https://monster-slayer-api-staging.herokuapp.com';
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const playerActionImages = {
@@ -82,24 +82,37 @@
             return person;
         };
 
+        // const validateForm = (account: IAccount): boolean => {
+
+        // };
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const getCharacterImage = (personType: PersonType, type: ActivityStateOptions): any => {
             return personType === PersonType.Player ? playerActionImages[type] : monsterActionImages[type];
         };
 
+        const signUp = (account: IAccount): Promise<IAccountResponse | null> => {
+            return axios.post(`${apiUrl}/accounts`, account)
+                .then(result => result.data as IAccountResponse)
+                .catch(err => {
+                    console.log(err);
+                    return null;
+                });
+        };
+
         const loginRequest = (username: string, password: string): Promise<IAccount> => {
-            return axios.post(`${loginUrl}/accounts/login`, {
+            return axios.post(`${apiUrl}/accounts/login`, {
                 username,
                 password
             });
         };
 
         const createAccountRequest = (account: IAccount): Promise<IAccount> => {
-            return axios.post(`${loginUrl}/accounts`, account);
+            return axios.post(`${apiUrl}/accounts`, account);
         };
 
         const getCharacterRequest = (accountId: number): Promise<ICharacter> => {
-            return axios.get(`${loginUrl}/${accountId}/character`);
+            return axios.get(`${apiUrl}/${accountId}/character`);
         };
 
         return {
@@ -110,6 +123,7 @@
             getCharacterImage,
 
             // Http Call
+            signUp,
             loginRequest,
             createAccountRequest,
             getCharacterRequest

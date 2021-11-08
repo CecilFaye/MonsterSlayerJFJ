@@ -1,9 +1,9 @@
 <template>
   <div class="home-screen" :style="`background-image:url(${(screenImage)});`">
-    <div id="text3d" class="home-screen-title">
-		<!-- <span>{{ `${gameName}`}}</span> -->
-		<!-- <img class="displayPicture" style="z-index: 10000 !important;"  :src="`${vuexieLogo}`"> <br> -->
-    </div>
+    <!-- <div id="text3d" class="home-screen-title">
+		<span>{{ `${gameName}`}}</span>
+		<img class="displayPicture" style="z-index: 10000 !important;"  :src="`${vuexieLogo}`"> <br>
+    </div> -->
     <div class="home-screen-options">
 		<div class="home-screen-option" @click="showLoginModal = true">
 			LOGIN
@@ -137,9 +137,12 @@
 	}
 
 	.home-screen-options {
-		margin: 215px auto 0 auto;
-		width: 28%;
-		cursor: pointer;
+		display: flex;
+		flex-direction: column;
+		position: fixed;
+		top: 36%;
+		left: 35%;
+		width: 50rem;
 	}
 
 	.home-screen-option {
@@ -148,6 +151,7 @@
 		padding: 10px;
 		font-size: 20px;
 		font-weight: 800;
-		margin: 35px;
+		margin: 15px;
+		cursor: pointer;
 	}
 </style>

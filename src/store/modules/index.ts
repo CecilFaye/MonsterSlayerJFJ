@@ -1,19 +1,20 @@
 import { Module } from 'vuex'
 import { mutations } from './mutations'
-import { IRootState as IRootState, ActivityStateOptions, ScreenStateOptions, IState, ISkill, IPersonState, PersonType } from '@/store/types'
+import { IRootState as IRootState, ActivityStateOptions, ScreenStateOptions, IState, ISkill, IPersonState, PersonType, ICharacterState, ICharacter, IAccount, CharacterTypes } from '@/store/types'
 import { getters } from './getters'
 
 export const state = {
     screenOptions: Object.keys(ScreenStateOptions).map(_ => _),
+    characterTypes: Object.keys(CharacterTypes),
 	currentScreen: 'homeScreen',
     fightLogs: [],
     battleStart: false,
 
-    account: {},
-    character: {},
-    characterState: {},
+    account: {} as IAccount,
+    character: {} as ICharacter,
+    characterState: {} as ICharacterState,
     // NOTE: This is to assume that there will only be 1 enemy at a given battle
-    enemyState: {},
+    enemyState: {} as ICharacterState,
 
 	// Player State
 	player: {
