@@ -27,7 +27,7 @@
 				</div>
 				<div class="main-controls">
 					<BattleControlWidget/>
-          <LogsControlWidget/>
+					<LogsControlWidget/>
 				</div>
 			</div>
 		</div>
@@ -44,7 +44,7 @@
 	import LogsControlWidget from "../widget/Logs.vue";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const screenBackground = require('../../assets/background/vuexie-battle.jpg');
+	const screenBackground = require('../../assets/background/inside-castle.jpg');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenGif = require('../../assets/background/before-fight.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -107,7 +107,7 @@
 
 <style scoped>
 	.main-container {
-		padding: 3rem;
+		padding: 5rem;
 		margin: auto;
 	}
 	.people-container {
@@ -118,14 +118,19 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		height: 100vh;
 
-		background-repeat: no-repeat;
-		background-size: cover;
 		background-attachment: fixed!important;
 		overflow:hidden;
 		text-align: center;
 		background: white;
+
+		/* Full height */
+		height: 100vh;
+
+		/* Center and scale the image nicely */
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: cover;
 	}
 
 	button {
