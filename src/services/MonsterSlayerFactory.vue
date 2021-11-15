@@ -2,27 +2,28 @@
 	/* eslint-disable @typescript-eslint/no-empty-function */
     import axios from "axios";
 	import { IAccount, ActivityStateOptions, ICharacter, IMonsterSlayerService, IPersonState, PersonType, IAccountResponse } from "@/store/types";
-    import Monsters from '../services/monsters.json';
-    import Player from '../services/player.json';
-import store from "@/store";
+    import Monsters from '@/app-lib/json/monsters.json'
+    import Player from '@/app-lib/json/player.json';
+    import store from "@/store";
+    import * as helper from "@/app-lib/services/session-helper";
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroIdleStance = require('../assets/hero/playerAqua-idle.gif');
+	const heroIdleStance = require('@/assets/hero/playerAqua-idle.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroAttackStance = require('../assets/hero/playerBeast-attack.gif');
+	const heroAttackStance = require('@/assets/hero/playerBeast-attack.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroFocusStance = require('../assets/hero/playerBeast-focus.gif');
+	const heroFocusStance = require('@/assets/hero/playerBeast-focus.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroSkillStance = require('../assets/hero/playerBeast-attack.gif');
+	const heroSkillStance = require('@/assets/hero/playerBeast-attack.gif');
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterIdleStance = require('../assets/monster/monsterPlant-idle.gif');
+	const monsterIdleStance = require('@/assets/monster/monsterPlant-idle.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterAttackStance = require('../assets/monster/monsterPlant-attack.gif');
+	const monsterAttackStance = require('@/assets/monster/monsterPlant-attack.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterFocusStance = require('../assets/monster/monsterPlant-focus.gif');
+	const monsterFocusStance = require('@/assets/monster/monsterPlant-focus.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterSkillStance = require('../assets/monster/monsterPlant-attack.gif');
+	const monsterSkillStance = require('@/assets/monster/monsterPlant-attack.gif');
 
     const apiUrl = 'https://monster-slayer-api-staging.herokuapp.com';
 
@@ -104,6 +105,7 @@ import store from "@/store";
             })
             .then(result => {
                 const account = result.data as IAccountResponse;
+
                 store.commit('game/setAccount', account);
                 return account;
             })

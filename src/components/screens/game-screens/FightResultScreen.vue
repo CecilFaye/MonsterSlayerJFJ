@@ -22,9 +22,9 @@
 	import { mapMutations, useStore } from "vuex";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const gameOverGif = require('../../assets/background/GameOver2.gif');
+	const gameOverGif = require('@/assets/background/GameOver2.gif');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const victoryGif = require('../../assets/background/YouWin2.gif');
+	const victoryGif = require('@/assets/background/YouWin2.gif');
 
 	const FightResultScreen = defineComponent({
 		props: [],

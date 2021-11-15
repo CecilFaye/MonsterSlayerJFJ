@@ -1,16 +1,25 @@
 import { MutationTree } from 'vuex'
 import store from '..';
+import * as helper from "@/app-lib/services/session-helper";
 import { ActivityStateOptions, IAccount, IAction, ICharacter, ICharacterState, IPersonState, IState, PersonType, ScreenStateOptions } from '../types';
 
 export const mutations: MutationTree<IState> = {
     setAccount(state, payload: IAccount) {
+        helper.saveSession('account', payload);
         state.account = payload;
     },
     setCharacter(state, payload: ICharacter) {
+        helper.saveSession('character', payload);
         state.character = payload;
     },
     changeScreen(state, payload: string) {
         state.currentScreen = payload;
+    },
+    initFromSession(state) {
+        if (!state.account) {
+            store.commit('game/setAccount', helper.getSessionValue(helper.storageNames.account));
+            store.commit('game/setCharacter', helper.getSessionValue(helper.storageNames.character));
+        }
     },
     initializePlayer(state, payload: IPersonState) {
         // Still in use and initially from the json file
@@ -26,6 +35,7 @@ export const mutations: MutationTree<IState> = {
         state.player.currentState.health = (state.player.maxHealth/state.player.maxHealth)*100;
         state.player.currentState.mana = (character.stats.mana/character.stats.mana)*100;
         state.player.skills.forEach((val, index) => {
+            val.id = +character.skills[index]._id;
             val.name = character.skills[index].name;
             val.manaCost = character.skills[index].cost;
             if (character.skills[index].target === 'enemy') {

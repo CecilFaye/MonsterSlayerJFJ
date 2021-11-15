@@ -23,6 +23,11 @@ export enum ActivityStateOptions {
     Failed = 'failed'
 }
 
+export interface IValidationError {
+    error: string;
+    name: string;
+}
+
 export const CharacterTypes = {
     Saber: 1,
     Archer: 2,

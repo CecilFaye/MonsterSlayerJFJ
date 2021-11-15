@@ -64,7 +64,7 @@ const BaseTextInput = defineComponent({
 		};
 
 		const isPassword = computed((): boolean => {
-			return props.formInputType === InputType.password;
+			return  props.formInputType === InputType.password;
 		});
 
 		const errorClass = computed((): string => {
