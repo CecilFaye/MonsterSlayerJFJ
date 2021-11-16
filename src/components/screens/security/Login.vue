@@ -114,7 +114,7 @@
 					.then((account: IAccountResponse) => {
 						if (account && !!account.accountId) {
 							alert('Login Success!');
-							router.push(`/game/${account.accountId}`);
+							router.push(`/game/character`);
 						} else {
 							alert('Invalid Username or Password!');
 						}

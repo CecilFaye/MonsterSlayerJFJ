@@ -1,26 +1,37 @@
 <template>
 	<div class="character-layout">
-        <div>
-            <p v-for="(log, index) in logs" class='log' :key="`log-${index}`">{{log}}</p>
+        <div class="header-stat">
+            <p>Level: {{` ${character.level}`}}</p>
+			<p>Class: {{` ${character.classTypeName}`}}</p>
+			<p>Total Exp.: {{` ${character.totalExp}`}}</p>
+			<p>Next Level Exp.: {{` ${character.nextLevelExp}`}}</p>
+        </div>
+		<div>
+            <p v-for="(stat, index) in stats" class='log' :key="`stat-${index}`">{{`${stat.key}: ${stat.value}`}}</p>
         </div>
 	</div>
 </template>
 
 <script lang="ts">
-	import { defineComponent, ref } from "vue";
-	import { mapMutations } from "vuex";
-	import { useStore } from "vuex";
+	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import { computed, defineComponent, onBeforeMount } from "vue";
+import { useStore } from "vuex";
 
-	// const { params } = useRoute();
 	const CharacterInfoScreen = defineComponent({
-		props: {
-			id: String
-		},
-		setup(props) {
+		setup() {
 			const store = useStore();
-
+			const service = useMonsterSlayerService();
+			const character = computed(() => service.getCharacterDetails());
+			const stats = computed(() => {
+				const character = store.state.game.character;
+				return Object.keys(character.stats).map(key => Object.assign({}, { key, value: character.stats[key] }));
+			});
+			onBeforeMount(() => {
+				store.commit('game/initFromSession');
+			});
 			return {
-
+				character,
+				stats
 			};
 		}
 	})
@@ -36,6 +47,14 @@
 		overflow: hidden !important;
 		margin: auto;
         display: flex;
-        background: lightseagreen;
+        background: transparent;
+		flex-direction: column;
+	}
+	p {
+		font-size: 20px;
+		font-weight: 800;
+	}
+	.header-stat {
+		padding: 10px 0;
 	}
 </style>

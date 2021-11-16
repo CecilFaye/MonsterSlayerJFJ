@@ -1,11 +1,12 @@
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
     import axios from "axios";
-	import { IAccount, ActivityStateOptions, ICharacter, IMonsterSlayerService, IPersonState, PersonType, IAccountResponse } from "@/store/types";
+	import { IAccount, ActivityStateOptions, ICharacter, IMonsterSlayerService, IPersonState, PersonType, IAccountResponse, CharacterTypes } from "@/store/types";
     import Monsters from '@/app-lib/json/monsters.json'
     import Player from '@/app-lib/json/player.json';
     import store from "@/store";
     import * as helper from "@/app-lib/services/session-helper";
+    import { useStore } from "vuex";
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires
 	const heroIdleStance = require('@/assets/hero/playerAqua-idle.gif');
@@ -52,6 +53,7 @@
 	};
 
     const useMonsterSlayerService = (): IMonsterSlayerService => {
+        const store = useStore();
         const randomAction = (limit: number): number => {
             return Math.floor(Math.random() * limit);
         };
@@ -72,6 +74,15 @@
         const getRandomMonsters = (): IPersonState => {
             const monsters = Monsters as IPersonState[];
             return monsters[randomAction(Monsters.length-1)];
+        };
+        const getCharacterTypeName = (characterTypeId: number): string => {
+            let stringName = '';
+            Object.keys(CharacterTypes).forEach(type => {
+                if (CharacterTypes[type] === characterTypeId) {
+                    stringName = type;
+                }
+            });
+            return stringName;
         };
         const initOptions = (person: IPersonState): IPersonState => {
             person.currentState = {
@@ -104,8 +115,7 @@
                 password
             })
             .then(result => {
-                const account = result.data as IAccountResponse;
-
+                const account = result.data as IAccount;
                 store.commit('game/setAccount', account);
                 return account;
             })
@@ -113,6 +123,7 @@
                 return axios.get(`${apiUrl}/accounts/${account.accountId}/character`)
                     .then(result => {
                         const character = result.data as ICharacter;
+                        character.classTypeName = getCharacterTypeName(character.classType);
                         store.commit('game/setCharacter', character);
                         return account;
                     })
@@ -126,12 +137,19 @@
             });
         };
 
+        const getCharacterDetails = (): ICharacter => {
+            const character = store.getters['game/getState']('character');
+            return character;
+        };
+
         return {
             randomAction,
             initOptions,
             getDefaultPerson,
             getRandomMonsters,
             getCharacterImage,
+            getCharacterTypeName,
+            getCharacterDetails,
 
             // Http Call
             signUp,

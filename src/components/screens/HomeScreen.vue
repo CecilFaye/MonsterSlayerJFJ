@@ -41,7 +41,6 @@ import { useRouter } from "vue-router";
 		props: [],
 		setup() {
 			const router = useRouter();
-
 			const store = useStore();
 			const gameName = store.state.name;
 			const gameVersion = store.state.version;

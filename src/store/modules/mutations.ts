@@ -1,7 +1,7 @@
 import { MutationTree } from 'vuex'
 import store from '..';
 import * as helper from "@/app-lib/services/session-helper";
-import { ActivityStateOptions, IAccount, IAction, ICharacter, ICharacterState, IPersonState, IState, PersonType, ScreenStateOptions } from '../types';
+import { ActivityStateOptions, CharacterTypes, IAccount, IAction, ICharacter, ICharacterState, IPersonState, IState, PersonType, ScreenStateOptions } from '../types';
 
 export const mutations: MutationTree<IState> = {
     setAccount(state, payload: IAccount) {
@@ -16,7 +16,7 @@ export const mutations: MutationTree<IState> = {
         state.currentScreen = payload;
     },
     initFromSession(state) {
-        if (!state.account) {
+        if (!state.account?.accountId) {
             store.commit('game/setAccount', helper.getSessionValue(helper.storageNames.account));
             store.commit('game/setCharacter', helper.getSessionValue(helper.storageNames.character));
         }

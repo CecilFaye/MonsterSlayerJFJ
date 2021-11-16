@@ -54,7 +54,9 @@
 				helper.clearAllSessionValues();
 				setTimeout(() => router.push('/'), 1000);
 			};
-
+			onBeforeMount(() => {
+				store.commit('game/initFromSession');
+			});
 
 			return {
 				gameName,
@@ -81,11 +83,11 @@
 	}
 	.info-container {
 		background: transparent;
-		height: 570px;
-		width: 728px;
+		height: 77%;
+		width: 62.3%;
 		position: absolute;
-		top: 24%;
-		left: 42.5%;
+		top: 23.3%;
+		left: 32.3%;
 	}
 	.menu-bar {
 		position: absolute;

@@ -129,7 +129,7 @@
 						username: userName.value,
 						password: password.value,
 						characterName: characterName.value,
-						classType: CharacterTypes[characterClass.value]
+						classType: CharacterTypes[characterClass.value].id
 					} as IAccount)
 					.then((response) => {
 						if (response) {

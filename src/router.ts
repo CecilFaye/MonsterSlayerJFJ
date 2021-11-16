@@ -46,7 +46,7 @@ const router: Router = createRouter({
 			},
 			children:[
 				{
-					path: '/game/character',
+					path: '',
 					component: () => import('@/components/screens/game-screens/CharacterLayoutScreen.vue'),
 					beforeEnter(to: RouteLocationNormalized,
 						from: RouteLocationNormalized, next: NavigationGuardNext){
@@ -95,7 +95,10 @@ const router: Router = createRouter({
 				},
 			]
 		},
-
+		{
+			path: '/:catchAll(.*)',
+			redirect: '/game/character'
+		}
 	],
 	history: createWebHistory(),
 	linkActiveClass: 'active',

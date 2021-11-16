@@ -67,6 +67,8 @@ export interface IMonsterSlayerService {
     getRandomMonsters: () => IPersonState;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getCharacterImage: (personType: PersonType, type: ActivityStateOptions) => any;
+    getCharacterTypeName: (characterTypeId: number) => string;
+    getCharacterDetails: () => ICharacter;
 
     // Http Call
     signUp: (account: IAccount) => Promise<IAccountResponse | null>;
@@ -82,7 +84,7 @@ export interface StyleInterface {
     [x: string]: string;
 }
 
-export interface IAccount {
+export interface IAccount extends IAccountResponse {
     fullName: string;
     email: string;
     username: string;
@@ -107,6 +109,7 @@ export interface ICharacter extends IAccountResponse {
     dungeonAccess: INameIdPair[];
     skills: ISkills[];
     classType: number;
+    classTypeName: string;
     nextLevelExp: number;
     totalExp: number;
 }
