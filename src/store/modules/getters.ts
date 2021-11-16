@@ -2,6 +2,9 @@ import { GetterTree } from 'vuex'
 import { ActivityStateOptions, IRootState, ISkill, IState, PersonType } from '../types';
 
 export const getters: GetterTree<IState, IRootState> = {
+    getState: (state) => (name: string): any => {
+        return state[name];
+    },
     getScreen: (state) => {
         return state.currentScreen;
     },

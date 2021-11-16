@@ -1,38 +1,33 @@
 <template>
 	<div class="credit-screen" :style="`background-image:url(${(screenImage)});`">
-		<div class="childA">
-			<div class="axie-side">
-				<img class="axieImg" :src="`${sampleGif}`">
-				<!-- <label class="devName">Faye </label> -->
+		<div class="childB">
+			<div class="developers-side">
+				<button class="devButton">
+				<img :src="`${fayeImg}`">
+				</button>
+				<button class="devButton">
+				<img :src="`${jhennesonImg}`">
+				</button>
+				<button class="devButton">
+				<img :src="`${joshuaImg}`">
+				</button>
 			</div>
-    </div>
-    <div class="childB">
-		<div class="developers-side">
-			<button class="devButton">	
-			<img :src="`${fayeImg}`">
-			</button> 
-			<button class="devButton">
-			<img :src="`${jhennesonImg}`">
-			</button> 
-			<button class="devButton">
-			<img :src="`${joshuaImg}`">
-			</button> 
+			<div class="home-screen-options">
+			<div class="home-screen-option" @click="returnHome()">
+				Back to Home Page
+			</div>
+			</div>
 		</div>
-		<div class="home-screen-options">
-		<div class="home-screen-option" @click="changeScreen('homeScreen')">
-			Back to Home Page
-		</div>
-		</div>
-    </div>
 	</div>
 </template>
 
 <script lang="ts">
 	import { defineComponent } from "vue";
+import { useRouter } from "vue-router";
 	import { mapMutations } from "vuex";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const screenBG = require('../../assets/background/vuexie-credits.jpg');
+	const screenBG = require('../../assets/background/vuexie-credits-v2.png');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const bookPng = require('../../assets/background/wizard-book.png');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -48,6 +43,15 @@
 
 	const CreditScreen = defineComponent({
 		props: [],
+		setup() {
+			const router = useRouter();
+			const returnHome = ():void => {
+				router.push('/');
+			};
+			return {
+				returnHome
+			}
+		},
 		data() {
 			return {
 				screenImage: screenBG,
@@ -73,17 +77,17 @@
 		text-align: center;
 		overflow: hidden !important;
 	}
-.childA{
-float:left;
-width:40%;
-height:100vh;
-position:absolute;
-}
-.childB {
-float:right;
-width:60%;
-height:100vh;
-}
+	.childA{
+		float:left;
+		width:40%;
+		height:100vh;
+		position:absolute;
+	}
+	.childB {
+		float:right;
+		width:60%;
+		height:100vh;
+	}
 	.credit-screen .bookBackground {
 		margin-top:-40px;
 	}
@@ -135,29 +139,29 @@ height:100vh;
 	}
 
 	.axie-side {
-	text-align: center;
-    top: 26%;
-    left: 34%;
-    position: absolute;
+		text-align: center;
+		top: 32%;
+		left: 24%;
+		position: absolute;
 	}
 
 	.developers-side {
-	text-align: center;
-    top: 35%;
-    left: 47%;
-    position: absolute;
+		text-align: center;
+		top: 35%;
+		left: 32%;
+		position: absolute;
 	}
 	.axieImg {
-	height:350px;
+		height:350px;
 	}
-		
+
 	.devButton {
 		border: none;
 		cursor: pointer;
 		margin:30px;
 		}
 
-			
+
 	.home-screen-options {
 		margin: 215px auto 0 auto;
 		width: 20%;
@@ -175,7 +179,7 @@ height:100vh;
 		font-weight: 800;
 		margin: 35px;
 	}
-	
+
 	.devName {
 		font-family: "AxieFont";
 		font-size: 40px;

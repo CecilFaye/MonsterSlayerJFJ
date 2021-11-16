@@ -7,7 +7,7 @@
 		<div class="home-screen-option" @click="showSignUpModal = true">
 			SIGN UP
 		</div>
-		<div class="home-screen-option" @click="changeScreen('creditScreen')">
+		<div class="home-screen-option" @click="goCredits()">
 			CREDITS
 		</div>
     </div>
@@ -22,10 +22,11 @@
 
 <script lang="ts">
 	import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
 	import { mapMutations } from "vuex";
 	import { useStore } from "vuex";
-	import Login from '../../components/screens/Login.vue';
-	import SignUp from '../../components/screens/SignUp.vue';
+	import Login from './security/Login.vue';
+	import SignUp from './security/SignUp.vue';
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const home = require('../../assets/background/vuexie-bg.jpg')
@@ -39,16 +40,21 @@
 		},
 		props: [],
 		setup() {
+			const router = useRouter();
 			const store = useStore();
 			const gameName = store.state.name;
 			const gameVersion = store.state.version;
 			const showLoginModal = ref<boolean>(false);
 			const showSignUpModal = ref<boolean>(false);
+			const goCredits = ():void => {
+				router.push('/credits');
+			};
 			return {
 				gameName,
 				gameVersion,
 				showLoginModal,
-				showSignUpModal
+				showSignUpModal,
+				goCredits
 			};
 		},
 		data() {

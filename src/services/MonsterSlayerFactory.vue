@@ -1,28 +1,25 @@
+
+
 <script lang="ts">
+    /* eslint-disable @typescript-eslint/no-explicit-any */
 	/* eslint-disable @typescript-eslint/no-empty-function */
+    /* eslint-disable @typescript-eslint/no-var-requires */
     import axios from "axios";
-	import { IAccount, ActivityStateOptions, ICharacter, IMonsterSlayerService, IPersonState, PersonType, IAccountResponse } from "@/store/types";
-    import Monsters from '../services/monsters.json';
-    import Player from '../services/player.json';
-import store from "@/store";
+	import { IAccount, ActivityStateOptions, ICharacter, IMonsterSlayerService, IPersonState, PersonType, IAccountResponse, CharacterTypes, ISkills, IEquipment, IItem } from "@/store/types";
+    import Monsters from '@/app-lib/json/monsters.json'
+    import Player from '@/app-lib/json/player.json';
+    import { useStore } from "vuex";
+    import { useRouter } from "vue-router";
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroIdleStance = require('../assets/hero/playerAqua-idle.gif');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroAttackStance = require('../assets/hero/playerBeast-attack.gif');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroFocusStance = require('../assets/hero/playerBeast-focus.gif');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const heroSkillStance = require('../assets/hero/playerBeast-attack.gif');
+	const heroIdleStance = require('@/assets/hero/playerAqua-idle.gif');
+	const heroAttackStance = require('@/assets/hero/playerBeast-attack.gif');
+	const heroFocusStance = require('@/assets/hero/playerBeast-focus.gif');
+	const heroSkillStance = require('@/assets/hero/playerBeast-attack.gif');
 
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterIdleStance = require('../assets/monster/monsterPlant-idle.gif');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterAttackStance = require('../assets/monster/monsterPlant-attack.gif');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterFocusStance = require('../assets/monster/monsterPlant-focus.gif');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const monsterSkillStance = require('../assets/monster/monsterPlant-attack.gif');
+	const monsterIdleStance = require('@/assets/monster/monsterPlant-idle.gif');
+	const monsterAttackStance = require('@/assets/monster/monsterPlant-attack.gif');
+	const monsterFocusStance = require('@/assets/monster/monsterPlant-focus.gif');
+	const monsterSkillStance = require('@/assets/monster/monsterPlant-attack.gif');
 
     const apiUrl = 'https://monster-slayer-api-staging.herokuapp.com';
 
@@ -51,6 +48,11 @@ import store from "@/store";
 	};
 
     const useMonsterSlayerService = (): IMonsterSlayerService => {
+        const store = useStore();
+        const router = useRouter();
+        const initFromSession = (): void => {
+            store.commit('game/initFromSession');
+        };
         const randomAction = (limit: number): number => {
             return Math.floor(Math.random() * limit);
         };
@@ -72,6 +74,15 @@ import store from "@/store";
             const monsters = Monsters as IPersonState[];
             return monsters[randomAction(Monsters.length-1)];
         };
+        const getCharacterTypeName = (characterTypeId: number): string => {
+            let stringName = '';
+            Object.keys(CharacterTypes).forEach(type => {
+                if (CharacterTypes[type] === characterTypeId) {
+                    stringName = type;
+                }
+            });
+            return stringName;
+        };
         const initOptions = (person: IPersonState): IPersonState => {
             person.currentState = {
                 health: person.maxHealth,
@@ -82,8 +93,6 @@ import store from "@/store";
             };
             return person;
         };
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const getCharacterImage = (personType: PersonType, type: ActivityStateOptions): any => {
             return personType === PersonType.Player ? playerActionImages[type] : monsterActionImages[type];
         };
@@ -93,7 +102,7 @@ import store from "@/store";
                 .then(result => result.data as IAccountResponse)
                 .catch(err => {
                     console.log(err);
-                    return null;
+                    return err.response.data;
                 });
         };
 
@@ -103,7 +112,7 @@ import store from "@/store";
                 password
             })
             .then(result => {
-                const account = result.data as IAccountResponse;
+                const account = result.data as IAccount;
                 store.commit('game/setAccount', account);
                 return account;
             })
@@ -111,25 +120,59 @@ import store from "@/store";
                 return axios.get(`${apiUrl}/accounts/${account.accountId}/character`)
                     .then(result => {
                         const character = result.data as ICharacter;
+                        character.classTypeName = getCharacterTypeName(character.classType);
                         store.commit('game/setCharacter', character);
                         return account;
                     })
                     .catch(err => {
-                        return err;
+                        return err.response.data;
                     });
             })
             .catch(err => {
-                console.log(err);
-                return null;
+                console.log(err.error);
+                return err.response.data;
             });
+        };
+        const gameInit = (): void => {
+            store.commit('game/initFirstTurn');
+        };
+        const battleStart = (): boolean => store.state.game.battleStart;
+        const getCharacterDetails = (): ICharacter => {
+            const character = store.getters['game/getState']('character');
+            return character;
+        };
+        const getCharacterSkills = (): ISkills[] => {
+            const character: ICharacter = store.getters['game/getState']('character');
+            return character.skills;
+        };
+        const getCharacterEquipment = (): IItem[] => {
+            const character: ICharacter = store.getters['game/getState']('character');
+            return Object.keys(character.equipment).map(key => character.equipment[key]);
+        };
+        const getWinner = ():boolean => {
+            return store.getters['game/isWinner']();
+        };
+        const gameReset = (): void => store.commit('game/reset', getDefaultPerson);
+        const gameResult = (): void => {
+            router.push('/game/fightresult');
         };
 
         return {
+            initFromSession,
             randomAction,
             initOptions,
+            battleStart,
             getDefaultPerson,
             getRandomMonsters,
             getCharacterImage,
+            getCharacterTypeName,
+            getCharacterDetails,
+            getCharacterSkills,
+            getCharacterEquipment,
+            getWinner,
+            gameReset,
+            gameInit,
+            gameResult,
 
             // Http Call
             signUp,

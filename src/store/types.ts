@@ -23,6 +23,11 @@ export enum ActivityStateOptions {
     Failed = 'failed'
 }
 
+export interface IValidationError {
+    error: string;
+    name: string;
+}
+
 export const CharacterTypes = {
     Saber: 1,
     Archer: 2,
@@ -56,12 +61,22 @@ export interface IState {
 }
 
 export interface IMonsterSlayerService {
+    initFromSession: () => void;
     getDefaultPerson: (type: PersonType) => IPersonState;
     randomAction: (limit: number) => number;
     initOptions: (person: IPersonState) => IPersonState;
     getRandomMonsters: () => IPersonState;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getCharacterImage: (personType: PersonType, type: ActivityStateOptions) => any;
+    getCharacterTypeName: (characterTypeId: number) => string;
+    getCharacterDetails: () => ICharacter;
+    getCharacterSkills: () => ISkills[];
+    getCharacterEquipment: () => IItem[];
+    getWinner: () => boolean;
+    gameReset: () => void;
+    gameInit: () => void;
+    gameResult: () => void;
+    battleStart: () => boolean;
 
     // Http Call
     signUp: (account: IAccount) => Promise<IAccountResponse | null>;
@@ -77,7 +92,7 @@ export interface StyleInterface {
     [x: string]: string;
 }
 
-export interface IAccount {
+export interface IAccount extends IAccountResponse {
     fullName: string;
     email: string;
     username: string;
@@ -102,6 +117,7 @@ export interface ICharacter extends IAccountResponse {
     dungeonAccess: INameIdPair[];
     skills: ISkills[];
     classType: number;
+    classTypeName: string;
     nextLevelExp: number;
     totalExp: number;
 }
@@ -151,10 +167,6 @@ export interface ISkills {
     cost: number;
     type: string;
 }
-
-
-
-
 
 
 // ##############################################

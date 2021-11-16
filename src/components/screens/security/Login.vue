@@ -9,14 +9,27 @@
 						<template v-slot:header>
 							<label class="modal-label">Username </label>
 						</template>
-						<base-text-input v-model="userName"
-							:errorStyles="errorStyles" />
+						<base-text-input
+							v-model="userName"
+							@validationLogger="logValidationError($event, 'username')"
+							:charLimit = 5
+							:formInputType = "InputType.text"
+							:errorLabel="'Invalid UserName'"
+							:errorStyles="errorStyles"
+						/>
 					</baseRowContent>
 					<baseRowContent>
 						<template v-slot:header>
 								<label class="modal-label"> Password </label>
 						</template>
-						<base-password-input v-model="password" type="password" :errorStyles="errorStyles" />
+						<base-text-input
+							v-model="password"
+							@validationLogger="logValidationError($event, 'password')"
+							:charLimit = 5
+							:formInputType = "InputType.password"
+							:errorLabel="'Invalid Password'"
+							:errorStyles="errorStyles"
+						/>
 					</baseRowContent>
 				</div>
 				<div class="home-screen-options" :disabled="loginNotAllowed">
@@ -33,18 +46,19 @@
 </template>
 
 <script lang="ts">
+	/* eslint-disable @typescript-eslint/no-var-requires */
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	import { defineComponent, Prop, computed, ref } from "vue";
-	import { IAccountResponse, StyleInterface } from "@/store/types";
+	import { IValidationError, StyleInterface } from "@/store/types";
 	import { useStore } from "vuex";
-	import baseTextInput from "../widget/BaseTextInput.vue";
-	import basePasswordInput from "../widget/BasePasswordInput.vue";
-	import baseRowContent from "../widget/BaseRowContent.vue"
+	import baseTextInput, { InputType } from "@/app-lib/components/BaseTextInput.vue";
+	import baseRowContent from "@/app-lib/components/BaseRowContent.vue"
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import { useRouter } from "vue-router";
 
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const home = require('../../assets/background/login-bg.png')
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const closeIcon = require('../../assets/background/close-icon.png');
+	const validations: IValidationError[] = [];
+	const home = require('@/assets/background/login-bg.png')
+	const closeIcon = require('@/assets/background/close-icon.png');
 
 	const Login = defineComponent({
 		props: {
@@ -52,8 +66,7 @@
 		},
 		components: {
 			baseTextInput,
-			baseRowContent,
-			basePasswordInput
+			baseRowContent
 		},
 		emits: {
 			closeModal: null
@@ -67,24 +80,45 @@
 		},
 		setup(props, context) {
 			const service = useMonsterSlayerService();
-			const store = useStore();
+			const router = useRouter();
+			const withErrors = ref<boolean>(false);
 			const onModalClose = () => { context.emit('closeModal') };
+			const logValidationError = (val: string, name: string) => {
+				const errorLog: IValidationError = validations.find(_ => _.name === name);
+				if (val) {
+					if (!errorLog) {
+						validations.push({ error: val, name: name });
+					} else {
+						errorLog.error = val;
+					}
+				} else if (errorLog) {
+					const index = validations.indexOf(errorLog);
+					if (index >= 0) {
+						validations.splice(index, 1);
+					}
+				}
+				// Need to add timeout - the click event is just too fast
+				setTimeout(() => {
+					withErrors.value = !!validations?.length
+				});
+			};
+
 
 			const login = () => {
 				// Need to add timeout - the click event is just too fast
 				setTimeout(() => {
 					service.loginRequest(userName.value, password.value)
-					.then((account: IAccountResponse) => {
-						if (account && !!account.accountId) {
+					.then((response: any) => {
+						if (response && !!response.accountId && !response?.error) {
 							alert('Login Success!');
-							store.commit('game/changeScreen', 'gameScreen');
+							router.push(`/game/character`);
 						} else {
-							alert('Invalid Username or Password!');
+							alert(`Login Failed: ${response?.error}`);
 						}
 
 					})
 					.catch(err => {
-						alert('Login Failed!');
+						alert(`Login Failed: ${err?.error}`);
 						console.log(err);
 					});
 				});
@@ -109,6 +143,8 @@
 
 			return {
 				onModalClose,
+				logValidationError,
+				InputType,
 				userName,
 				password,
 				login,
@@ -172,6 +208,7 @@
 	position: absolute;
 	left: 92%;
 	top: 0%;
+	cursor: pointer;
 }
 .home-screen-options {
 	display: flex;

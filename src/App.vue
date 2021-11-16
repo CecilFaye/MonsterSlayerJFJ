@@ -1,20 +1,24 @@
 <template>
 	<div id="app">
-		<HomeScreen v-if="currentScreen === 'homeScreen'"/>
+		<!-- <HomeScreen v-if="currentScreen === 'homeScreen'"/>
 		<CreditScreen v-if="currentScreen === 'creditScreen'"/>
 		<GameScreen v-if="currentScreen === 'gameScreen'"/>
-		<FightResultScreen v-if="currentScreen === 'fightResultScreen'"/>
+		<FightResultScreen v-if="currentScreen === 'fightResultScreen'"/> -->
+		<router-view v-slot="{ Component }">
+			<component :is="Component" />
+		</router-view>
 	</div>
 </template>
 
 <script lang="ts">
 	import { computed, defineComponent } from 'vue';
+	import { useRouter } from 'vue-router';
 	import { useStore } from 'vuex';
 
 	import HomeScreen from '@/components/screens/HomeScreen.vue'
 	import CreditScreen from './components/screens/CreditScreen.vue'
 	import GameScreen from './components/screens/GameScreen.vue'
-	import FightResultScreen from './components/screens/FightResultScreen.vue'
+	import FightResultScreen from './components/screens/game-screens/FightResultScreen.vue'
 
 	const App = defineComponent({
 		name: 'App',
@@ -25,6 +29,7 @@
 			FightResultScreen
 		},
 		setup() {
+			const router = useRouter();
 			const store = useStore();
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const currentScreen = computed(() => {

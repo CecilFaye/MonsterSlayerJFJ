@@ -11,6 +11,7 @@
 						</template>
 						<base-text-input v-model="fullName"
 							@validationLogger="logValidationError($event, 'fullName')"
+							:charLimit = 6
 							:formInputType = "InputType.text"
 							:errorLabel="'Name is required'"
 							:errorStyles="errorStyles" />
@@ -85,23 +86,19 @@
 
 <script lang="ts">
 	import { defineComponent, Prop, computed, ref, watch } from "vue";
-	import { CharacterTypes, IAccount, StyleInterface } from "@/store/types";
-	import baseTextInput, { InputType } from "../widget/BaseTextInput.vue";
-	import baseRowContent from "../widget/BaseRowContent.vue"
+	import { CharacterTypes, IAccount, IValidationError, StyleInterface } from "@/store/types";
+	import baseTextInput, { InputType } from "@/app-lib/components/BaseTextInput.vue";
+	import baseRowContent from "@/app-lib/components/BaseRowContent.vue"
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import { useStore } from "vuex";
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const home = require('../../assets/background/login-bg.png')
+	const home = require('@/assets/background/login-bg.png')
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const closeIcon = require('../../assets/background/close-icon.png');
+	const closeIcon = require('@/assets/background/close-icon.png');
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const validations: IValidationError[] = [];
 
-	interface IValidationError {
-		error: string;
-		name: string;
-	}
 
 	const SignUp = defineComponent({
 		props: {
@@ -134,13 +131,13 @@
 						characterName: characterName.value,
 						classType: CharacterTypes[characterClass.value]
 					} as IAccount)
-					.then((response) => {
-						if (response) {
+					.then((response: any) => {
+						if (response && !response?.error) {
 							alert('Registration Successful!');
 							alert(`Signup ID: ${response.accountId}`);
 							onSignUpClose()
 						} else {
-							alert('Registration Failed!');
+							alert(`Registration Failed: ${response?.error}`);
 						}
 					});
 				}

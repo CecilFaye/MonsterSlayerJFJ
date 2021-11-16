@@ -1,7 +1,7 @@
 <template>
 	<transition name="fade">
 		<div class="battle-controls" v-show="battleStart">
-			<button v-for="(skill, index) in actionSkills" :key="`ctrl-${index}`" @click="action(skill)" :disabled="!playerTurn">
+			<button v-for="(skill, index) in actionSkills" :key="`ctrl-${index}`" @click="attack(skill)" :disabled="!playerTurn">
 				{{skill.name}}
 			</button>
 		</div>
@@ -22,19 +22,25 @@
 			const store = useStore();
 
             // Methods
-			const action = (skill: ISkill): void => {
-				store.commit('game/action', { personType: PersonType.Player, actionTaken: skill} as IAction);
-			};
+			const attack = (skill: ISkill): void =>  action(skill, PersonType.Player);
 
 			watch(() => store.state.game[`${PersonType.Monsters}`].turn, (value, oldValue) => {
 				if (value) {
 					setTimeout(() => {
 						const skills: ISkill[] = store.getters['game/getSkills'](PersonType.Monsters);
 						const monsterAttack = skills.filter(skill => skill.skillType !== ActivityStateOptions.Idle)[service.randomAction(skills.length-1)];
-						store.commit('game/action', { personType: PersonType.Monsters, actionTaken:  monsterAttack} as IAction);
+						action(monsterAttack, PersonType.Monsters);
 					}, 2000);
 				}
 			});
+
+			const action = (skill: ISkill, type: PersonType) => {
+				store.commit('game/action',
+				{
+					work: { personType: type, actionTaken: skill} as IAction,
+					reset: service.gameResult
+				});
+			};
 
 			// Computed
 			const actionSkills = computed(() => {
@@ -49,7 +55,7 @@
 			});
 
             return {
-                action,
+                attack,
 				playerTurn,
 				battleStart,
                 actionSkills
