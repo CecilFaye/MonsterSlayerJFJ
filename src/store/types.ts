@@ -61,6 +61,7 @@ export interface IState {
 }
 
 export interface IMonsterSlayerService {
+    initFromSession: () => void;
     getDefaultPerson: (type: PersonType) => IPersonState;
     randomAction: (limit: number) => number;
     initOptions: (person: IPersonState) => IPersonState;
@@ -69,6 +70,13 @@ export interface IMonsterSlayerService {
     getCharacterImage: (personType: PersonType, type: ActivityStateOptions) => any;
     getCharacterTypeName: (characterTypeId: number) => string;
     getCharacterDetails: () => ICharacter;
+    getCharacterSkills: () => ISkills[];
+    getCharacterEquipment: () => IItem[];
+    getWinner: () => boolean;
+    gameReset: () => void;
+    gameInit: () => void;
+    gameResult: () => void;
+    battleStart: () => boolean;
 
     // Http Call
     signUp: (account: IAccount) => Promise<IAccountResponse | null>;
@@ -159,10 +167,6 @@ export interface ISkills {
     cost: number;
     type: string;
 }
-
-
-
-
 
 
 // ##############################################

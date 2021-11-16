@@ -1,11 +1,5 @@
 <template>
 	<div class="credit-screen" :style="`background-image:url(${(screenImage)});`">
-		<div class="childA">
-			<div class="axie-side">
-				<img class="axieImg" :src="`${sampleGif}`">
-				<!-- <label class="devName">Faye </label> -->
-			</div>
-		</div>
 		<div class="childB">
 			<div class="developers-side">
 				<button class="devButton">
@@ -33,7 +27,7 @@ import { useRouter } from "vue-router";
 	import { mapMutations } from "vuex";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	const screenBG = require('../../assets/background/vuexie-credits.jpg');
+	const screenBG = require('../../assets/background/vuexie-credits-v2.png');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const bookPng = require('../../assets/background/wizard-book.png');
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -154,7 +148,7 @@ import { useRouter } from "vue-router";
 	.developers-side {
 		text-align: center;
 		top: 35%;
-		left: 47%;
+		left: 32%;
 		position: absolute;
 	}
 	.axieImg {

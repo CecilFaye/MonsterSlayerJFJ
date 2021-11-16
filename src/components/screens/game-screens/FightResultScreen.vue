@@ -1,40 +1,51 @@
+
 <template>
 	<div class="fight-result-screen" :style="`background-image:url(${(screenImage)});`">
 		<transition>
 			<div v-show="isVictor" class="result-container"  >
 				<img :src="victoryGif" >
-				<button class="btn1" @click="changeScreen('gameScreen')">Play Again!</button>
-				<button class="btn2" @click="changeScreen('homeScreen')">Back To Home</button>
+				<button class="btn1" @click="anotherGame">Play Again!</button>
+				<button class="btn2" @click="navigateToHome">Back To Character Information</button>
 			</div>
 		</transition>
 		<transition>
 			<div v-show="!isVictor" class="result-container" >
 				<img class="img2" :src="gameOverGif">
-				<button class="btn3" @click="changeScreen('gameScreen')">Play Again!</button>
-				<button class="btn4" @click="changeScreen('homeScreen')">Back To Home</button>
+				<button class="btn3" @click="anotherGame">Play Again!</button>
+				<button class="btn4" @click="navigateToHome">Back To Character Information</button>
 			</div>
 		</transition>
 	</div>
 </template>
 
 <script lang="ts">
+	/* eslint-disable @typescript-eslint/no-var-requires */
+	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import { computed, defineComponent } from "vue";
-	import { mapMutations, useStore } from "vuex";
+	import { useRouter } from "vue-router";
+	import { mapMutations } from "vuex";
 
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const gameOverGif = require('@/assets/background/GameOver2.gif');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const victoryGif = require('@/assets/background/YouWin2.gif');
+	const gameRoute = `/game`;
 
 	const FightResultScreen = defineComponent({
-		props: [],
 		setup() {
-			const store = useStore();
-			const isVictor = computed(() =>  store.getters['game/isWinner']());
+			const service = useMonsterSlayerService();
+			const router = useRouter();
+			const isVictor = computed(() =>  service.getWinner());
+			const navigateToHome = () => {
+				router.push(`${gameRoute}/character`);
+			};
+			const anotherGame = () => {
+				router.push(`${gameRoute}/battle`);
+			};
             return {
 				gameOverGif,
 				victoryGif,
-				isVictor
+				isVictor,
+				navigateToHome,
+				anotherGame
 			}
         },
 		methods: {
@@ -51,7 +62,6 @@
 	button {
 		cursor: pointer;
 	}
-
 	.fight-result-screen {
 		background-repeat: no-repeat;
 		background-size: cover;
@@ -96,7 +106,7 @@
 	}
 
 	.btn2 {
-		top: 80%;
+		top: 82%;
 	}
 
 	.btn3 {
@@ -104,6 +114,6 @@
 	}
 
 	.btn4 {
-		top: 87%;
+		top: 89%;
 	}
 </style>

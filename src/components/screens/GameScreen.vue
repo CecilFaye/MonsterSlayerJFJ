@@ -1,13 +1,15 @@
 <template>
 	<div class="base-game-screen" :style="`background-image:url(${(screenImage)});`">
-		<router-view></router-view>
+		<transition name="fade">
+			<router-view></router-view>
+		</transition>
 	</div>
 </template>
 
 <script lang="ts">
 	import { defineComponent, onBeforeMount, ref } from "vue";
 	import { useStore } from "vuex";
-	import { useRoute, useRouter } from "vue-router";
+	import { useRouter } from "vue-router";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const battleScreenImage = require('../../assets/background/vuexie-battle.jpg')

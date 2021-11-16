@@ -1,10 +1,10 @@
-
 <template>
 	<div v-show="showEntrance" >
 		<img class="entrance-screen" :src="screenGif" >
 	</div>
 	<transition name="fade">
 		<div v-if="!showEntrance" class="game-screen" :style="`background-image:url(${(screenBackground)});`">
+			<button class="back-button" @click="navigateToHome">Back to Character Info.</button>
 			<div class="main-container">
 				<div class="people-container">
 					<div class="person-container player">
@@ -36,41 +36,36 @@
 
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
+	/* eslint-disable @typescript-eslint/no-var-requires */
 	import { computed, defineComponent, onBeforeMount, ref, watch } from "vue";
-	import { useStore } from "vuex";
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import Character from "../../model/Character.vue";
 	import BattleControlWidget from "../../widget/BattleControls.vue";
 	import LogsControlWidget from "../../widget/Logs.vue";
+	import { useRouter } from "vue-router";
 
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenBackground = require('../../../assets/background/inside-castle.jpg');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const screenGif = require('../../../assets/background/before-fight.gif');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const vsGif = require('../../../assets/background/versus.gif');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const fightGif = require('../../../assets/background/fight.gif');
 
 	const GameScreen = defineComponent({
-		props: [],
 		components: {
 			Character,
 			BattleControlWidget,
 			LogsControlWidget
 		},
 		setup() {
-			// Properties
 			const showEntrance = ref<boolean>(true);
 			const showFightImage = ref<boolean>(true);
-
-			// Hooks
 			const service = useMonsterSlayerService();
-			const store = useStore();
+			const router = useRouter();
+			const navigateToHome = () => {
+				router.push(`/game/character`);
+			};
 
-			// Lifecycle Hooks
 			onBeforeMount(() => {
-				store.commit('game/reset', service);
+				service.gameReset();
 			});
 
 			setTimeout(() => {
@@ -82,13 +77,13 @@
 				if (!value) {
 					setTimeout(() => {
 						showFightImage.value = false;
-						setTimeout(() => store.commit('game/initFirstTurn'), 1000);
+						setTimeout(() => service.gameInit(), 1000);
 					}, 2000);
 				}
 			});
 
 			const battleStart = computed(() => {
-				return store.state.game.battleStart;
+				return service.battleStart();
 			});
 
 			return {
@@ -98,7 +93,8 @@
 				fightGif,
 				showEntrance,
 				showFightImage,
-				battleStart
+				battleStart,
+				navigateToHome
 			}
 		}
 	})
@@ -186,5 +182,22 @@
 	.center-images {
 		display: flex;
 		flex-direction: column;
+	}
+	.back-button {
+		margin: 5px;
+		min-width: 100px;
+		min-height: 2rem;
+		font-size: 1rem;
+		font-weight: 800;
+		cursor: pointer;
+		padding: 0.7rem;
+		text-transform: uppercase;
+        box-shadow: 0px 4px 5px #7c797933;
+        border-radius: 10px;
+		background-color: rgb(185, 105, 48);
+		color: whitesmoke;
+		top: 3%;
+		left: 1.5%;
+		position: absolute;
 	}
 </style>

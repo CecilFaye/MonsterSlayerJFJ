@@ -129,15 +129,15 @@
 						username: userName.value,
 						password: password.value,
 						characterName: characterName.value,
-						classType: CharacterTypes[characterClass.value].id
+						classType: CharacterTypes[characterClass.value]
 					} as IAccount)
-					.then((response) => {
-						if (response) {
+					.then((response: any) => {
+						if (response && !response?.error) {
 							alert('Registration Successful!');
 							alert(`Signup ID: ${response.accountId}`);
 							onSignUpClose()
 						} else {
-							alert('Registration Failed!');
+							alert(`Registration Failed: ${response?.error}`);
 						}
 					});
 				}

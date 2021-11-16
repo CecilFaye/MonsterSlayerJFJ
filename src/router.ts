@@ -90,6 +90,11 @@ const router: Router = createRouter({
 					props: true
 				},
 				{
+					path: '/game/fightresult',
+					component: () => import('@/components/screens/game-screens/FightResultScreen.vue'),
+					props: true
+				},
+				{
 					path: '/:catchAll(.*)',
 					component: () => import('@/components/screens/security/NotFound.vue')
 				},

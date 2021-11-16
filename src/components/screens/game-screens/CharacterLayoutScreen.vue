@@ -10,6 +10,7 @@
 		<div class="character-image">
 			<div class="axie-side">
 				<img class="axieImg" :src="`${characterImage}`">
+				<span class="character-name">{{ character.name }}</span>
 			</div>
 			<button class="battle-button" @click="navigateToRoute('battle')">Battle</button>
 			<button class="logout-button" @click="logout">Logout</button>
@@ -22,47 +23,35 @@
 
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-var-requires */
-	import { defineComponent, onBeforeMount, ref } from "vue";
-	import { useRoute, useRouter } from "vue-router";
-	import { mapMutations } from "vuex";
-	import { useStore } from "vuex";
+	import { defineComponent, onBeforeMount } from "vue";
+	import { useRouter } from "vue-router";
 	import * as helper from "@/app-lib/services/session-helper";
+	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 
 	const characterScreenImage = require('../../../assets/background/vuexie-info-main.png');
-	const battleScreenImage = require('../../../assets/background/arena.jpg');
-	const characterImage = require('../../../assets/background/faye-gift.gif');
+	const characterImage =  require('@/assets/hero/playerAqua-idle.gif');
 
-	// const { params } = useRoute();
 	const CharacterLayoutScreen = defineComponent({
-		props: {
-			id: String
-		},
-		setup(props) {
-			const store = useStore();
+		setup() {
+			const service = useMonsterSlayerService();
 			const router = useRouter();
-
-			const gameName = store.state.name;
-			const gameVersion = store.state.version;
 			const screenImage = characterScreenImage;
 			const gameRoute = `/game`;
-
 			const navigateToRoute = (routeName: string) => {
 				router.push(`${gameRoute}/${routeName}`);
 			};
-
 			const logout = () => {
 				helper.clearAllSessionValues();
 				setTimeout(() => router.push('/'), 1000);
 			};
+			const character = service.getCharacterDetails();
 			onBeforeMount(() => {
-				store.commit('game/initFromSession');
+				service.initFromSession();
 			});
-
 			return {
-				gameName,
-				gameVersion,
 				screenImage,
 				characterImage,
+				character,
 				navigateToRoute,
 				logout
 			};
@@ -117,15 +106,22 @@
 		top: 11%;
 		left: 12.1%;
 		position: absolute;
-
 	}
 	.axieImg {
-		height:300px;
+		height:350px;
 	}
 	.axie-side {
 		text-align: center;
 		top: 33%;
-		left: 18%;
+		left: 16%;
 		position: absolute;
+	}
+	.character-name {
+		font-size: 20px;
+		font-weight: 800;
+		text-transform: uppercase;
+		position: absolute;
+		left: 32%;
+		top: 108%;
 	}
 </style>

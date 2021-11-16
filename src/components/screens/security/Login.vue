@@ -46,20 +46,18 @@
 </template>
 
 <script lang="ts">
+	/* eslint-disable @typescript-eslint/no-var-requires */
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	import { defineComponent, Prop, computed, ref } from "vue";
-	import { IAccountResponse, IValidationError, StyleInterface } from "@/store/types";
+	import { IValidationError, StyleInterface } from "@/store/types";
 	import { useStore } from "vuex";
 	import baseTextInput, { InputType } from "@/app-lib/components/BaseTextInput.vue";
 	import baseRowContent from "@/app-lib/components/BaseRowContent.vue"
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 	import { useRouter } from "vue-router";
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const validations: IValidationError[] = [];
-
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const home = require('@/assets/background/login-bg.png')
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const closeIcon = require('@/assets/background/close-icon.png');
 
 	const Login = defineComponent({
@@ -83,7 +81,6 @@
 		setup(props, context) {
 			const service = useMonsterSlayerService();
 			const router = useRouter();
-			const store = useStore();
 			const withErrors = ref<boolean>(false);
 			const onModalClose = () => { context.emit('closeModal') };
 			const logValidationError = (val: string, name: string) => {
@@ -111,17 +108,17 @@
 				// Need to add timeout - the click event is just too fast
 				setTimeout(() => {
 					service.loginRequest(userName.value, password.value)
-					.then((account: IAccountResponse) => {
-						if (account && !!account.accountId) {
+					.then((response: any) => {
+						if (response && !!response.accountId && !response?.error) {
 							alert('Login Success!');
 							router.push(`/game/character`);
 						} else {
-							alert('Invalid Username or Password!');
+							alert(`Login Failed: ${response?.error}`);
 						}
 
 					})
 					.catch(err => {
-						alert('Login Failed!');
+						alert(`Login Failed: ${err?.error}`);
 						console.log(err);
 					});
 				});

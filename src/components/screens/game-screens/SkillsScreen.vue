@@ -1,43 +1,39 @@
 <template>
 	<div class="skills-layout">
-        <div>
+        <div class="division">
             <ul>
-                <li v-for="(skill, index) in skills" :key="`skill-${index}`">{{skill.name}}</li>
+                <li v-for="(skill, index) in skills" :key="`skill-${index}`"><span @click="skillInfo(skill)">{{skill?.name ?? ''}}</span></li>
             </ul>
         </div>
-         <div>
-            <!-- skill model here -->
+         <div class="division">
+             <div v-show="!!skillDetails?.name" class="arrangement">
+                <span>{{`Name: `}}<span class="skill-text">{{skillDetails?.name ?? ''}}</span></span>
+                <span>{{skillDetails?.target === 'self' ? 'Gain: ' : 'Damage: '}}<span>{{Math.abs(skillDetails?.damage ?? 0)}}</span></span>
+                <span>{{`Target: `}}<span class="skill-text">{{skillDetails?.target ?? 0}}</span></span>
+                <span>{{`Mana Cost: ${Math.abs(skillDetails?.cost ?? 0)}`}}</span>
+            </div>
         </div>
 	</div>
 </template>
 
 <script lang="ts">
-	import { ActivityStateOptions, ISkill } from "@/store/types";
-    import { computed, defineComponent, ref } from "vue";
-	import { mapMutations } from "vuex";
-	import { useStore } from "vuex";
+	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+    import { ISkills } from "@/store/types";
+    import { defineComponent, ref } from "vue";
 
-	// const { params } = useRoute();
 	const SkillsScreen = defineComponent({
-		props: {
-			id: String
-		},
-		setup(props) {
-			const store = useStore();
+		setup() {
+            const service = useMonsterSlayerService();
+			const skills = service.getCharacterSkills();
+            const skillDetails = ref<ISkills>();
 
-            const skills = computed(() => {
-				const skills: ISkill[] = store.getters['game/getSkills']('player');
-				return skills.filter(skill => skill.skillType !== ActivityStateOptions.Idle);
-			});
-
-            const skillInfo = (id: string) => {
-                // const skills: ISkill[] = store.getters['game/getSkills']('player');
-                return '';
+            const skillInfo = (skill: ISkills): void => {
+                skillDetails.value = {...skill};
             };
-
 			return {
                 skills,
-                skillInfo
+                skillInfo,
+                skillDetails
 			};
 		}
 	})
@@ -52,6 +48,34 @@
 		text-align: center;
 		overflow: hidden !important;
 		margin: auto;
-        background:lightcoral;
+        background:transparent;
+        display: flex;
+        flex-direction: row;
 	}
+    .division {
+        width: 50%;
+        padding: 3rem 2rem;
+    }
+    .arrangement {
+        display: flex;
+        flex-direction: column;
+    }
+    span {
+		font-size: 20px;
+		font-weight: 800;
+	}
+	.header-stat {
+		padding: 10px 0;
+	}
+    li {
+        cursor: pointer;
+        text-decoration: none;
+    }
+    li:hover {
+        color: whitesmoke;
+    }
+    .skill-text {
+        text-transform: uppercase;
+        color: whitesmoke;
+    }
 </style>

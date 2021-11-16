@@ -1,7 +1,12 @@
-import { MutationTree } from 'vuex'
-import store from '..';
-import * as helper from "@/app-lib/services/session-helper";
-import { ActivityStateOptions, CharacterTypes, IAccount, IAction, ICharacter, ICharacterState, IPersonState, IState, PersonType, ScreenStateOptions } from '../types';
+import { MutationTree } from 'vuex';
+
+import * as helper from '@/app-lib/services/session-helper';
+
+import store from '../';
+import {
+	ActivityStateOptions, IAccount, IAction, ICharacter, ICharacterState, IPersonState, IState,
+	PersonType
+} from '../types';
 
 export const mutations: MutationTree<IState> = {
     setAccount(state, payload: IAccount) {
@@ -29,9 +34,9 @@ export const mutations: MutationTree<IState> = {
         // TEMPORARY: Use the same model until the monster API is available
         const character = state.characterState;
         state.player.name = character.name;
-        // NOTE: Change the value to 1000 coz the value from API too low
-        state.player.maxHealth = 700; //character.stats.health;
-        state.player.maxMana = 700; //character.stats.mana;
+        // NOTE: Change the value to 500 coz the value from API is too low
+        state.player.maxHealth = 500; //character.stats.health;
+        state.player.maxMana = 200; //character.stats.mana;
         state.player.currentState.health = (state.player.maxHealth/state.player.maxHealth)*100;
         state.player.currentState.mana = (character.stats.mana/character.stats.mana)*100;
         state.player.skills.forEach((val, index) => {
@@ -56,9 +61,9 @@ export const mutations: MutationTree<IState> = {
 
         // TEMPORARY: Use the same model until the monster API is available
         const character = state.enemyState;
-        // NOTE: Change the health to 1000 coz the value from API too low
+        // NOTE: Change the health to 1000 coz the value from API is too low
         state.monster.maxHealth = 1000; //character.stats.health;
-        state.monster.maxMana = 1000; //haracter.stats.mana;
+        state.monster.maxMana = 500; //haracter.stats.mana;
         state.monster.currentState.health = (state.monster.maxHealth/state.monster.maxHealth)*100;
         state.monster.currentState.mana = (character.stats.mana/character.stats.mana)*100;
         state.monster.skills.forEach((val, index) => {
@@ -77,18 +82,18 @@ export const mutations: MutationTree<IState> = {
         state.player.turn = true;
         state.battleStart = true;
     },
-    reset(state, service) {
+    reset(state, getDefaultPerson: (type: PersonType) => IPersonState) {
 
         // TODO: Change this code once the monster API is available
         state.fightLogs = [];
         state.player.turn = false;
         state.battleStart = false;
-        store.commit('game/initializePlayer', service.getDefaultPerson(PersonType.Player));
-        store.commit('game/initializeMonster', service.getDefaultPerson(PersonType.Monsters));
-        alert(`Character is Loaded:  ${JSON.stringify(state.character)}`);
+        store.commit('game/initializePlayer', getDefaultPerson(PersonType.Player));
+        store.commit('game/initializeMonster', getDefaultPerson(PersonType.Monsters));
 
     },
-    action(state, act: IAction) {
+    action(state, payload: { work: IAction, reset: () => void }) {
+        const act = payload.work;
         const actor = act.personType as PersonType;
         const receiver = actor === PersonType.Player ? PersonType.Monsters : PersonType.Player;
         const manaCost = act.actionTaken.manaCost;
@@ -104,18 +109,18 @@ export const mutations: MutationTree<IState> = {
         const receiverMaxMana = state[receiver].maxMana;
         const manaIncrement = act.actionTaken.manaIncrement;
         const healthIncrement = act.actionTaken.healthIncrement;
+        const actorActualMana = (actorMana/100)*actorMaxMana;
+        const actorActualHealth = (actorHealth/100)*actorMaxHealth;
+        const receiverActualHealth = (receiverHealth/100)*receiverMaxHealth;
 
-        if (actorMana > manaCost) {
-            const actorActualMana = (actorMana/100)*actorMaxMana;
-            const actorActualHealth = (actorHealth/100)*actorMaxHealth;
-            const receiverActualHealth = (receiverHealth/100)*receiverMaxHealth;
+        if (actorActualMana > manaCost) {
             const remainingReceiverHealth = receiverActualHealth - act.actionTaken.damage;
             const remainingActorMana = actorActualMana - act.actionTaken.manaCost;
             const remainingHealthPercentage = (remainingReceiverHealth/receiverMaxHealth)*100;
             const remainingActorManaPercentage = (remainingActorMana/actorMaxMana)*100;
             state[actor].currentState.activityState = act.actionTaken.skillType;
-            state[receiver].currentState.health = remainingHealthPercentage < 0 ? 0 : remainingHealthPercentage;
-            state[actor].currentState.mana = remainingActorManaPercentage < 0 ? 0 : remainingActorManaPercentage;
+            state[receiver].currentState.health = remainingHealthPercentage <= 0 ? 0 : remainingHealthPercentage;
+            state[actor].currentState.mana = remainingActorManaPercentage <= 0 ? 0 : remainingActorManaPercentage;
 
             if (healthIncrement) {
                 const healthTotal = actorActualHealth + act.actionTaken.healthIncrement;
@@ -130,9 +135,7 @@ export const mutations: MutationTree<IState> = {
             store.commit('game/actionLog', act);
             setTimeout(() =>{
                 if (state[receiver].currentState.health < 1) {
-                    console.log(state[receiver]);
-                    console.log(state[actor]);
-                    store.commit('game/changeScreen', ScreenStateOptions.FightResultScreen);
+                    payload.reset();
                 } else  {
                     state[actor].currentState.activityState = ActivityStateOptions.Idle;
                     state[actor].turn = false;
@@ -169,3 +172,4 @@ export const mutations: MutationTree<IState> = {
         }
     }
 }
+

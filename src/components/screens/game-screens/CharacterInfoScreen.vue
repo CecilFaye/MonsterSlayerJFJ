@@ -14,20 +14,15 @@
 
 <script lang="ts">
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
-	import { computed, defineComponent, onBeforeMount } from "vue";
-import { useStore } from "vuex";
+	import { computed, defineComponent } from "vue";
 
 	const CharacterInfoScreen = defineComponent({
 		setup() {
-			const store = useStore();
 			const service = useMonsterSlayerService();
-			const character = computed(() => service.getCharacterDetails());
+			const character = service.getCharacterDetails();
 			const stats = computed(() => {
-				const character = store.state.game.character;
+				const character = service.getCharacterDetails();
 				return Object.keys(character.stats).map(key => Object.assign({}, { key, value: character.stats[key] }));
-			});
-			onBeforeMount(() => {
-				store.commit('game/initFromSession');
 			});
 			return {
 				character,
