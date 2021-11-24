@@ -38,7 +38,7 @@
 	/* eslint-disable @typescript-eslint/no-empty-function */
 	import { computed, defineComponent, onBeforeMount, ref, watch } from "vue";
 	import { useStore } from "vuex";
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
 	import Character from "../model/Character.vue";
 	import BattleControlWidget from "../widget/BattleControls.vue";
 	import LogsControlWidget from "../widget/Logs.vue";

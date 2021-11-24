@@ -1,0 +1,1 @@
+export const apiUrl = 'https://monster-slayer-api-staging.herokuapp.com';

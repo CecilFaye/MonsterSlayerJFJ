@@ -20,7 +20,7 @@
 
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-var-requires */
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
 	import { computed, defineComponent } from "vue";
 	import { useRouter } from "vue-router";
 	import { mapMutations } from "vuex";

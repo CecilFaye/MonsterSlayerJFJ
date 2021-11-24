@@ -26,7 +26,7 @@
 	import { defineComponent, onBeforeMount } from "vue";
 	import { useRouter } from "vue-router";
 	import * as helper from "@/app-lib/services/session-helper";
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
 
 	const characterScreenImage = require('../../../assets/background/vuexie-info-main.png');
 	const characterImage =  require('@/assets/hero/playerAqua-idle.gif');

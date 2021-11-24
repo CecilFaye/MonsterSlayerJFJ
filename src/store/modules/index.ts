@@ -2,6 +2,7 @@ import { Module } from 'vuex'
 import { mutations } from './mutations'
 import { IRootState as IRootState, ActivityStateOptions, ScreenStateOptions, IState, ISkill, IPersonState, PersonType, ICharacterState, ICharacter, IAccount, CharacterTypes } from '@/store/types'
 import { getters } from './getters'
+import { actions } from './actions'
 
 export const state = {
     screenOptions: Object.keys(ScreenStateOptions).map(_ => _),
@@ -64,6 +65,7 @@ const namespaced = true
 export const game: Module<IState, IRootState> = {
     namespaced,
     state,
+    actions,
     mutations,
     getters
 }

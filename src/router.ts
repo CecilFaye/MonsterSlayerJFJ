@@ -6,8 +6,8 @@ import {
 	NavigationGuardNext
 } from "vue-router";
 
-import * as helper from '@/app-lib/services/session-helper';
-import { storageNames } from "@/app-lib/services/session-helper";
+import * as helper from '@/app-lib/helper/session-helper';
+import { storageNames } from "@/app-lib/helper/session-helper";
 
 const router: Router = createRouter({
 	routes: [
@@ -31,6 +31,19 @@ const router: Router = createRouter({
 		{
 			path: '/credits',
 			component: () => import('@/components/screens/CreditScreen.vue'),
+		},
+		{
+			path: '/mainstage',
+			component:  () => import('@/components/screens/MainStageScreen.vue'),
+			beforeEnter(to: RouteLocationNormalized,
+				from: RouteLocationNormalized, next: NavigationGuardNext){
+					if(helper.hasSession(storageNames.account)){
+						next();
+					} else {
+						helper.clearAllSessionValues();
+						next('/');
+					}
+			}
 		},
 		{
 			path: '/game',

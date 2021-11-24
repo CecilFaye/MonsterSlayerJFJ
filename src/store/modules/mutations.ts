@@ -1,12 +1,24 @@
 import { MutationTree } from 'vuex';
 
-import * as helper from '@/app-lib/services/session-helper';
+import * as helper from '@/app-lib/helper/session-helper';
 
 import store from '../';
 import {
 	ActivityStateOptions, IAccount, IAction, ICharacter, ICharacterState, IPersonState, IState,
 	PersonType
 } from '../types';
+
+export enum MutationTypes {
+    setAccount = 'SET_ACCOUNT',
+    setCharacter = 'SET_CHARACTER',
+    initFromSession = 'LOAD_USER_FROM_SESSION',
+    initializePlayer = 'INIT_CHARACTER',
+    initializeMonster = 'INIT_ENEMY',
+    initFirstTurn= 'INIT_FIRST_TURN',
+    reset = 'RESET_GAME',
+    action = 'ACT_ACTOR',
+    actionLog = 'LOG_EVENT'
+}
 
 export const mutations: MutationTree<IState> = {
     setAccount(state, payload: IAccount) {

@@ -53,7 +53,7 @@
 	import { useStore } from "vuex";
 	import baseTextInput, { InputType } from "@/app-lib/components/BaseTextInput.vue";
 	import baseRowContent from "@/app-lib/components/BaseRowContent.vue"
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
 	import { useRouter } from "vue-router";
 
 	const validations: IValidationError[] = [];
@@ -111,7 +111,7 @@
 					.then((response: any) => {
 						if (response && !!response.accountId && !response?.error) {
 							alert('Login Success!');
-							router.push(`/game/character`);
+							router.push(`/mainstage`);
 						} else {
 							alert(`Login Failed: ${response?.error}`);
 						}

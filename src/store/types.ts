@@ -60,27 +60,9 @@ export interface IState {
     monster: IPersonState;
 }
 
-export interface IMonsterSlayerService {
-    initFromSession: () => void;
-    getDefaultPerson: (type: PersonType) => IPersonState;
-    randomAction: (limit: number) => number;
-    initOptions: (person: IPersonState) => IPersonState;
-    getRandomMonsters: () => IPersonState;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getCharacterImage: (personType: PersonType, type: ActivityStateOptions) => any;
-    getCharacterTypeName: (characterTypeId: number) => string;
-    getCharacterDetails: () => ICharacter;
-    getCharacterSkills: () => ISkills[];
-    getCharacterEquipment: () => IItem[];
-    getWinner: () => boolean;
-    gameReset: () => void;
-    gameInit: () => void;
-    gameResult: () => void;
-    battleStart: () => boolean;
-
-    // Http Call
-    signUp: (account: IAccount) => Promise<IAccountResponse | null>;
-    loginRequest: (username: string, password: string) => Promise<IAccountResponse>;
+export interface INameIdPair {
+    _id: string;
+    name: string;
 }
 
 export interface IAction {
@@ -102,24 +84,41 @@ export interface IAccount extends IAccountResponse {
     classType: number;
 }
 
-export interface IAccountResponse {
+export interface IAccountResponse  {
     accountId: string;
 }
 
-export interface ICharacter extends IAccountResponse {
+export interface ICharacter extends INameIdPair, IAccountResponse {
     stats: IStats;
     equipment: IEquipment;
-
-    _id: string;
-    name: string;
     level: number;
-
     dungeonAccess: INameIdPair[];
     skills: ISkills[];
     classType: number;
     classTypeName: string;
     nextLevelExp: number;
     totalExp: number;
+}
+
+export interface IDungeonResponse extends INameIdPair {
+    image: string;
+    recommendedLevel: number;
+    bossReq: string;
+    locked: boolean;
+    enemies: IDungeonEnemy[];
+}
+
+export interface IEnterDungeonResponse {
+    dungeon: IDungeon;
+    enemy: IEnemy;
+}
+
+export interface IBattleResponse {
+    exp: number;
+    lvlUp: boolean;
+    drop: string;
+    newSkills: string[];
+    unlockedDungeons: string[];
 }
 
 export interface ICharacterState extends ICharacter {
@@ -144,28 +143,45 @@ export interface IEquipment {
     armor: IItem;
 }
 
-export interface IItem {
-    _id: string;
+export interface IItem extends INameIdPair {
     bonus: IStats;
     classId: number;
-    name: string;
     // Determines whether item is a weapon (WPN) or an armor (AMR)
     type: string;
 }
 
-export interface INameIdPair {
-    _id: string;
-    name: string;
+export interface IInventory extends INameIdPair  {
+    characterId: string;
+    item: IItem;
 }
 
-export interface ISkills {
-    _id: string;
-    name: string;
+export interface ISkills extends INameIdPair {
     classId: number;
     damage: number;
     target: string;
     cost: number;
     type: string;
+}
+
+export interface IDungeon extends INameIdPair  {
+    image: string;
+}
+
+export interface IDungeonEnemy extends INameIdPair {
+    boss: boolean;
+    drops: IEnemyDrop[];
+}
+
+export interface IEnemyDrop extends INameIdPair {
+    classId: number;
+    type: string;
+}
+
+export interface IEnemy extends INameIdPair {
+    image: string;
+    level: number;
+    stats: IStats;
+    skills: ISkills[];
 }
 
 
