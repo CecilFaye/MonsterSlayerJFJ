@@ -21,15 +21,15 @@
 			<div class="character-info">
 				<div class="grid-container">
 					<div class="grid-itemLevel">Level {{ character.level}}</div>
-					<div class="grid-item">HEALTH</div>
-					<div class="grid-item">MANA</div>  
-					<div class="grid-item">EXP.</div>
-					<div class="grid-item">NEXT LVL UP.</div>
-					<div class="grid-item">{{ character.classTypeName}}</div>  
-					<div class="grid-item">{{ character.stats["health"]}}</div>
-					<div class="grid-item">{{ character.stats["mana"]}}</div>
-					<div class="grid-item">{{ character.totalExp }}</div>
-					<div class="grid-item">{{ character.nextLevelExp }}</div>
+					<div class="grid-itemTitle">HEALTH</div>
+					<div class="grid-itemTitle">MANA</div>  
+					<div class="grid-itemTitle">EXP.</div>
+					<div class="grid-itemTitle">NEXT LVL UP.</div>
+					<div class="grid-item"><span class="class-type">{{ character.classTypeName }}</span></div>  
+					<div class="grid-item"><img class="icon-img" :src="`${healthImage}`"><span class="info-class">{{ character.stats["health"]}}</span></div>
+					<div class="grid-item"><img class="icon-img" :src="`${manaImage}`"><span class="info-class">{{ character.stats["mana"]}}</span></div>
+					<div class="grid-item"><img class="icon-img" :src="`${expImage}`"><span class="info-class">{{ character.totalExp }}</span></div>
+					<div class="grid-item"><img class="icon-img" :src="`${nxtLvlImage}`"><span class="info-class">{{ character.nextLevelExp }}</span></div>
 				</div>
 			</div>
 			<div class="info-container">
@@ -48,7 +48,11 @@
 
 	const characterScreenImage = require('../../../assets/background/vuexie-characterLayout.jpg');
 	const characterImage =  require('@/assets/hero/playerAqua-idle.gif');
-
+	const healthImage =  require('@/assets/skills/healthIcon.jpg');
+	const manaImage =  require('@/assets/skills/manaIcon.jpg');
+	const expImage =  require('@/assets/skills/expIcon.jpg');
+	const nxtLvlImage =  require('@/assets/skills/nextLvlIcon.jpg');
+	
 	const CharacterLayoutScreen = defineComponent({
 		setup() {
 			const service = useMonsterSlayerService();
@@ -73,6 +77,10 @@
 			return {
 				screenImage,
 				characterImage,
+				healthImage,
+				manaImage,
+				expImage,
+				nxtLvlImage,
 				character,
 				stats,
 				navigateToRoute,
@@ -88,18 +96,18 @@
 		width: 77%;
 		background-repeat: no-repeat;
 		background-size: cover;
-		text-align: center;
 		overflow: hidden !important;
 		margin: auto;
 		margin-top: 5%;
 	}
 	.info-container {
 		background: transparent;
-		height: 77%;
-		width: 62.3%;
+		height: 107%;
+		width: 67.3%;
 		position: absolute;
 		top: 29.3%;
-		left: 32.3%;
+		left: 34%;
+
 	}
 	.character-info {
 		background: transparent;
@@ -183,7 +191,7 @@
 	.grid-container 
 	{
 		display: grid;
-		grid-template-columns: 5fr 2fr 2fr 2fr 2fr;
+		grid-template-columns: 4fr 2fr 2fr 2fr 2.5fr;
 		background-color: transparent;
 		height: 65.3%;
 		width: 91%;
@@ -192,12 +200,43 @@
 		left: 4.9%;
 	}
 	.grid-item {
-		background-color: transparent;
+		text-align: left;
+	}		
+	.grid-itemTitle {
 		text-align: center;
-	}	
-	.grid-itemLevel {
-		text-align: center;	
-		font-family: "AxieFont";
 		color: #a4785c;
+		font-weight: 900;
+		color: #a4785c;
+		font-size: 14px;
+		margin-top: -2px;
+	}
+	.grid-itemLevel {
+		font-weight: 900;
+		color: #a4785c;
+		text-align: left;
+		margin-top: -10px;
+		margin-left: 19px;
+		font-size: 22px;
+	}
+	.icon-img {
+		font-weight: 1px;    
+		height: 32px;
+		padding-right: 7px;
+		margin-left: 16px;
+	}
+	.info-class {
+		color: #5f330e;
+		font-weight: 900;
+		position: absolute;
+		margin-top: 4px;
+	}
+	.class-type {
+		color: #5f330e;
+		font-family: "AxieFont";
+		text-transform: uppercase;
+		font-size: 20px;
+		position: absolute;
+		margin-top: -5px;
+		left: 9%;
 	}
 </style>
