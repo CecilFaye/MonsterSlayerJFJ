@@ -19,14 +19,6 @@
                 <span class="label-class"> EQUIPPED (3 Skills Max)</span>
             </div>  
         </div>
-         <!-- <div class="division">
-             <div v-show="!!skillDetails?.name" class="arrangement">
-                <span>{{`Name: `}}<span class="skill-text">{{skillDetails?.name ?? ''}}</span></span>
-                <span>{{skillDetails?.target === 'self' ? 'Gain: ' : 'Damage: '}}<span>{{Math.abs(skillDetails?.damage ?? 0)}}</span></span>
-                <span>{{`Target: `}}<span class="skill-text">{{skillDetails?.target ?? 0}}</span></span>
-                <span>{{`Mana Cost: ${Math.abs(skillDetails?.cost ?? 0)}`}}</span>
-            </div>
-        </div> -->
 	</div>
 </template>
 
@@ -71,26 +63,10 @@
         height: 68%;
         width: 69%;
 	}
-    .division {
-        width: 50%;
-        padding: 3rem 2rem;
-    }
-    .arrangement {
-        display: flex;
-        flex-direction: column;
-    }
     span {
 		font-size: 20px;
 		font-weight: 800;
 	}
-	.header-stat {
-		padding: 10px 0;
-	}
-    li {
-        cursor: pointer;
-        text-decoration: none;
-        margin-top: 30px;
-    }
     p:hover {
         color: whitesmoke;
     }
