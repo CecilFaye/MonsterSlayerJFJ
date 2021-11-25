@@ -10,25 +10,43 @@
 		<div class="character-image">
 			<div class="axie-side">
 				<img class="axieImg" :src="`${characterImage}`">
+				<span class="character-class">{{ character.classTypeName }} </span>
+				<span class="character-level">Lv.{{ character.level }} </span>
 				<span class="character-name">{{ character.name }}</span>
 			</div>
 			<button class="battle-button" @click="navigateToRoute('battle')">Battle</button>
 			<button class="logout-button" @click="logout">Logout</button>
 		</div>
-		<div class="info-container">
-			<router-view></router-view>
+		<div>
+			<div class="character-info">
+				<div class="grid-container">
+					<div class="grid-itemLevel">Level {{ character.level}}</div>
+					<div class="grid-item">HEALTH</div>
+					<div class="grid-item">MANA</div>  
+					<div class="grid-item">EXP.</div>
+					<div class="grid-item">NEXT LVL UP.</div>
+					<div class="grid-item">{{ character.classTypeName}}</div>  
+					<div class="grid-item">{{ character.stats["health"]}}</div>
+					<div class="grid-item">{{ character.stats["mana"]}}</div>
+					<div class="grid-item">{{ character.totalExp }}</div>
+					<div class="grid-item">{{ character.nextLevelExp }}</div>
+				</div>
+			</div>
+			<div class="info-container">
+				<router-view></router-view>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-var-requires */
-	import { defineComponent, onBeforeMount } from "vue";
+	import { defineComponent, onBeforeMount, computed } from "vue";
 	import { useRouter } from "vue-router";
 	import * as helper from "@/app-lib/services/session-helper";
 	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
 
-	const characterScreenImage = require('../../../assets/background/vuexie-info-main.png');
+	const characterScreenImage = require('../../../assets/background/vuexie-characterLayout.jpg');
 	const characterImage =  require('@/assets/hero/playerAqua-idle.gif');
 
 	const CharacterLayoutScreen = defineComponent({
@@ -45,6 +63,10 @@
 				setTimeout(() => router.push('/'), 1000);
 			};
 			const character = service.getCharacterDetails();
+			const stats = computed(() => {
+				const character = service.getCharacterDetails();
+				return Object.keys(character.stats).map(key => Object.assign({}, { key, value: character.stats[key] }));
+			});
 			onBeforeMount(() => {
 				service.initFromSession();
 			});
@@ -52,6 +74,7 @@
 				screenImage,
 				characterImage,
 				character,
+				stats,
 				navigateToRoute,
 				logout
 			};
@@ -75,8 +98,16 @@
 		height: 77%;
 		width: 62.3%;
 		position: absolute;
-		top: 23.3%;
+		top: 29.3%;
 		left: 32.3%;
+	}
+	.character-info {
+		background: transparent;
+		height: 8.3%;
+		width: 33.3%;
+		position: absolute;
+		top: 26.83%; 
+		left: 43.9%;
 	}
 	.menu-bar {
 		position: absolute;
@@ -103,25 +134,70 @@
 		position: absolute;
 	}
 	.battle-button {
-		top: 11%;
-		left: 12.1%;
+		top: 9.6%;
+		left: 11.1%;
 		position: absolute;
+		min-width: 135px;
+		min-height: 135px;
+		background-color: transparent;
+		border: transparent;
+		color: transparent;
+		box-shadow: none;
 	}
 	.axieImg {
-		height:350px;
+		height:450px;
 	}
 	.axie-side {
 		text-align: center;
-		top: 33%;
-		left: 16%;
+		top: 21%;
+		left: 13%;
 		position: absolute;
 	}
 	.character-name {
-		font-size: 20px;
-		font-weight: 800;
-		text-transform: uppercase;
+		font-size: 26px;
+		font-weight: 400;
 		position: absolute;
-		left: 32%;
-		top: 108%;
+		left: 34%;
+		top: 114%;
+		font-family: "AxieFont";
+		color: white;
+	}	
+	.character-class {
+		font-size: 20px;
+		font-weight: 400;
+		position: absolute;
+		left: 32.5%;
+		top: 91%;
+		font-family: "AxieFont";
+		color: white;
+	}	
+	.character-level {
+		font-size: 26px;
+		font-weight: 400;
+		position: absolute;
+		left: 49%;
+		top: 90%;
+		font-family: "AxieFont";
+		color: lawngreen;
+	}
+	.grid-container 
+	{
+		display: grid;
+		grid-template-columns: 5fr 2fr 2fr 2fr 2fr;
+		background-color: transparent;
+		height: 65.3%;
+		width: 91%;
+		position: absolute;
+		top: 18.83%;
+		left: 4.9%;
+	}
+	.grid-item {
+		background-color: transparent;
+		text-align: center;
+	}	
+	.grid-itemLevel {
+		text-align: center;	
+		font-family: "AxieFont";
+		color: #a4785c;
 	}
 </style>
