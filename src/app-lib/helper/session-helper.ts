@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { IAccountResponse } from "@/store/types";
-
 export enum storageNames {
     account = 'account',
     character = 'character'
@@ -19,7 +17,7 @@ export const hasSession = (name: string): boolean => {
     return !!sessionStorage.getItem(`vuexie/${name}`);
 }
 
-export const getSessionValue = (name: string): IAccountResponse => {
+export const getSessionValue = <T>(name: string): T => {
     return JSON.parse(sessionStorage.getItem(`vuexie/${name}`));
 }
 

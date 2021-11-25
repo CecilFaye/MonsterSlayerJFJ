@@ -7,7 +7,7 @@ import { apiUrl } from "@/app-lib/constant/app-config";
 export interface IMonsterSlayerRequest {
     signup: (account: IAccount) => Promise<any>;
     login: (username: string, password: string) => Promise<any>;
-    getCharacter: (account: IAccount) => Promise<ICharacter>;
+    getCharacter: (accountId: string) => Promise<ICharacter>;
     getSkills: (accountId: string) => Promise<ISkills[]>;
     getInventory: (accountId: string) => Promise<IInventory[]>;
     getDungeons: (accountId: string) => Promise<IDungeonResponse[]>;
@@ -39,9 +39,9 @@ const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
                 return err.response.data;
             });
         },
-        getCharacter: (account: IAccount): Promise<ICharacter> => {
+        getCharacter: (accountId: string): Promise<ICharacter> => {
             const service = useMonsterSlayerService();
-            return axios.get(`${apiUrl}/accounts/${account.accountId}/character`)
+            return axios.get(`${apiUrl}/accounts/${accountId}/character`)
                 .then(result => {
                     if (result.status === 200) {
                         const character = result.data as ICharacter;

@@ -25,7 +25,7 @@
 	/* eslint-disable @typescript-eslint/no-var-requires */
 	import { defineComponent, onBeforeMount } from "vue";
 	import { useRouter } from "vue-router";
-	import * as helper from "@/app-lib/services/session-helper";
+	import * as helper from "@/app-lib/helper/session-helper";
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
 
 	const characterScreenImage = require('../../../assets/background/vuexie-info-main.png');

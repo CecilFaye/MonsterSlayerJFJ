@@ -1,6 +1,6 @@
-import Vuex, { StoreOptions } from 'vuex'
+import Vuex, { StoreOptions, useStore } from 'vuex'
+import { game } from './modules/game'
 import { IRootState } from './types'
-import { game } from './modules'
 
 const store: StoreOptions<IRootState> = {
 	state: {
@@ -11,4 +11,10 @@ const store: StoreOptions<IRootState> = {
 		game
 	}
 }
-export default new Vuex.Store<IRootState>(store)
+export default new Vuex.Store<IRootState>(store);
+// export type Store = DocumentsStore<Pick<RootState, 'documents'>>
+
+
+// const useGameStore = () => {
+// 	return useStore<Pick<IGameState>
+// }

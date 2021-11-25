@@ -34,7 +34,7 @@ const router: Router = createRouter({
 		},
 		{
 			path: '/mainstage',
-			component:  () => import('@/components/screens/MainStageScreen.vue'),
+			component:  () => import('@/components/screens/game-screens/MainStageScreen.vue'),
 			beforeEnter(to: RouteLocationNormalized,
 				from: RouteLocationNormalized, next: NavigationGuardNext){
 					if(helper.hasSession(storageNames.account)){

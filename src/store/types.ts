@@ -1,3 +1,9 @@
+import { IGameState } from "./modules/game/state";
+
+export enum StoreModule {
+    auth = 'auth',
+    game = 'game'
+}
 
 export enum PersonType {
     Player = 'player',
@@ -39,26 +45,10 @@ export const CharacterTypes = {
 export interface IRootState {
     version: string;
     name: string;
+    // game: IGameState;
 }
 
-export interface IState {
-    screenOptions: string[];
-    characterTypes: string[];
-	currentScreen: string;
-    fightLogs: string[];
-    battleStart: boolean;
 
-    // NEW STATE
-    account: IAccount;
-    character: ICharacter;
-    characterState: ICharacterState;
-    // NOTE: This is to assume that there will only be 1 enemy at a given battle
-    enemyState: ICharacterState;
-
-    // OLD STATE
-	player: IPersonState;
-    monster: IPersonState;
-}
 
 export interface INameIdPair {
     _id: string;

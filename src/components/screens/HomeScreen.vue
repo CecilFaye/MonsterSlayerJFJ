@@ -41,17 +41,12 @@ import { useRouter } from "vue-router";
 		props: [],
 		setup() {
 			const router = useRouter();
-			const store = useStore();
-			const gameName = store.state.name;
-			const gameVersion = store.state.version;
 			const showLoginModal = ref<boolean>(false);
 			const showSignUpModal = ref<boolean>(false);
 			const goCredits = ():void => {
 				router.push('/credits');
 			};
 			return {
-				gameName,
-				gameVersion,
 				showLoginModal,
 				showSignUpModal,
 				goCredits

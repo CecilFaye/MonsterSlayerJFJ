@@ -2,14 +2,21 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/no-var-requires */
-import { IAccount, ActivityStateOptions, ICharacter, IPersonState, PersonType, IAccountResponse, CharacterTypes, ISkills, IEquipment, IItem } from "@/store/types";
-import Monsters from '@/app-lib/json/monsters.json'
+import { useRouter } from 'vue-router';
+
+import Monsters from '@/app-lib/json/monsters.json';
 import Player from '@/app-lib/json/player.json';
-import { useStore } from "vuex";
-import { useRouter } from "vue-router";
-import { ActionTypes } from "@/store/modules/actions";
-import useMonsterSlayerRequest from "./monster-slayer-request";
+import { ActionTypes } from '@/store/modules/game/actions';
+import { GetterTypes } from '@/store/modules/game/getters';
+import { MutationTypes } from '@/store/modules/game/mutations';
+/* eslint-disable @typescript-eslint/no-var-requires */
+import {
+	ActivityStateOptions, CharacterTypes, IAccount, IAccountResponse, ICharacter, IItem,
+	IPersonState, ISkills, PersonType
+} from '@/store/types';
+
+import useMonsterSlayerRequest from './monster-slayer-request';
+import { useStore } from 'vuex';
 
 const heroIdleStance = require('@/assets/hero/playerAqua-idle.gif');
 const heroAttackStance = require('@/assets/hero/playerBeast-attack.gif');
@@ -73,7 +80,7 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
     const store = useStore();
     const router = useRouter();
     const initFromSession = (): void => {
-        store.commit('game/initFromSession');
+        store.commit(MutationTypes.initFromSession, null);
     };
     const randomAction = (limit: number): number => {
         return Math.floor(Math.random() * limit);
@@ -128,34 +135,37 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         .then(result => {
             if (result) {
                 const account = result as IAccount;
-                store.commit('game/setAccount', account);
+                return store.dispatch('game/' + ActionTypes.loadCharacterAsync, account)
+                    .then(result => {
+                        if (result) {
+                            store.commit('game/' + MutationTypes.setAccount, account);
+                        }
+                        return account;
+                    });
             }
             return result;
         })
-        .then(account => store.dispatch(ActionTypes.loadCharacterAsync, account)
-            .then(() => account)
-        );
     };
     const gameInit = (): void => {
-        store.commit('game/initFirstTurn');
+        store.commit(MutationTypes.initFirstTurn, null);
     };
-    const battleStart = (): boolean => store.state.game.battleStart;
+    const battleStart = (): boolean => store.state.battleStart;
     const getCharacterDetails = (): ICharacter => {
-        const character = store.getters['game/getState']('character');
+        const character = store.getters['game/' + GetterTypes.getState]('character');
         return character;
     };
     const getCharacterSkills = (): ISkills[] => {
-        const character: ICharacter = store.getters['game/getState']('character');
+        const character: ICharacter = store.getters[GetterTypes.getState]('character');
         return character.skills;
     };
     const getCharacterEquipment = (): IItem[] => {
-        const character: ICharacter = store.getters['game/getState']('character');
+        const character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
         return Object.keys(character.equipment).map(key => character.equipment[key]);
     };
     const getWinner = ():boolean => {
-        return store.getters['game/isWinner']();
+        return store.getters['game' + GetterTypes.isWinner]();
     };
-    const gameReset = (): void => store.commit('game/reset', getDefaultPerson);
+    const gameReset = (): void => store.commit(MutationTypes.reset, getDefaultPerson);
     const gameResult = (): void => {
         router.push('/game/fightresult');
     };

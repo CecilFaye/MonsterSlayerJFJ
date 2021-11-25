@@ -10,6 +10,7 @@
 	import { defineComponent, onBeforeMount, ref } from "vue";
 	import { useStore } from "vuex";
 	import { useRouter } from "vue-router";
+import { MutationTypes } from "@/store/modules/game/mutations";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const battleScreenImage = require('../../assets/background/vuexie-battle.jpg')
@@ -28,7 +29,7 @@
 
 			// Lifecycle Hooks
 			onBeforeMount(() => {
-				store.commit('game/initFromSession');
+				store.commit('game/' + MutationTypes.initFromSession);
 			});
 
 
