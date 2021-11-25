@@ -3,9 +3,7 @@
         <div class="grid-container">
             <div class="item1">
                 <span class="label-class"> SKILLS</span> 
-                <ul>
-                    <li v-for="(skill, index) in skills" :key="`skill-${index}`"><span @click="skillInfo(skill)">{{skill?.name ?? ''}}</span></li>
-                </ul>
+                <p class="skills-class" v-for="(skill, index) in skills" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" @click="skillInfo(skill)"> <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span> <span class="skills-equip">EQUIP</span></p>
             </div>
             <div class="item2">
                 <span class="label-class"> DETAILS</span> <br>
@@ -38,6 +36,7 @@
     import { ISkills } from "@/store/types";
     import { defineComponent, ref } from "vue";
     const cardsImg = require('../../../assets/skills/archer-arrowAssault.png');
+    const cardslogo = require('../../../assets/skills/archer-arrowAssault-logo.png');
 
 	const SkillsScreen = defineComponent({
 		setup() {
@@ -47,11 +46,11 @@
 
             const skillInfo = (skill: ISkills): void => {
                 skillDetails.value = {...skill};
-
             };
 			return {
                 skills,
                 cardsImg,
+                cardslogo,
                 skillInfo,
                 skillDetails
 			};
@@ -90,8 +89,9 @@
     li {
         cursor: pointer;
         text-decoration: none;
+        margin-top: 30px;
     }
-    li:hover {
+    p:hover {
         color: whitesmoke;
     }
     .grid-container {
@@ -121,6 +121,29 @@
         position: absolute;
         left: 46%;
         top: 11%;
+    }
+    .logo-img {
+        position: absolute;
+        height: 5%;
+        border: 2px solid white;
+        border-radius: 5px;
+    }
+    .skills-class{
+        cursor: pointer;
+        text-decoration: none;
+        margin-top: 10px;
+        color: #5f330e;
+        margin-left: 10px;
+    }
+    .skills-description{
+        margin-left: 72px;
+        font-size: 17px;
+    }
+    .skills-equip {
+        color: #f5d06c;    
+        position: absolute;
+        left: 39%;
+        font-size: 12px;
     }
     .skill-title {
         text-transform: uppercase;
