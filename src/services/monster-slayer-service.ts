@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { useRouter } from 'vue-router';
-
+import * as helper from '@/app-lib/helper/session-helper';
 import Monsters from '@/app-lib/json/monsters.json';
 import Player from '@/app-lib/json/player.json';
 import { ActionTypes } from '@/store/modules/game/actions';
@@ -80,7 +80,8 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
     const store = useStore();
     const router = useRouter();
     const initFromSession = (): void => {
-        store.commit(MutationTypes.initFromSession, null);
+        store.commit('game/' + MutationTypes.setAccount, helper.getSessionValue<IAccount>(helper.storageNames.account));
+        store.commit('game/' + MutationTypes.setCharacter, helper.getSessionValue<ICharacter>(helper.storageNames.character));
     };
     const randomAction = (limit: number): number => {
         return Math.floor(Math.random() * limit);
@@ -155,7 +156,7 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         return character;
     };
     const getCharacterSkills = (): ISkills[] => {
-        const character: ICharacter = store.getters[GetterTypes.getState]('character');
+        const character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
         return character.skills;
     };
     const getCharacterEquipment = (): IItem[] => {

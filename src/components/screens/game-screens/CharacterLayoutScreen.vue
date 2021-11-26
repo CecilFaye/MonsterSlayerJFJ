@@ -1,22 +1,24 @@
 
 <template>
-	<div class="character-screen-layout"  :style="`background-image:url(${(screenImage)});`">
-		<div class="menu-bar">
-			<button @click="navigateToRoute('character')">Character</button>
-			<button @click="navigateToRoute('skills')">Skills</button>
-			<button @click="navigateToRoute('inventory')">Inventory</button>
+	<div class="character-screen-layout center"  >
+		<div class="bg" :style="`background-image:url(${(screenImage)});`">
+			<div class="menu-bar">
+				<button @click="navigateToRoute('character')">Character</button>
+				<button @click="navigateToRoute('skills')">Skills</button>
+				<button @click="navigateToRoute('inventory')">Inventory</button>
 
-		</div>
-		<div class="character-image">
-			<div class="axie-side">
-				<img class="axieImg" :src="`${characterImage}`">
-				<span class="character-name">{{ character.name }}</span>
 			</div>
-			<button class="battle-button" @click="navigateToRoute('battle')">Battle</button>
-			<button class="logout-button" @click="logout">Logout</button>
-		</div>
-		<div class="info-container">
-			<router-view></router-view>
+			<div class="character-image">
+				<div class="axie-side">
+					<img class="axieImg" :src="`${characterImage}`">
+					<span class="character-name">{{ character.name }}</span>
+				</div>
+				<button class="battle-button" @click="navigateToRoute('battle')">Battle</button>
+				<button class="logout-button" @click="logout">Logout</button>
+			</div>
+			<div class="info-container">
+				<router-view></router-view>
+			</div>
 		</div>
 	</div>
 </template>
@@ -61,15 +63,43 @@
 </script>
 <style scoped>
 	.character-screen-layout {
-		height: 82%;
+		/* height: 82%;
 		width: 77%;
 		background-repeat: no-repeat;
 		background-size: cover;
 		text-align: center;
 		overflow: hidden !important;
 		margin: auto;
-		margin-top: 5%;
+		margin-top: 5%; */
+		position: relative;
+        height: 700px;
+        width: 1250px;
+        background: lightgray;
+        box-shadow: 0px 2px 15px 7px #2c8cdb;
 	}
+	.center {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+
+	.bg {
+        display: flex;
+        flex-direction: row;
+
+        /* Full height */
+        height: inherit;
+
+        /* Center and scale the image nicely */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        z-index: -1;
+    }
+
 	.info-container {
 		background: transparent;
 		height: 77%;

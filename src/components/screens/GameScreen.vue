@@ -7,10 +7,9 @@
 </template>
 
 <script lang="ts">
-	import { defineComponent, onBeforeMount, ref } from "vue";
-	import { useStore } from "vuex";
+	import { defineComponent, onBeforeMount } from "vue";
 	import { useRouter } from "vue-router";
-import { MutationTypes } from "@/store/modules/game/mutations";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const battleScreenImage = require('../../assets/background/vuexie-battle.jpg')
@@ -20,16 +19,14 @@ import { MutationTypes } from "@/store/modules/game/mutations";
 			id: String
 		},
 		setup(props) {
-			const store = useStore();
 			const router = useRouter();
-			const gameName = store.state.name;
-			const gameVersion = store.state.version;
+			const service = useMonsterSlayerService()
 			const screenImage = battleScreenImage;
 			const gameRoute = `/game/${props.id}`;
 
 			// Lifecycle Hooks
 			onBeforeMount(() => {
-				store.commit('game/' + MutationTypes.initFromSession);
+				service.initFromSession();
 			});
 
 
@@ -38,8 +35,6 @@ import { MutationTypes } from "@/store/modules/game/mutations";
 			};
 
 			return {
-				gameName,
-				gameVersion,
 				screenImage,
 				navigateToRoute
 			};

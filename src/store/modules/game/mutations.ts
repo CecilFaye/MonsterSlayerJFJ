@@ -14,7 +14,6 @@ export enum MutationTypes {
     setSkills = 'SET_SKILLS',
     setInventory = 'SET_INVENTORY',
     setDungeons = 'SET_DUNGEONS',
-    initFromSession = 'LOAD_USER_FROM_SESSION',
     initializePlayer = 'INIT_CHARACTER',
     initializeMonster = 'INIT_ENEMY',
     initFirstTurn= 'INIT_FIRST_TURN',
@@ -30,7 +29,6 @@ export interface GameMutations {
     [MutationTypes.setSkills](state: IGameState, payload: ISkills[]): void;
     [MutationTypes.setInventory](state: IGameState, payload: IInventory[]): void;
     [MutationTypes.setDungeons](state: IGameState, payload: IDungeonResponse[]): void;
-    [MutationTypes.initFromSession](state: IGameState): void;
     [MutationTypes.initializePlayer](state: IGameState, payload: IPersonState): void;
     [MutationTypes.initializeMonster](state: IGameState, payload: IPersonState): void;
     [MutationTypes.initFirstTurn](state: IGameState): void;
@@ -61,12 +59,6 @@ export const mutations: MutationTree<IGameState> = {
     },
     [MutationTypes.setDungeons](state, payload: IDungeonResponse[]) {
         state.dungeon = payload;
-    },
-    [MutationTypes.initFromSession](state) {
-        if (!state.account?.accountId) {
-            store.commit(MutationTypes.setAccount, helper.getSessionValue<IAccount>(helper.storageNames.account));
-            store.commit(MutationTypes.setCharacter, helper.getSessionValue<ICharacter>(helper.storageNames.character));
-        }
     },
     [MutationTypes.initializePlayer](state, payload: IPersonState) {
         // Still in use and initially from the json file
