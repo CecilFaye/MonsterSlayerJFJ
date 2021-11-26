@@ -45,10 +45,7 @@ export const CharacterTypes = {
 export interface IRootState {
     version: string;
     name: string;
-    // game: IGameState;
 }
-
-
 
 export interface INameIdPair {
     _id: string;

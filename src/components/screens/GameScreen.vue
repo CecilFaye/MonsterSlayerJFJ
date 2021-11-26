@@ -48,8 +48,6 @@
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-attachment: fixed!important;
-		text-align: center;
 		overflow: hidden !important;
 	}
-
 </style>
