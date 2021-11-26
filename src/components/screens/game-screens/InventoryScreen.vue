@@ -1,11 +1,33 @@
+
 <template>
 	<div class="inventory-layout">
-        <div class="division">
+         <div class="grid-container">
+            <div class="item1">
+                <span class="label-class"> PARTS</span>
+                <p class="parts-class" v-for="(equip, index) in equipments" :key="`equip-${index}`"> <img class="logo-img" :src="`${partsImg}`" @click="itemInfo(equip)"> <span class="parts-description" @click="itemInfo(equip)">{{equip?.name ?? ''}}</span> <span class="parts-equip">EQUIP</span></p>
+            </div>
+            <div class="item2">
+                <span class="label-class"> DETAILS</span> <br>
+                <div v-show="!!itemDetails?.name">
+                <span>{{`Name: `}}<span class="item-text">{{itemDetails?.name ?? ''}}</span></span><br>
+                <span>{{`Type: `}}<span class="item-text">{{itemType ?? ''}}</span></span><br>
+                <span>{{`Class: `}}<span class="item-text">{{itemClass ?? ''}}</span></span>
+                  <div v-bind:style="{marginTop: '2rem'}" class="arrangement">
+                    <span class="item-text">STATS BONUS</span>
+                    <span  v-for="(stat, index) in itemStatBonus" class='log' :key="`stat-${index}`">{{`${stat.key}: ${Math.abs(stat.value ?? 0)}`}}</span>
+                </div>
+                </div>
+            </div>
+            <div class="item3">
+                <span class="label-class"> EQUIPPED</span>
+            </div>
+        </div>
+        <!-- <div class="division">
             <ul>
                 <li v-for="(equip, index) in equipments" :key="`equip-${index}`"><span @click="itemInfo(equip)">{{equip?.name ?? ''}}</span></li>
             </ul>
-        </div>
-         <div class="division">
+        </div> -->
+         <!-- <div class="division">
              <div v-show="!!itemDetails?.name" class="arrangement">
                 <span>{{`Name: `}}<span class="item-text">{{itemDetails?.name ?? ''}}</span></span>
                 <span>{{`Type: `}}<span class="item-text">{{itemType ?? ''}}</span></span>
@@ -15,14 +37,17 @@
                     <span  v-for="(stat, index) in itemStatBonus" class='log' :key="`stat-${index}`">{{`${stat.key}: ${Math.abs(stat.value ?? 0)}`}}</span>
                 </div>
             </div>
-        </div>
+        </div> -->
 	</div>
 </template>
 
 <script lang="ts">
+    /* eslint-disable @typescript-eslint/no-var-requires */
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
     import { IItem } from "@/store/types";
     import { computed, defineComponent, ref } from "vue";
+
+    const partsImg = require('../../../assets/inventory/sampleParts.png');
 
 	const InventoryScreen = defineComponent({
 		setup() {
@@ -51,6 +76,7 @@
 			return {
                 equipments,
                 itemInfo,
+                partsImg,
                 itemType,
                 itemClass,
                 itemStatBonus,
@@ -62,8 +88,6 @@
 </script>
 <style scoped>
 	.inventory-layout {
-		height: inherit;
-		width: inherit;
 		background-repeat: no-repeat;
 		background-size: cover;
 		text-align: center;
@@ -72,17 +96,21 @@
         background:transparent;
         display: flex;
         flex-direction: row;
+        margin-top:70px;
+        height: 68%;
+        width: 69%;
 	}
-    .division {
-        width: 50%;
-        padding: 3rem 2rem;
+    .label-class {
+        color: white;
+        margin-left: 8px;
+        font-size: 17px;
     }
     .arrangement {
         display: flex;
         flex-direction: column;
     }
     span {
-		font-size: 20px;
+		font-size: 11px;
 		font-weight: 800;
 	}
 	.header-stat {
@@ -92,8 +120,25 @@
         cursor: pointer;
         text-decoration: none;
     }
-    li:hover {
+    p:hover {
         color: whitesmoke;
+    }
+    .grid-container {
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+        grid-template-rows: 5fr 3fr;
+        height: inherit;
+        width: inherit;
+        border: 2px solid #5f330e;
+    }
+    .item1 {
+        grid-row-start: 1;
+        grid-row-end: 3;
+    }
+    .grid-container > div {
+        border: 2px solid #5f330e;
+        font-size: 30px;
+        text-align: left;
     }
     .item-text {
         text-transform: uppercase;
@@ -103,4 +148,27 @@
 		font-size: 20px;
 		font-weight: 800;
 	}
+    .parts-class{
+        cursor: pointer;
+        text-decoration: none;
+        margin-top: 17px;
+        color: #5f330e;
+        padding:10px;
+    }
+    .parts-description{
+        margin-left: 72px;
+        font-size: 17px;
+    }
+    .parts-equip {
+        color: #f5d06c;
+        position: absolute;
+        left: 39%;
+        font-size: 12px;
+    }
+    .logo-img {
+        position: absolute;
+        height: 7%;
+        left: 16%;
+        top: 12%;
+    }
 </style>
