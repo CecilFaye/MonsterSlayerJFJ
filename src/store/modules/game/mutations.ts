@@ -1,32 +1,66 @@
-import { MutationTree } from 'vuex';
+import { MutationTree, useStore } from 'vuex';
 
-import * as helper from '@/app-lib/services/session-helper';
-
-import store from '../';
+import * as helper from '@/app-lib/helper/session-helper';
 import {
-	ActivityStateOptions, IAccount, IAction, ICharacter, ICharacterState, IPersonState, IState,
-	PersonType
-} from '../types';
+	ActivityStateOptions, IAccount, IAction, ICharacter, ICharacterState, IDungeonResponse,
+	IInventory, IPersonState, ISkills, PersonType
+} from '@/store/types';
 
-export const mutations: MutationTree<IState> = {
-    setAccount(state, payload: IAccount) {
+import { IGameState } from './state';
+
+export enum MutationTypes {
+    setAccount = 'SET_ACCOUNT',
+    setCharacter = 'SET_CHARACTER',
+    setSkills = 'SET_SKILLS',
+    setInventory = 'SET_INVENTORY',
+    setDungeons = 'SET_DUNGEONS',
+    initializePlayer = 'INIT_CHARACTER',
+    initializeMonster = 'INIT_ENEMY',
+    initFirstTurn= 'INIT_FIRST_TURN',
+    reset = 'RESET_GAME',
+    action = 'ACT_ACTOR',
+    actionLog = 'LOG_EVENT',
+    changeScreen = 'CHANGE_SCREEN'
+}
+
+export interface GameMutations {
+    [MutationTypes.setAccount](state: IGameState, payload: IAccount): void;
+    [MutationTypes.setCharacter](state: IGameState, payload: ICharacter): void;
+    [MutationTypes.setSkills](state: IGameState, payload: ISkills[]): void;
+    [MutationTypes.setInventory](state: IGameState, payload: IInventory[]): void;
+    [MutationTypes.setDungeons](state: IGameState, payload: IDungeonResponse[]): void;
+    [MutationTypes.initializePlayer](state: IGameState, payload: IPersonState): void;
+    [MutationTypes.initializeMonster](state: IGameState, payload: IPersonState): void;
+    [MutationTypes.initFirstTurn](state: IGameState): void;
+    [MutationTypes.reset](state: IGameState, getDefaultPerson: (type: PersonType) => IPersonState): void;
+    [MutationTypes.action](state: IGameState, payload: { work: IAction, reset: () => void }): void;
+    [MutationTypes.actionLog](state: IGameState, payload: IAction): void;
+    [MutationTypes.changeScreen](state: IGameState, payload: string): void;
+}
+const store = useStore();
+
+export const mutations: MutationTree<IGameState> = {
+    [MutationTypes.changeScreen](state, payload: string) {
+        state.currentScreen = payload;
+    },
+    [MutationTypes.setAccount](state, payload: IAccount) {
         helper.saveSession('account', payload);
         state.account = payload;
     },
-    setCharacter(state, payload: ICharacter) {
+    [MutationTypes.setCharacter](state, payload: ICharacter) {
         helper.saveSession('character', payload);
         state.character = payload;
     },
-    changeScreen(state, payload: string) {
-        state.currentScreen = payload;
+    [MutationTypes.setSkills](state, payload: ISkills[]) {
+        state.skills = payload;
     },
-    initFromSession(state) {
-        if (!state.account?.accountId) {
-            store.commit('game/setAccount', helper.getSessionValue(helper.storageNames.account));
-            store.commit('game/setCharacter', helper.getSessionValue(helper.storageNames.character));
-        }
+    [MutationTypes.setInventory](state, payload: IInventory[]) {
+        state.inventory = payload;
     },
-    initializePlayer(state, payload: IPersonState) {
+    [MutationTypes.setDungeons](state, payload: IDungeonResponse[]) {
+        state.dungeon = payload;
+    },
+    [MutationTypes.initializePlayer](state, payload: IPersonState) {
         // Still in use and initially from the json file
         state.player = payload;
         state.characterState =  JSON.parse(JSON.stringify(state.character)) as ICharacterState;
@@ -52,7 +86,7 @@ export const mutations: MutationTree<IState> = {
             }
         });
     },
-    initializeMonster(state, payload: IPersonState) {
+    [MutationTypes.initializeMonster](state, payload: IPersonState) {
         // Still in use and from the json file
         state.monster = payload;
 
@@ -78,21 +112,21 @@ export const mutations: MutationTree<IState> = {
             }
         });
     },
-    initFirstTurn(state) {
+    [MutationTypes.initFirstTurn](state) {
         state.player.turn = true;
         state.battleStart = true;
     },
-    reset(state, getDefaultPerson: (type: PersonType) => IPersonState) {
+    [MutationTypes.reset](state, getDefaultPerson: (type: PersonType) => IPersonState) {
 
         // TODO: Change this code once the monster API is available
         state.fightLogs = [];
         state.player.turn = false;
         state.battleStart = false;
-        store.commit('game/initializePlayer', getDefaultPerson(PersonType.Player));
-        store.commit('game/initializeMonster', getDefaultPerson(PersonType.Monsters));
+        store.commit(MutationTypes.initializePlayer, getDefaultPerson(PersonType.Player));
+        store.commit(MutationTypes.initializeMonster, getDefaultPerson(PersonType.Monsters));
 
     },
-    action(state, payload: { work: IAction, reset: () => void }) {
+    [MutationTypes.action](state, payload: { work: IAction, reset: () => void }) {
         const act = payload.work;
         const actor = act.personType as PersonType;
         const receiver = actor === PersonType.Player ? PersonType.Monsters : PersonType.Player;
@@ -132,7 +166,7 @@ export const mutations: MutationTree<IState> = {
                 const manaTotalPercentage = (manaTotal/actorMaxMana)*100;
                 state[actor].currentState.mana = manaTotalPercentage > 100 ? 100 : manaTotalPercentage;
             }
-            store.commit('game/actionLog', act);
+            store.commit(MutationTypes.actionLog, act);
             setTimeout(() =>{
                 if (state[receiver].currentState.health < 1) {
                     payload.reset();
@@ -150,25 +184,25 @@ export const mutations: MutationTree<IState> = {
             state[receiver].turn = true;
         }
     },
-    actionLog(state, act: IAction) {
-        const attackerName = (act.personType === PersonType.Player ? state.player.name : state.monster.name).toUpperCase();
-        const skillName = act.actionTaken.name.toUpperCase();
+    [MutationTypes.actionLog](state, payload: IAction) {
+        const attackerName = (payload.personType === PersonType.Player ? state.player.name : state.monster.name).toUpperCase();
+        const skillName = payload.actionTaken.name.toUpperCase();
 
-        if(act.actionTaken.damage != 0 && act.actionTaken.healthIncrement != 0)//Avada kedavra
+        if(payload.actionTaken.damage != 0 && payload.actionTaken.healthIncrement != 0)//Avada kedavra
         {
-            state.fightLogs.unshift(attackerName +" used " + skillName +  " dealt " + act.actionTaken.damage +" damage and gained " + act.actionTaken.healthIncrement + " health");
+            state.fightLogs.unshift(attackerName +" used " + skillName +  " dealt " + payload.actionTaken.damage +" damage and gained " + payload.actionTaken.healthIncrement + " health");
         }
-        else if(act.actionTaken.damage == 0  && act.actionTaken.manaIncrement != 0) //Focus
+        else if(payload.actionTaken.damage == 0  && payload.actionTaken.manaIncrement != 0) //Focus
         {
-            state.fightLogs.unshift(attackerName +" used " + skillName +  " gained " + act.actionTaken.manaIncrement +" mana");
+            state.fightLogs.unshift(attackerName +" used " + skillName +  " gained " + payload.actionTaken.manaIncrement +" mana");
         }
-        else if(act.actionTaken.damage == 0 && act.actionTaken.healthIncrement != 0) //Anapneo
+        else if(payload.actionTaken.damage == 0 && payload.actionTaken.healthIncrement != 0) //Anapneo
         {
-            state.fightLogs.unshift(attackerName +" used " + skillName +  " gained " + act.actionTaken.healthIncrement +" health");
+            state.fightLogs.unshift(attackerName +" used " + skillName +  " gained " + payload.actionTaken.healthIncrement +" health");
         }
         else //Attack, Aqua Eructo
         {
-            state.fightLogs.unshift(attackerName +" used " + skillName +  " dealt " + act.actionTaken.damage +" damage");
+            state.fightLogs.unshift(attackerName +" used " + skillName +  " dealt " + payload.actionTaken.damage +" damage");
         }
     }
 }

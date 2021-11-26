@@ -10,7 +10,7 @@
 
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
     import { ActivityStateOptions, IAction, ISkill, PersonType } from "@/store/types";
     import { computed, defineComponent, watch } from "vue";
     import { useStore } from "vuex";

@@ -89,7 +89,7 @@
 	import { CharacterTypes, IAccount, IValidationError, StyleInterface } from "@/store/types";
 	import baseTextInput, { InputType } from "@/app-lib/components/BaseTextInput.vue";
 	import baseRowContent from "@/app-lib/components/BaseRowContent.vue"
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
 	import { useStore } from "vuex";
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const home = require('@/assets/background/login-bg.png')

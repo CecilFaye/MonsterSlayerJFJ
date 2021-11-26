@@ -1,8 +1,9 @@
+
 <template>
 	<div class="inventory-layout">
          <div class="grid-container">
             <div class="item1">
-                <span class="label-class"> PARTS</span> 
+                <span class="label-class"> PARTS</span>
                 <p class="parts-class" v-for="(equip, index) in equipments" :key="`equip-${index}`"> <img class="logo-img" :src="`${partsImg}`" @click="itemInfo(equip)"> <span class="parts-description" @click="itemInfo(equip)">{{equip?.name ?? ''}}</span> <span class="parts-equip">EQUIP</span></p>
             </div>
             <div class="item2">
@@ -19,7 +20,7 @@
             </div>
             <div class="item3">
                 <span class="label-class"> EQUIPPED</span>
-            </div>  
+            </div>
         </div>
         <!-- <div class="division">
             <ul>
@@ -41,8 +42,8 @@
 </template>
 
 <script lang="ts">
-	/* eslint-disable @typescript-eslint/no-var-requires */
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+    /* eslint-disable @typescript-eslint/no-var-requires */
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
     import { IItem } from "@/store/types";
     import { computed, defineComponent, ref } from "vue";
 
@@ -94,11 +95,11 @@
 		margin: auto;
         background:transparent;
         display: flex;
-        flex-direction: row;        
+        flex-direction: row;
         margin-top:70px;
         height: 68%;
         width: 69%;
-	}   
+	}
     .label-class {
         color: white;
         margin-left: 8px;
@@ -118,10 +119,10 @@
     li {
         cursor: pointer;
         text-decoration: none;
-    }  
+    }
     p:hover {
         color: whitesmoke;
-    }  
+    }
     .grid-container {
         display: grid;
         grid-template-columns: 3fr 2fr;
@@ -159,14 +160,14 @@
         font-size: 17px;
     }
     .parts-equip {
-        color: #f5d06c;    
+        color: #f5d06c;
         position: absolute;
         left: 39%;
         font-size: 12px;
-    }    
+    }
     .logo-img {
         position: absolute;
-        height: 7%;    
+        height: 7%;
         left: 16%;
         top: 12%;
     }

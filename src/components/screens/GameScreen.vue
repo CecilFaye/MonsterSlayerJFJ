@@ -7,9 +7,9 @@
 </template>
 
 <script lang="ts">
-	import { defineComponent, onBeforeMount, ref } from "vue";
-	import { useStore } from "vuex";
+	import { defineComponent, onBeforeMount } from "vue";
 	import { useRouter } from "vue-router";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const battleScreenImage = require('../../assets/background/vuexie-battle.jpg')
@@ -19,16 +19,14 @@
 			id: String
 		},
 		setup(props) {
-			const store = useStore();
 			const router = useRouter();
-			const gameName = store.state.name;
-			const gameVersion = store.state.version;
+			const service = useMonsterSlayerService()
 			const screenImage = battleScreenImage;
 			const gameRoute = `/game/${props.id}`;
 
 			// Lifecycle Hooks
 			onBeforeMount(() => {
-				store.commit('game/initFromSession');
+				service.initFromSession();
 			});
 
 
@@ -37,8 +35,6 @@
 			};
 
 			return {
-				gameName,
-				gameVersion,
 				screenImage,
 				navigateToRoute
 			};
@@ -52,8 +48,6 @@
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-attachment: fixed!important;
-		text-align: center;
 		overflow: hidden !important;
 	}
-
 </style>

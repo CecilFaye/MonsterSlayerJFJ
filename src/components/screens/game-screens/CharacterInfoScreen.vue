@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
 	import { computed, defineComponent } from "vue";
 
 	const CharacterInfoScreen = defineComponent({

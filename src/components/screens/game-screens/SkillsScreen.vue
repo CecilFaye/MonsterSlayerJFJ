@@ -2,7 +2,7 @@
 	<div class="skills-layout">
         <div class="grid-container">
             <div class="item1">
-                <span class="label-class"> SKILLS</span> 
+                <span class="label-class"> SKILLS</span>
                 <p class="skills-class" v-for="(skill, index) in skills" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" @click="skillInfo(skill)"> <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span> <span class="skills-equip">EQUIP</span></p>
             </div>
             <div class="item2">
@@ -17,14 +17,14 @@
             </div>
             <div class="item3">
                 <span class="label-class"> EQUIPPED (3 Skills Max)</span>
-            </div>  
+            </div>
         </div>
 	</div>
 </template>
 
 <script lang="ts">
-	/* eslint-disable @typescript-eslint/no-var-requires */
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+    /* eslint-disable @typescript-eslint/no-var-requires */
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
     import { ISkills } from "@/store/types";
     import { defineComponent, ref } from "vue";
     const cardsImg = require('../../../assets/skills/archer-arrowAssault.png');
@@ -116,7 +116,7 @@
         font-size: 17px;
     }
     .skills-equip {
-        color: #f5d06c;    
+        color: #f5d06c;
         position: absolute;
         left: 39%;
         font-size: 12px;
@@ -129,21 +129,21 @@
         font-size: 10px;
         position: absolute;
         text-align: center;
-    }    
+    }
     .skill-mana {
        color: whitesmoke;
        top: 12%;
        left: 48%;
        font-size: 17px;
        position: absolute;
-    }    
+    }
     .skill-damage {
        color: whitesmoke;
        top: 16.6%;
        left: 46.3%;
        font-size: 17px;
        position: absolute;
-    }    
+    }
     .skill-heal {
        color: whitesmoke;
        top: 20.5%;

@@ -1,9 +1,6 @@
+
 <template>
 	<div id="app">
-		<!-- <HomeScreen v-if="currentScreen === 'homeScreen'"/>
-		<CreditScreen v-if="currentScreen === 'creditScreen'"/>
-		<GameScreen v-if="currentScreen === 'gameScreen'"/>
-		<FightResultScreen v-if="currentScreen === 'fightResultScreen'"/> -->
 		<router-view v-slot="{ Component }">
 			<component :is="Component" />
 		</router-view>
@@ -11,6 +8,8 @@
 </template>
 
 <script lang="ts">
+	/* eslint-disable @typescript-eslint/no-var-requires */
+	import 'normalize.css';
 	import { computed, defineComponent } from 'vue';
 	import { useRouter } from 'vue-router';
 	import { useStore } from 'vuex';
@@ -19,6 +18,7 @@
 	import CreditScreen from './components/screens/CreditScreen.vue'
 	import GameScreen from './components/screens/GameScreen.vue'
 	import FightResultScreen from './components/screens/game-screens/FightResultScreen.vue'
+
 
 	const App = defineComponent({
 		name: 'App',
@@ -37,7 +37,7 @@
 				return store.state.game.currentScreen;
 			});
 			return {
-				currentScreen,
+				currentScreen
 			}
 		}
 	});
@@ -46,6 +46,7 @@
 </script>
 
 <style>
+
 	html, body {
 		margin: 0;
 		padding: 0;
@@ -57,7 +58,7 @@
 		-moz-osx-font-smoothing: grayscale;
 	}
 	@font-face {
-font-family: "AxieFont";
-src:url('~@/assets/KOMIKAX_.ttf') format("truetype");
-}
+		font-family: "AxieFont";
+		src:url('~@/assets/KOMIKAX_.ttf') format("truetype");
+	}
 </style>

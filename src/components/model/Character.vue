@@ -23,7 +23,7 @@
     import { useStore } from "vuex";
 	import { ActivityStateOptions, PersonType } from "@/store/types";
 	import HealthBarWidget from "../widget/HealthBar.vue";
-	import useMonsterSlayerService from "@/services/MonsterSlayerFactory.vue";
+	import useMonsterSlayerService from "@/services/monster-slayer-service";
 	import ManaBarWidget from "../widget/ManaBar.vue";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
