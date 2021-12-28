@@ -12,7 +12,7 @@ import { MutationTypes } from '@/store/modules/game/mutations';
 /* eslint-disable @typescript-eslint/no-var-requires */
 import {
 	ActivityStateOptions, CharacterTypes, IAccount, IAccountResponse, ICharacter, IDungeonResponse, IInventory, IItem,
-	IPersonState, ISkills, PersonType
+	IPersonState, ISkills, PersonType, IStats, InfoKeyValue, Stats, IEquipment
 } from '@/store/types';
 
 import useMonsterSlayerRequest from './monster-slayer-request';
@@ -51,6 +51,12 @@ const monsterActionImages = {
     // Assign an image for failed attack
     [ActivityStateOptions.Failed]: monsterIdleStance
 };
+export interface ICharInfoDisplay {
+    key: string,
+    base: number,
+    bonus: number,
+    total: number
+}
 
 export interface IMonsterSlayerService {
     initFromSession: () => void;
@@ -63,7 +69,7 @@ export interface IMonsterSlayerService {
     getCharacterTypeName: (characterTypeId: number) => string;
     getCharacterDetails: () => ICharacter;
     getCharacterSkills: () => ISkills[];
-    getCharacterEquipment: () => IItem[];
+    getCharacterEquipment: () => IEquipment;
     getWinner: () => boolean;
     gameReset: () => void;
     gameInit: () => void;
@@ -72,6 +78,7 @@ export interface IMonsterSlayerService {
     getDungeons: () => IDungeonResponse[];
     getSkills: () => ISkills[];
     getInventory: () => IInventory[];
+    getCharacterStats: () => InfoKeyValue[];
     logout: () => void;
 
     // Http Call
@@ -164,6 +171,26 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         }
         return character;
     };
+    const getCharacterStats = (): InfoKeyValue[] => {
+        const allStats: ICharInfoDisplay[] = [];
+        let character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
+        if (!character || !character?._id) {
+            character = helper.getSessionValue(helper.storageNames.character) as ICharacter;
+            store.commit(MutationTypes.setCharacter, character);
+        }
+        const weaponBonus: IStats = character.equipment.weapon.bonus;
+        const armorBonus: IStats = character.equipment.armor.bonus;
+        Object.keys(Stats).map(key => {
+            const info = {
+                key,
+                base: character.stats[key],
+                bonus: weaponBonus[key] + armorBonus[key],
+                total: character.stats[key] + weaponBonus[key] + armorBonus[key]
+            } as ICharInfoDisplay;
+            allStats.push(info);
+        });
+        return allStats;
+    };
     const getCharacterSkills = (): ISkills[] => {
         let character = store.getters['game/' + GetterTypes.getState]('character');
         if (!character || !character?._id) {
@@ -172,13 +199,13 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         }
         return character.skills;
     };
-    const getCharacterEquipment = (): IItem[] => {
+    const getCharacterEquipment = (): IEquipment => {
         let character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
         if (!character || !character?._id) {
             character = helper.getSessionValue(helper.storageNames.character) as ICharacter;
             store.commit('game/' + MutationTypes.setCharacter, character);
         }
-        return Object.keys(character.equipment).map(key => character.equipment[key]);
+        return character.equipment;
     };
     const getDungeons = (): IDungeonResponse[] => {
         let dungeons: IDungeonResponse[] = store.getters['game/' + GetterTypes.getDungeons]();
@@ -228,6 +255,7 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         getCharacterDetails,
         getCharacterSkills,
         getCharacterEquipment,
+        getCharacterStats,
         getDungeons,
         getSkills,
         getInventory,

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ActionTree, useStore } from 'vuex';
 import useMonsterSlayerRequest from '@/services/monster-slayer-request';
-import { IAccount, IRootState } from '../../types';
+import { IAccount, InfoKeyValue, IRootState } from '../../types';
 import { MutationTypes } from './mutations';
 import { IGameState } from './state';
 
@@ -19,11 +19,6 @@ export enum CharacterInfo {
     inventory = 'inventory',
     skills = 'skills',
     dungeon = 'dungeon'
-}
-
-export interface InfoKeyValue {
-    key: string;
-    [key: string]: any;
 }
 
 // type AugmentedActionContext = Omit<ActionContext<IGameState, IGameState>, 'commit'> & {

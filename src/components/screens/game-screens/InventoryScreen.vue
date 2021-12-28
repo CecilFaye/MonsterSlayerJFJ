@@ -4,7 +4,16 @@
          <div class="grid-container">
             <div class="item1">
                 <span class="label-class"> PARTS</span>
-                <p class="parts-class" v-for="(equip, index) in equipments" :key="`equip-${index}`"> <img class="logo-img" :src="`${partsImg}`" @click="itemInfo(equip)"> <span class="parts-description" @click="itemInfo(equip)">{{equip?.name ?? ''}}</span> <span class="parts-equip">EQUIP</span></p>
+                <p class="parts-class" @click="itemInfo(armor)">
+                    <img class="logo-img" :src="`${partsImg}`" >
+                    <span class="parts-description">{{armor?.name ?? ''}}</span>
+                    <span class="parts-equip">EQUIP</span>
+                </p>
+                <p class="parts-class"  @click="itemInfo(weapon)">
+                    <img class="logo-img" :src="`${partsImg}`">
+                    <span class="parts-description">{{weapon?.name ?? ''}}</span>
+                    <span class="parts-equip">EQUIP</span>
+                </p>
             </div>
             <div class="item2">
                 <span class="label-class"> DETAILS</span> <br>
@@ -44,7 +53,7 @@
 <script lang="ts">
     /* eslint-disable @typescript-eslint/no-var-requires */
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
-    import { IItem } from "@/store/types";
+    import { IEquipment, IItem } from "@/store/types";
     import { computed, defineComponent, ref } from "vue";
 
     const partsImg = require('../../../assets/inventory/sampleParts.png');
@@ -52,9 +61,10 @@
 	const InventoryScreen = defineComponent({
 		setup() {
             const service = useMonsterSlayerService();
-			const equipments = service.getCharacterEquipment();
+			const equipments: IEquipment = service.getCharacterEquipment();
+            const armor: IItem = equipments.armor;
+            const weapon: IItem = equipments.weapon;
             const itemDetails = ref<IItem>();
-            console.log(equipments);
             const itemInfo = (item: IItem): void => {
                 itemDetails.value = {...item};
             };
@@ -75,6 +85,8 @@
 			});
 			return {
                 equipments,
+                armor,
+                weapon,
                 itemInfo,
                 partsImg,
                 itemType,

@@ -1,3 +1,4 @@
+
 <template>
 	<div class="character-layout">
 		<div class="stat-container quick-border">
@@ -5,19 +6,19 @@
 			<div class="stat-division">
 				<div class="values">
 					<span class="label">Attribute</span>
-					<p style="text-transform: uppercase; font-weight: bold;" v-for="(stat, index) in stats" :key="`stat-${index}`">{{stat.key}}</p>
+					<p class="sub-label" v-for="(stat, index) in stats" :key="`stat-${index}`">{{stat.key}}</p>
 				</div>
 				<div class="values">
 					<span class="label">Base</span>
-					<p v-for="(stat, index) in stats" :key="`stat-${index}`">{{stat.value}}</p>
+					<p v-for="(stat, index) in stats" :key="`stat-${index}`">{{stat.base}}</p>
 				</div>
 				<div class="values">
 					<span class="label">Bonus</span>
-					<p v-for="(stat, index) in stats" :key="`stat-${index}`">{{stat.value}}</p>
+					<p class="bonus" v-for="(stat, index) in stats" :key="`stat-${index}`">{{stat.bonus}}</p>
 				</div>
 				<div class="values">
 					<span class="label">Total</span>
-					<p v-for="(stat, index) in stats" :key="`stat-${index}`">{{stat.value}}</p>
+					<p v-for="(stat, index) in stats" :key="`stat-${index}`">{{stat.total}}</p>
 				</div>
 			</div>
 		</div>
@@ -25,9 +26,23 @@
 			<div class="equip-skills">
 				<div class="equipments">
 					<div class="label">Equipments</div>
+					<p class="parts-class" @click="getInfo(equipment.armor)">
+						<span class="sub-label">Armor:</span>
+						<img class="item-img" :src="`${partsImg}`">
+						{{equipment.armor?.name ?? ''}}
+					</p>
+					<p class="parts-class" @click="getInfo(equipment.weapon)">
+						<span class="sub-label">Weapon:</span>
+						<img class="item-img" :src="`${partsImg}`" >
+						{{equipment.weapon?.name ?? ''}}
+					</p>
 				</div>
 				<div class="skills">
 					<div class="label">Skills</div>
+					<p class="parts-class" v-for="(skill, index) in skills" :key="`skill-${index}`" @click="getInfo(skill)">
+						<img class="skill-img" :src="`${cardslogo}`" >
+						{{skill?.name ?? ''}}
+					</p>
 				</div>
 			</div>
 			<div class="information">
@@ -39,20 +54,38 @@
 </template>
 
 <script lang="ts">
+	/* eslint-disable @typescript-eslint/no-var-requires */
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
-	import { computed, defineComponent } from "vue";
+	import { IItem } from "@/store/types";
+	import { computed, defineComponent, ref } from "vue";
 
+	const partsImg = require('@/assets/inventory/sampleParts.png');
+	const cardslogo = require('@/assets/skills/archer-arrowAssault-logo.png');
 	const CharacterInfoScreen = defineComponent({
 		setup() {
 			const service = useMonsterSlayerService();
 			const character = service.getCharacterDetails();
+			const dataDetails = ref<IItem>();
 			const stats = computed(() => {
-				const character = service.getCharacterDetails();
-				return Object.keys(character.stats).map(key => Object.assign({}, { key, value: character.stats[key] }));
+				return service.getCharacterStats();
 			});
+			const equipment = computed(() => {
+				return service.getCharacterEquipment();
+			});
+			const getInfo = (item: IItem): void => {
+                dataDetails.value = {...item};
+            };
+			const skills = computed(() => {
+				return service.getCharacterSkills();
+			})
 			return {
 				character,
-				stats
+				stats,
+				equipment,
+				skills,
+				partsImg,
+				cardslogo,
+				getInfo
 			};
 		}
 	})
@@ -67,6 +100,7 @@
 	p {
 		padding: 0;
 		margin: 0.5em;
+		color: #5f330e;
 	}
 	.stat-container {
 		display: grid;
@@ -104,6 +138,9 @@
 	.skills {
 		border-top: 2px solid #5f330e;
 	}
+	.bonus {
+		color:rgb(13, 66, 36);
+	}
 	.label {
 		text-align: center;
 		margin: auto;
@@ -112,5 +149,30 @@
 		text-transform: uppercase;
 		color:saddlebrown;
 		font-family: "AxieFont";
+	}
+	.parts-class{
+        cursor: pointer;
+        text-decoration: none;
+        color: #5f330e;
+    }
+    .parts-description{
+        font-size: 17px;
+    }
+    .item-img {
+		height: 10%;
+		width: 15%;
+		vertical-align: middle;
+    }
+	.skill-img {
+		height: 20px;
+		width: 20px;
+		vertical-align: middle;
+		margin: 0 1rem;
+		border: 1px solid white;
+        border-radius: 5px
+    }
+	.sub-label {
+		text-transform: uppercase;
+		font-weight: bold;
 	}
 </style>

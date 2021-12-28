@@ -36,7 +36,7 @@
     import * as helper from "@/app-lib/helper/helper";
 
 	const home = require('@/assets/background/login-bg.png');
-    const sample = require('@/assets/background/arena.jpg')
+    const dungeon = require('@/assets/background/axie-dungeon.jpg')
 	const closeIcon = require('@/assets/background/close-icon.png');
 
 	const SelectDungeon = defineComponent({
@@ -49,8 +49,8 @@
 		data()
 		{
 			return {
-				screenImage: home,
-                sampleDungeon: sample,
+				screenImage: dungeon,
+                sampleDungeon: dungeon,
 				closeIcon
 			}
 		},
