@@ -44,23 +44,26 @@ export const actions: ActionTree<IGameState, IRootState> & GameActions= {
     [ActionTypes.loadCharacterAsync]: ({ commit }, payload?: IAccount): Promise<boolean> => {
         const accountId = payload.accountId;
         const promiseMap: InfoKeyValue[] = [
-            { key: 'character' , value: request.getCharacter },
             { key: 'inventory' , value: request.getInventory },
             { key: 'skills' , value: request.getSkills },
             { key: 'dungeon' , value: request.getDungeons }
         ];
-        return Promise.all(
-            promiseMap.map(async info => {
-                return {
-                    key: info.key,
-                    [info.key]: await info.value(accountId)
-                } as InfoKeyValue;
-            })
-        ).then(val => {
-            commit(MutationTypes.setCharacter, val.find(_ => _.key === CharacterInfo.character)[CharacterInfo.character] );
-            commit(MutationTypes.setSkills, val.find(_ => _.key === CharacterInfo.skills)[CharacterInfo.skills] );
-            commit(MutationTypes.setInventory, val.find(_ => _.key === CharacterInfo.inventory)[CharacterInfo.inventory] );
-            commit(MutationTypes.setDungeons, val.find(_ => _.key === CharacterInfo.dungeon)[CharacterInfo.dungeon] );
+        return request.getCharacter(accountId)
+        .then(charInfo => {
+            commit(MutationTypes.setCharacter, charInfo);
+            return Promise.all(
+                promiseMap.map(async info => {
+                    return {
+                        key: info.key,
+                        [info.key]: await info.value(charInfo._id)
+                    } as InfoKeyValue;
+                })
+            )
+        })
+        .then(val => {
+            commit(MutationTypes.setSkills, val.find(_ => _.key === CharacterInfo.skills)[CharacterInfo.skills]);
+            commit(MutationTypes.setInventory, val.find(_ => _.key === CharacterInfo.inventory)[CharacterInfo.inventory]);
+            commit(MutationTypes.setDungeons, val.find(_ => _.key === CharacterInfo.dungeon)[CharacterInfo.dungeon]);
             return true;
         }).catch(err => {
             console.log(err);
