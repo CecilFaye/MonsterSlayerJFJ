@@ -3,7 +3,9 @@
         <div class="grid-container">
             <div class="item1">
                 <span class="label-class"> SKILLS</span>
-                <p class="skills-class" v-for="(skill, index) in skills" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" @click="skillInfo(skill)"> <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span> <span class="skills-equip">EQUIP</span></p>
+                <p class="skills-class" v-for="(skill, index) in skills" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" @click="skillInfo(skill)">
+                <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span>
+                <span class="skills-equip">EQUIP</span></p>
             </div>
             <div class="item2">
                 <span class="label-class"> DETAILS</span> <br>

@@ -49,7 +49,7 @@
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
 	import { navArrangement } from "@/app-lib/constant/app-config"
 
-	const characterScreenImage = require('../../../assets/background/vuexie-character-layout.jpg');
+	const characterScreenImage = require('@/assets/background/vuexie-character-layout.jpg');
 	const characterImage =  require('@/assets/hero/playerAqua-idle.gif');
 	const healthImage =  require('@/assets/skills/healthIcon.jpg');
 	const manaImage =  require('@/assets/skills/manaIcon.jpg');
@@ -143,12 +143,11 @@
 
 	.info-container {
 		background: transparent;
-		height: 107%;
-		width: 67.3%;
+		height: 52.5%;
+		width: 43.3%;
 		position: absolute;
-		top: 29.3%;
-		left: 34%;
-
+		top: 27.3%;
+		left: 42%;
 	}
 	.character-info {
 		background: transparent;
@@ -165,7 +164,7 @@
 		cursor: pointer;
 		padding: 0.7rem;
 		text-transform: uppercase;
-        box-shadow: 0px 4px 5px #7c797933;
+        /* box-shadow: 0px 4px 5px #7c797933; */
         border-radius: 10px;
 		background-color: rgb(185, 105, 48);
 		z-index: 1;
@@ -282,7 +281,7 @@
         width: 106px !important;
 		min-height: 70px !important;
         min-width: 70px !important;
-        /* border-color: transparent; */
+        border-color: transparent;
         border-radius: 0 0 5rem 0rem;
         cursor: pointer;
         background:transparent;
@@ -294,7 +293,7 @@
 		top: 5%;
         height: 57px !important;
         width: 50px !important;
-        /* border-color: transparent; */
+        border-color: transparent;
         border-radius: 5rem 2rem 2rem 5rem;
         background:transparent;
 		margin: 0 !important;
@@ -305,7 +304,7 @@
 		top: 5%;
         height: 57px !important;
         width: 50px !important;
-        /* border-color: transparent; */
+        border-color: transparent;
         border-radius: 2rem 5rem 5rem 2rem;
         background:transparent;
 		margin: 0 !important;
