@@ -30,7 +30,7 @@ export enum CharacterInfo {
 // }
 
 export interface GameActions {
-    [ActionTypes.loadCharacterAsync]({ commit }, payload?: string): Promise<boolean>;
+    [ActionTypes.loadCharacterAsync]({ commit }, payload?: IAccount): Promise<boolean>;
     // [ActionTypes.loadEnemyAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
     // [ActionTypes.loadDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
     // [ActionTypes.enterDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
@@ -38,13 +38,14 @@ export interface GameActions {
 }
 
 export const actions: ActionTree<IGameState, IRootState> & GameActions= {
-    [ActionTypes.loadCharacterAsync]: ({ commit }, payload?: string): Promise<boolean> => {
-        const accountId = payload;
+    [ActionTypes.loadCharacterAsync]: ({ commit }, payload?: IAccount): Promise<boolean> => {
+        const accountId = payload.accountId;
         const promiseMap: InfoKeyValue[] = [
             { key: 'inventory' , value: request.getInventory },
             { key: 'skills' , value: request.getSkills },
             { key: 'dungeon' , value: request.getDungeons }
         ];
+        if (accountId)
         return request.getCharacter(accountId)
         .then(charInfo => {
             commit(MutationTypes.setCharacter, charInfo);
@@ -66,9 +67,10 @@ export const actions: ActionTree<IGameState, IRootState> & GameActions= {
             console.log(err);
             return false;
         });
+        else return new Promise<boolean>(() => false);
     },
-    [ActionTypes.updateSkillAsync]: ( payload: any): Promise<any> => {
-        return request.putSkills(payload.accountId, payload.skills);
+    [ActionTypes.updateSkillAsync]: ({ commit }, payload: any): Promise<any> => {
+        return request.putSkills(payload.characterId, payload.skills);
     }
     // [ActionTypes.loadEnemyAsync]: ({ commit }, payload: any): Promise<void> => {
 

@@ -135,7 +135,7 @@
         display: grid;
         grid-template-columns: 3fr 2fr;
         grid-template-rows: 5fr 3fr;
-        height: 37em;
+        height: 37.7em;
         width: inherit;
         border: 2px solid #5f330e;
     }

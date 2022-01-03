@@ -5,7 +5,7 @@
                 <div class="label"> SKILLS</div>
                 <p class="skills-class" v-for="(skill, index) in skillList" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" >
                     <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span>
-                    <span class="skills-equip" @click="equipSkill(skill)" v-if="!skill.equipped">EQUIP</span>
+                    <span class="skills-equip" @click="equipSkill(skill)" v-if="!skill.equipped" v-bind:class="{ 'disabled-equip': currentSkills?.lenght > 2 }">EQUIP</span>
                     <span class="skills-equipped" v-if="skill.equipped">EQUIPPED</span>
                 </p>
             </div>
@@ -39,11 +39,12 @@
 
 <script lang="ts">
     /* eslint-disable @typescript-eslint/no-var-requires */
+
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
     import { ISkills } from "@/store/types";
-    import { computed, defineComponent, onBeforeMount, ref } from "vue";
-    const cardsImg = require('../../../assets/skills/archer-arrowAssault.png');
-    const cardslogo = require('../../../assets/skills/archer-arrowAssault-logo.png');
+    import { computed, defineComponent, ref } from "vue";
+    const cardsImg = require('@/assets/skills/archer-arrowAssault.png');
+    const cardslogo = require('@/assets/skills/archer-arrowAssault-logo.png');
 
 	const SkillsScreen = defineComponent({
 		setup() {
@@ -71,11 +72,14 @@
             };
 
             const equipSkill = (skill: ISkills): void => {
-                const skillsUpdate: string[] = [skill._id];
-                skills.value.forEach(s => {
-                    skillsUpdate.push(s._id);
-                });
-                updateSkills(skillsUpdate);
+                if (skills.value?.length >= 3) return;
+                if (confirm("Continue equip?")) {
+                    const skillsUpdate: string[] = [skill._id];
+                    skills.value.forEach(s => {
+                        skillsUpdate.push(s._id);
+                    });
+                    updateSkills(skillsUpdate);
+                }
             };
             const updateSkills = (update: string[]): void => {
                 service.updateSkills(update)
@@ -85,11 +89,14 @@
                 });
             };
             const removeSkill = (skill: ISkills): void => {
-                const skillIndex = skills.value.findIndex(s => s._id === skill._id);
-                skills.value.splice(skillIndex, 1);
-                const skillUpdates = skills.value.map(s => s._id);
-                updateSkills(skillUpdates);
+                if (confirm("Continue delete?")) {
+                    const skillIndex = skills.value.findIndex(s => s._id === skill._id);
+                    skills.value.splice(skillIndex, 1);
+                    const skillUpdates = skills.value.map(s => s._id);
+                    updateSkills(skillUpdates);
+                }
             };
+
 			return {
                 currentSkills,
                 skillList,
@@ -118,7 +125,7 @@
     .grid-container {
         display: grid;
         grid-template-columns: 3fr 2fr;
-        height: 37em;
+        height: 37.7em;
         width: inherit;
         border: 2px solid #5f330e;
     }
@@ -262,5 +269,9 @@
         line-height: 1.5;
         padding-right: 5px;
         cursor: pointer;
+    }
+    .disabled-equip {
+        color:gray;
+        cursor: default;
     }
 </style>

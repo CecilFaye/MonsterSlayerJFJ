@@ -1,4 +1,5 @@
-export function stringCompare(a: string, b: string): any {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const stringCompare = (a: string, b: string): any => {
     if (!a) {
         a = '';
     }

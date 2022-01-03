@@ -12,7 +12,7 @@ export interface IMonsterSlayerRequest {
     getInventory: (accountId: string) => Promise<IInventory[]>;
     getDungeons: (accountId: string) => Promise<IDungeonResponse[]>;
     putEquipment: (accountId: string, equipment: IEquipment) => Promise<boolean>;
-    putSkills: (accountId: string, skills: string[]) => Promise<boolean>;
+    putSkills: (characterId: string, skills: string[]) => Promise<boolean>;
     deleteItem: (accountId: string, itemId: string) => Promise<boolean>;
 }
 
@@ -96,8 +96,8 @@ const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
                 return err.response.data;
             });
         },
-        putSkills: (accountId: string, items: string[]): Promise<boolean> => {
-            return axios.put(`${apiUrl}/character/${accountId}/skills`, items)
+        putSkills: (characterId: string, items: string[]): Promise<boolean> => {
+            return axios.put(`${apiUrl}/character/${characterId}/skills`, items)
             .then(result => result.status === 200)
             .catch(err => {
                 return err.response.data;
