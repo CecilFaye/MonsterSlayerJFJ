@@ -19,14 +19,14 @@
                         <span class="skill-damage">{{skillDetails?.target != 'self' ? Math.abs(skillDetails?.damage ?? 0) : 0}}</span>
                         <span class="skill-heal">{{skillDetails?.target === 'self' ? Math.abs(skillDetails?.damage ?? 0) : 0}}</span>
                         <span class="skill-target">{{`Target: ${skillDetails?.target ?? ''}`}}</span>
-                        <span class="skill-type">{{`Type: ${skillDetails?.type ?? ''}`}}</span>
+                        <span class="skill-type">{{`Type: ${skillDetails?.type ? skillTypeName(skillDetails?.type) : ''}`}}</span>
                     </div>
                     <div v-show="!skillDetails?.name">
                         <p class="default-details">Click Skill to show details.</p>
                     </div>
                 </div>
                 <div class="equipped">
-                    <div class="label"> EQUIPPED</div>
+                    <div class="label">EQUIPPED (3 Skills Max)</div>
                     <p class="skills-class" v-for="(skill, index) in currentSkills" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" >
                         <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span>
                         <span class="unequip" @click="removeSkill(skill)">X</span>
@@ -97,6 +97,8 @@
                 }
             };
 
+            const skillTypeName = (type: string): string => service.skillTypeName(type);
+
 			return {
                 currentSkills,
                 skillList,
@@ -105,6 +107,7 @@
                 skillInfo,
                 equipSkill,
                 removeSkill,
+                skillTypeName,
                 skillDetails
 			};
 		}

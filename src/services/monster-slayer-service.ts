@@ -65,7 +65,6 @@ export interface IMonsterSlayerService {
     randomAction: (limit: number) => number;
     initOptions: (person: IPersonState) => IPersonState;
     getRandomMonsters: () => IPersonState;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getCharacterImage: (personType: PersonType, type: ActivityStateOptions) => any;
     getCharacterTypeName: (characterTypeId: number) => string;
     getCharacterDetails: () => ICharacter;
@@ -82,6 +81,7 @@ export interface IMonsterSlayerService {
     getCharacterStats: () => InfoKeyValue[];
     logout: () => void;
     updateSkills: (skills: string[]) => Promise<void>;
+    skillTypeName: (type: string) => string;
 
     // Http Call
     signUp: (account: IAccount) => Promise<IAccountResponse | null>;
@@ -231,6 +231,8 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         .then(() => store.dispatch('game/' + ActionTypes.loadCharacterAsync, { accountId: character.accountId }));
     };
 
+    const skillTypeName = (type: string): string => type === 'P' ? 'Physical' : 'Magic';
+
     const getInventory = (): IInventory[] => {
         let inventory: IInventory[] = store.getters['game/' + GetterTypes.getInventory]();
         if (!inventory || !inventory?.length) {
@@ -271,6 +273,7 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         gameReset,
         gameInit,
         gameResult,
+        skillTypeName,
         updateSkills,
 
         logout,

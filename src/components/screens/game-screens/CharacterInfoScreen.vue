@@ -54,7 +54,7 @@
 					<span class="skill-damage">{{skillDetails?.target != 'self' ? Math.abs(skillDetails?.damage ?? 0) : '0'}}</span>
 					<span class="skill-heal">{{skillDetails?.target === 'self' ? Math.abs(skillDetails?.damage ?? 0) : '0'}}</span>
 					<span class="skill-target">{{`Target: ${skillDetails?.target ?? ''}`}}</span>
-					<span class="skill-type">{{`Type: ${skillDetails?.type ?? ''}`}}</span>
+					<span class="skill-type">{{`Type: ${skillDetails?.type ? skillTypeName(skillDetails?.type) : ''}`}}</span>
 				</div>
 				<div class="equipment-container" v-show="showDetails && isItem">
 					<span class="sub-label"  >{{`Name: `}}</span>{{itemDetails?.name ?? ''}}<br>
@@ -132,6 +132,8 @@
 				return isItemClicked.value;
 			});
 
+			const skillTypeName = (type: string): string => service.skillTypeName(type);
+
 			return {
 				character,
 				stats,
@@ -146,7 +148,8 @@
 				isItem,
 				itemType,
 				itemClass,
-				getInfo
+				getInfo,
+				skillTypeName
 			};
 		}
 	})

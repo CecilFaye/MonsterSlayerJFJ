@@ -68,7 +68,6 @@
 			const service = useMonsterSlayerService();
 			const store = useStore();
 
-			// Lifecycle Hooks
 			onBeforeMount(() => {
 				store.commit('game/reset', service);
 			});
