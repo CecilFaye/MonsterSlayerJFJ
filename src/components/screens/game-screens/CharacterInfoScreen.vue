@@ -46,8 +46,31 @@
 				</div>
 			</div>
 			<div class="information">
-				<div class="label">Information</div>
-				<p style="text-transform: uppercase; font-weight: bold;" v-for="(stat, index) in stats" :key="`stat-${index}`">{{stat.key}}</p>
+				<div class="label">Details</div>
+				<div class="skills-container" v-show="showDetails && !isItem">
+					<img class="cards-img" :src="`${cardsImg}`">
+					<span class="skill-title">{{skillDetails?.name ?? ''}}</span>
+					<span class="skill-mana">{{`${Math.abs(skillDetails?.cost ?? 0)}`}}</span>
+					<span class="skill-damage">{{skillDetails?.target != 'self' ? Math.abs(skillDetails?.damage ?? 0) : 'N/A'}}</span>
+					<span class="skill-heal">{{skillDetails?.target === 'self' ? Math.abs(skillDetails?.damage ?? 0) : 'N/A'}}</span>
+					<span class="skill-target">{{`Target: ${skillDetails?.target ?? ''}`}}</span>
+					<span class="skill-type">{{`Type: ${skillDetails?.type ?? ''}`}}</span>
+				</div>
+				<div class="equipment-container" v-show="showDetails && isItem">
+					<span class="sub-label"  >{{`Name: `}}</span>{{itemDetails?.name ?? ''}}<br>
+					<span  class="sub-label">{{`Type: `}}</span>{{itemType}} <br>
+					<span  class="sub-label">{{`Class: `}}</span>{{itemClass}}
+					<div v-bind:style="{paddingTop: '0.5rem'}">
+						<span  class="label">STATS BONUS</span>
+						<p v-for="(stat, index) in Object.keys(itemDetails?.bonus ?? [])" :key="`stat-${index}`">
+							<span class="sub-label">{{`${stat}: `}}</span>
+							{{`${Math.abs(itemDetails?.bonus[stat] ?? 0)}`}}
+						</p>
+					</div>
+				</div>
+				<div class="default-display" v-show="!showDetails">
+					<p>Click Equipment or Skills to show details.</p>
+				</div>
 			</div>
         </div>
 	</div>
@@ -56,28 +79,59 @@
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-var-requires */
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
-	import { IItem } from "@/store/types";
+	import { IItem, ISkills } from "@/store/types";
 	import { computed, defineComponent, ref } from "vue";
 
 	const partsImg = require('@/assets/inventory/sampleParts.png');
+	const cardsImg = require('@/assets/skills/archer-arrowAssault.png');
 	const cardslogo = require('@/assets/skills/archer-arrowAssault-logo.png');
 	const CharacterInfoScreen = defineComponent({
 		setup() {
 			const service = useMonsterSlayerService();
 			const character = service.getCharacterDetails();
-			const dataDetails = ref<IItem>();
+			const itemDetails = ref<IItem>(null);
+			const skillDetails = ref<ISkills>(null);
+			const isItemClicked = ref<boolean>(true);
+			const isClicked = ref<boolean>(false);
 			const stats = computed(() => {
 				return service.getCharacterStats();
 			});
 			const equipment = computed(() => {
 				return service.getCharacterEquipment();
 			});
-			const getInfo = (item: IItem): void => {
-                dataDetails.value = {...item};
+			const getInfo = (item: IItem | ISkills): void => {
+				// eslint-disable-next-line no-prototype-builtins
+				if (item.hasOwnProperty('bonus')) {
+					itemDetails.value = {...item} as IItem;
+					isItemClicked.value = true;
+				} else {
+					isItemClicked.value = false;
+					skillDetails.value = {...item} as ISkills;
+				}
+				isClicked.value = true;
             };
+			const itemType = computed((): string => {
+                const type = itemDetails.value?.type;
+                if (type) {
+                    return itemDetails.value.type.toUpperCase() === 'WPN' ? 'Weapon' : 'Armor';
+                } else {
+                    return '';
+                }
+            });
+			const itemClass = computed((): string => {
+                return service.getCharacterTypeName(itemDetails.value?.classId ?? 0)
+            });
 			const skills = computed(() => {
 				return service.getCharacterSkills();
-			})
+			});
+
+			const showDetails = computed(() => {
+				return isClicked.value;
+			});
+			const isItem = computed(() => {
+				return isItemClicked.value;
+			});
+
 			return {
 				character,
 				stats,
@@ -85,6 +139,13 @@
 				skills,
 				partsImg,
 				cardslogo,
+				cardsImg,
+				skillDetails,
+				itemDetails,
+				showDetails,
+				isItem,
+				itemType,
+				itemClass,
 				getInfo
 			};
 		}
@@ -97,10 +158,20 @@
         background:transparent;
 		border: 4px solid #5f330e;
 	}
-	p {
+	.equipment-container, .skills-container, p {
 		padding: 0;
 		margin: 0.5em;
 		color: #5f330e;
+	}
+	.skills-container {
+		text-align: center;
+	}
+	.equipment-container, .skills-container, .default-display {
+		margin-top: 1rem;
+	}
+
+	.default-display {
+		text-align: center;
 	}
 	.stat-container {
 		display: grid;
@@ -163,6 +234,10 @@
 		width: 15%;
 		vertical-align: middle;
     }
+	.item-text {
+        text-transform: uppercase;
+        color: whitesmoke;
+    }
 	.skill-img {
 		height: 20px;
 		width: 20px;
@@ -171,8 +246,78 @@
 		border: 1px solid white;
         border-radius: 5px
     }
+	.cards-img {
+        height: 63%;
+        width: 63%;
+    }
 	.sub-label {
 		text-transform: uppercase;
 		font-weight: bold;
 	}
+	.skills-class{
+        cursor: pointer;
+        text-decoration: none;
+        margin-top: 10px;
+        color: #5f330e;
+        margin-left: 10px;
+    }
+    .skills-description{
+        margin-left: 72px;
+        font-size: 17px;
+    }
+    .skills-equip {
+        color: #f5d06c;
+        position: absolute;
+        left: 39%;
+        font-size: 12px;
+    }
+    .skill-title {
+        text-transform: uppercase;
+        color: whitesmoke;
+		font-weight: 900;
+        top: 70%;
+        left: 70%;
+        font-size: 10px;
+        position: absolute;
+        text-align: center;
+    }
+    .skill-mana {
+		color: whitesmoke;
+		top: 69%;
+		left: 63.9%;
+		font-size: 17px;
+		position: absolute;
+		font-weight: 900;
+    }
+    .skill-damage {
+		color: whitesmoke;
+		font-weight: 900;
+		top: 79%;
+		left: 60.3%;
+		font-size: 17px;
+		position: absolute;
+    }
+    .skill-heal {
+		color: whitesmoke;
+		font-weight: 900;
+		top: 88%;
+		left: 27.3rem;
+		font-size: 17px;
+		position: absolute;
+    }
+	.skill-target, .skill-type {
+		color: whitesmoke;
+		top: 108%;
+		left: 30rem;
+		position: absolute;
+		text-transform: capitalize;
+    }
+
+	.skill-type {
+		color: whitesmoke;
+		top: 111%;
+		left: 30rem;
+		position: absolute;
+		text-transform: capitalize;
+    }
 </style>
