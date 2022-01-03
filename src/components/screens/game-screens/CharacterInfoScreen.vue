@@ -34,7 +34,7 @@
 					<p class="parts-class" @click="getInfo(equipment.weapon)">
 						<span class="sub-label">Weapon:</span>
 						<img class="item-img" :src="`${partsImg}`" >
-						{{equipment.weapon?.name ?? ''}}
+						<span>{{equipment.weapon?.name ?? ''}}</span>
 					</p>
 				</div>
 				<div class="skills">
@@ -51,8 +51,8 @@
 					<img class="cards-img" :src="`${cardsImg}`">
 					<span class="skill-title">{{skillDetails?.name ?? ''}}</span>
 					<span class="skill-mana">{{`${Math.abs(skillDetails?.cost ?? 0)}`}}</span>
-					<span class="skill-damage">{{skillDetails?.target != 'self' ? Math.abs(skillDetails?.damage ?? 0) : 'N/A'}}</span>
-					<span class="skill-heal">{{skillDetails?.target === 'self' ? Math.abs(skillDetails?.damage ?? 0) : 'N/A'}}</span>
+					<span class="skill-damage">{{skillDetails?.target != 'self' ? Math.abs(skillDetails?.damage ?? 0) : '0'}}</span>
+					<span class="skill-heal">{{skillDetails?.target === 'self' ? Math.abs(skillDetails?.damage ?? 0) : '0'}}</span>
 					<span class="skill-target">{{`Target: ${skillDetails?.target ?? ''}`}}</span>
 					<span class="skill-type">{{`Type: ${skillDetails?.type ?? ''}`}}</span>
 				</div>
@@ -69,7 +69,7 @@
 					</div>
 				</div>
 				<div class="default-display" v-show="!showDetails">
-					<p>Click Equipment or Skills to show details.</p>
+					<p>Click Equipment or Skill to show details.</p>
 				</div>
 			</div>
         </div>
@@ -226,6 +226,9 @@
         text-decoration: none;
         color: #5f330e;
     }
+	.parts-class:hover {
+		color: #fff;
+	}
     .parts-description{
         font-size: 17px;
     }
@@ -273,41 +276,48 @@
     }
     .skill-title {
         text-transform: uppercase;
-        color: whitesmoke;
+		color: whitesmoke;
 		font-weight: 900;
-        top: 70%;
-        left: 70%;
-        font-size: 10px;
-        position: absolute;
-        text-align: center;
+		top: 70%;
+		left: 69%;
+		font-size: 10px;
+		position: absolute;
+		text-align: center;
+		width: 95px;
     }
     .skill-mana {
-		color: whitesmoke;
+		color: rgb(0, 0, 177);
 		top: 69%;
-		left: 63.9%;
+		left: 63%;
 		font-size: 17px;
 		position: absolute;
 		font-weight: 900;
+		width: 31px;
+		text-align: center;
     }
     .skill-damage {
-		color: whitesmoke;
+		color: red;
 		font-weight: 900;
-		top: 79%;
-		left: 60.3%;
+		top: 78.8%;
+		left: 60%;
 		font-size: 17px;
 		position: absolute;
+		width: 35px;
+		text-align: center;
     }
     .skill-heal {
-		color: whitesmoke;
+		color: rgb(28, 172, 71);
 		font-weight: 900;
-		top: 88%;
-		left: 27.3rem;
+		top: 87.9%;
+		left: 27.2rem;
 		font-size: 17px;
 		position: absolute;
+		width: 35px;
+		text-align: center;
     }
 	.skill-target, .skill-type {
 		color: whitesmoke;
-		top: 108%;
+		top: 107%;
 		left: 30rem;
 		position: absolute;
 		text-transform: capitalize;

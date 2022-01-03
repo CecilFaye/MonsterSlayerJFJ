@@ -80,6 +80,7 @@ export interface IMonsterSlayerService {
     getInventory: () => IInventory[];
     getCharacterStats: () => InfoKeyValue[];
     logout: () => void;
+    updateSkills: (skills: string[]) => Promise<void>;
 
     // Http Call
     signUp: (account: IAccount) => Promise<IAccountResponse | null>;
@@ -148,7 +149,7 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         .then(result => {
             if (result) {
                 const account = result as IAccount;
-                return store.dispatch('game/' + ActionTypes.loadCharacterAsync, account)
+                return store.dispatch('game/' + ActionTypes.loadCharacterAsync, account.accountId)
                     .then(result => {
                         if (result) {
                             store.commit('game/' + MutationTypes.setAccount, account);
@@ -223,6 +224,12 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         }
         return skills;
     };
+    const updateSkills = (skills: string[]): Promise<void> => {
+        const account = sessionStorage.getItem(helper.storageNames.account);
+        return store.dispatch('game/' + ActionTypes.updateSkillAsync, skills)
+        .then(() => store.dispatch('game/' + ActionTypes.loadCharacterAsync, account));
+    };
+
     const getInventory = (): IInventory[] => {
         let inventory: IInventory[] = store.getters['game/' + GetterTypes.getInventory]();
         if (!inventory || !inventory?.length) {
@@ -263,6 +270,7 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         gameReset,
         gameInit,
         gameResult,
+        updateSkills,
 
         logout,
         signUp,

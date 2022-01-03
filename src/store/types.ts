@@ -164,6 +164,7 @@ export interface ISkills extends INameIdPair {
     target: string;
     cost: number;
     type: string;
+    equipped: boolean;
 }
 
 export interface IDungeon extends INameIdPair  {

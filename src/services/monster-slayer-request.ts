@@ -78,7 +78,7 @@ const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
             });
         },
         getSkills: (accountId: string): Promise<ISkills[]> => {
-            return axios.get(`${apiUrl}/character/${accountId}/inventory`)
+            return axios.get(`${apiUrl}/character/${accountId}/skills`)
             .then(result => {
                 if (result.status === 200) {
                     return result.data as ISkills[];

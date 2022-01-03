@@ -106,11 +106,7 @@
 		overflow: hidden !important;
 		margin: auto;
         background:transparent;
-        display: flex;
         flex-direction: row;
-        margin-top:70px;
-        height: 68%;
-        width: 69%;
 	}
     .label-class {
         color: white;
@@ -139,7 +135,7 @@
         display: grid;
         grid-template-columns: 3fr 2fr;
         grid-template-rows: 5fr 3fr;
-        height: inherit;
+        height: 37em;
         width: inherit;
         border: 2px solid #5f330e;
     }

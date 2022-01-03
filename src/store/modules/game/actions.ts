@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ActionTree, useStore } from 'vuex';
 import useMonsterSlayerRequest from '@/services/monster-slayer-request';
-import { IAccount, InfoKeyValue, IRootState } from '../../types';
+import { IAccount, InfoKeyValue, IRootState, ISkills } from '../../types';
 import { MutationTypes } from './mutations';
 import { IGameState } from './state';
 
@@ -12,6 +12,7 @@ export enum ActionTypes {
     loadEnemyAsync = 'LOAD_ENEMY_ASYNC',
     loadDungeonAsync = 'LOAD_DUNGEON_ASYNC',
     enterDungeonAsync = 'ENTER_DUNGEON_ASYNC',
+    updateSkillAsync = 'UPDATE_SKILL_ASYNC',
 }
 
 export enum CharacterInfo {
@@ -29,15 +30,16 @@ export enum CharacterInfo {
 // }
 
 export interface GameActions {
-    [ActionTypes.loadCharacterAsync]({ commit }, payload?: IAccount): Promise<boolean>;
+    [ActionTypes.loadCharacterAsync]({ commit }, payload?: string): Promise<boolean>;
     // [ActionTypes.loadEnemyAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
     // [ActionTypes.loadDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
     // [ActionTypes.enterDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
+    [ActionTypes.updateSkillAsync]({ commit }, payload: ISkills): Promise<any>;
 }
 
 export const actions: ActionTree<IGameState, IRootState> & GameActions= {
-    [ActionTypes.loadCharacterAsync]: ({ commit }, payload?: IAccount): Promise<boolean> => {
-        const accountId = payload.accountId;
+    [ActionTypes.loadCharacterAsync]: ({ commit }, payload?: string): Promise<boolean> => {
+        const accountId = payload;
         const promiseMap: InfoKeyValue[] = [
             { key: 'inventory' , value: request.getInventory },
             { key: 'skills' , value: request.getSkills },
@@ -65,6 +67,9 @@ export const actions: ActionTree<IGameState, IRootState> & GameActions= {
             return false;
         });
     },
+    [ActionTypes.updateSkillAsync]: ( payload: any): Promise<any> => {
+        return request.putSkills(payload.accountId, payload.skills);
+    }
     // [ActionTypes.loadEnemyAsync]: ({ commit }, payload: any): Promise<void> => {
 
     // },

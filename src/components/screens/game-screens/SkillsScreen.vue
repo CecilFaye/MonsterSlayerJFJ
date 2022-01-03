@@ -1,24 +1,37 @@
 <template>
 	<div class="skills-layout">
         <div class="grid-container">
-            <div class="item1">
-                <span class="label-class"> SKILLS</span>
-                <p class="skills-class" v-for="(skill, index) in skills" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" @click="skillInfo(skill)">
-                <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span>
-                <span class="skills-equip">EQUIP</span></p>
+            <div class="skills-list">
+                <div class="label"> SKILLS</div>
+                <p class="skills-class" v-for="(skill, index) in skillList" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" >
+                    <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span>
+                    <span class="skills-equip" @click="equipSkill(skill)" v-if="!skill.equipped">EQUIP</span>
+                    <span class="skills-equipped" v-if="skill.equipped">EQUIPPED</span>
+                </p>
             </div>
-            <div class="item2">
-                <span class="label-class"> DETAILS</span> <br>
-                <div v-show="!!skillDetails?.name">
-                <img class="cards-img" :src="`${cardsImg}`">
-                <span class="skill-title">{{skillDetails?.name ?? ''}}</span>
-                <span class="skill-mana">{{`${Math.abs(skillDetails?.cost ?? 0)}`}}</span>
-                <span class="skill-damage">{{skillDetails?.target != 'self' ? Math.abs(skillDetails?.damage ?? 0) : 0}}</span>
-                <span class="skill-heal">{{skillDetails?.target === 'self' ? Math.abs(skillDetails?.damage ?? 0) : 0}}</span>
+            <div class="right-side-grid">
+                <div class="details">
+                    <div class="label"> DETAILS</div>
+                    <div v-show="!!skillDetails?.name" >
+                        <img class="cards-img" :src="`${cardsImg}`">
+                        <span class="skill-title">{{skillDetails?.name ?? ''}}</span>
+                        <span class="skill-mana">{{`${Math.abs(skillDetails?.cost ?? 0)}`}}</span>
+                        <span class="skill-damage">{{skillDetails?.target != 'self' ? Math.abs(skillDetails?.damage ?? 0) : 0}}</span>
+                        <span class="skill-heal">{{skillDetails?.target === 'self' ? Math.abs(skillDetails?.damage ?? 0) : 0}}</span>
+                        <span class="skill-target">{{`Target: ${skillDetails?.target ?? ''}`}}</span>
+                        <span class="skill-type">{{`Type: ${skillDetails?.type ?? ''}`}}</span>
+                    </div>
+                    <div v-show="!skillDetails?.name">
+                        <p class="default-details">Click Skill to show details.</p>
+                    </div>
                 </div>
-            </div>
-            <div class="item3">
-                <span class="label-class"> EQUIPPED (3 Skills Max)</span>
+                <div class="equipped">
+                    <div class="label"> EQUIPPED</div>
+                    <p class="skills-class" v-for="(skill, index) in currentSkills" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" >
+                        <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span>
+                        <span class="unequip" @click="removeSkill(skill)">X</span>
+                    </p>
+                </div>
             </div>
         </div>
 	</div>
@@ -28,24 +41,63 @@
     /* eslint-disable @typescript-eslint/no-var-requires */
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
     import { ISkills } from "@/store/types";
-    import { defineComponent, ref } from "vue";
+    import { computed, defineComponent, onBeforeMount, ref } from "vue";
     const cardsImg = require('../../../assets/skills/archer-arrowAssault.png');
     const cardslogo = require('../../../assets/skills/archer-arrowAssault-logo.png');
 
 	const SkillsScreen = defineComponent({
 		setup() {
             const service = useMonsterSlayerService();
-			const skills = service.getCharacterSkills();
+            const skills = ref<ISkills[]>(service.getCharacterSkills());
+            const allSkills = ref<ISkills[]>(service.getSkills());
             const skillDetails = ref<ISkills>();
+			const skillList = computed(() => {
+                allSkills.value?.forEach(skill => {
+                    if (skills.value.find(s => s._id === skill._id)) {
+                        skill.equipped = true;
+                    } else {
+                        skill.equipped = false;
+                    }
+                })
+                return allSkills.value;
+            });
+
+            const currentSkills = computed(() => {
+                return skills.value;
+            });
 
             const skillInfo = (skill: ISkills): void => {
                 skillDetails.value = {...skill};
             };
+
+            const equipSkill = (skill: ISkills): void => {
+                const skillsUpdate: string[] = [skill._id];
+                skills.value.forEach(s => {
+                    skillsUpdate.push(s._id);
+                });
+                updateSkills(skillsUpdate);
+            };
+            const updateSkills = (update: string[]): void => {
+                service.updateSkills(update)
+                .then(() => {
+                    skills.value = service.getCharacterSkills();
+                    allSkills.value = service.getSkills();
+                });
+            };
+            const removeSkill = (skill: ISkills): void => {
+                const skillIndex = skills.value.findIndex(s => s._id === skill._id);
+                skills.value.splice(skillIndex, 1);
+                const skillUpdates = skills.value.map(s => s._id);
+                updateSkills(skillUpdates);
+            };
 			return {
-                skills,
+                currentSkills,
+                skillList,
                 cardsImg,
                 cardslogo,
                 skillInfo,
+                equipSkill,
+                removeSkill,
                 skillDetails
 			};
 		}
@@ -54,103 +106,161 @@
 </script>
 <style scoped>
 	.skills-layout {
-		background-repeat: no-repeat;
-		background-size: cover;
-		overflow: hidden !important;
+		background:transparent;
 		margin: auto;
-        background:transparent;
-        display: flex;
-        flex-direction: row;
-        margin-top:70px;
-        height: 68%;
-        width: 69%;
 	}
-    span {
-		font-size: 20px;
-		font-weight: 800;
-	}
-    p:hover {
-        color: whitesmoke;
+    p {
+        padding:0;
+        margin: 1rem;
+        color: #5f330e;
     }
+
     .grid-container {
         display: grid;
         grid-template-columns: 3fr 2fr;
-        grid-template-rows: 5fr 3fr;
-        height: inherit;
+        height: 37em;
         width: inherit;
         border: 2px solid #5f330e;
     }
-    .item1 {
-        grid-row-start: 1;
-        grid-row-end: 3;
+    .grid-container .label {
+        margin: 5px 0px;
+    }
+    .right-side-grid {
+        display: grid;
+        grid-template-rows: 2fr 1.8fr;
+    }
+    .details {
+        border-bottom: 2px solid #5f330e;
+        text-align: center;
+    }
+    .equipped {
+        border-top: 2px solid #5f330e;
     }
     .grid-container > div {
         border: 2px solid #5f330e;
-        font-size: 30px;
         text-align: left;
     }
-    .label-class {
-        color: white;
-        margin-left: 8px;
-        font-size: 17px;
+    .skills-list {
+        overflow-x: hidden;
+        overflow-y: auto;
     }
     .cards-img {
-        height: 24%;
-        position: absolute;
-        left: 46%;
-        top: 11%;
+        height: 75%;
+        width: 75%;
     }
     .logo-img {
-        position: absolute;
-        height: 5%;
-        border: 2px solid white;
-        border-radius: 5px;
+        height: 20px;
+		width: 20px;
+		vertical-align: middle;
+		margin: 0 1rem;
+		border: 1px solid white;
+        border-radius: 5px
+
     }
+    .label {
+		text-align: center;
+		margin: auto;
+		width: 100%;
+		font-weight: 900;
+		text-transform: uppercase;
+		color:saddlebrown;
+		font-family: "AxieFont";
+	}
     .skills-class{
-        cursor: pointer;
         text-decoration: none;
-        margin-top: 10px;
         color: #5f330e;
         margin-left: 10px;
     }
     .skills-description{
-        margin-left: 72px;
-        font-size: 17px;
+        text-transform: uppercase;
+        font-weight: 800;
+        cursor: pointer;
+    }
+    .skills-description:hover {
+        color: whitesmoke;
     }
     .skills-equip {
+        font-size: 9px;
         color: #f5d06c;
-        position: absolute;
-        left: 39%;
-        font-size: 12px;
+        float: right;
+        font-weight: bolder;
+        cursor: pointer;
     }
+    .skills-equipped {
+        font-size: 9px;
+        color: rgb(11, 102, 38);
+        float: right;
+        cursor: default;
+        font-weight: bolder;
+    }
+    .sub-label {
+		text-transform: uppercase;
+        font-weight: 800;
+	}
     .skill-title {
         text-transform: uppercase;
         color: whitesmoke;
-        top: 12.7%;
-        left: 51%;
+        font-weight: 800;
+        top: 11.5%;
+        left: 74%;
         font-size: 10px;
         position: absolute;
         text-align: center;
+        width: 93px;
     }
     .skill-mana {
-       color: whitesmoke;
-       top: 12%;
-       left: 48%;
-       font-size: 17px;
-       position: absolute;
+        text-transform: uppercase;
+        color: rgb(0, 0, 177);
+        font-weight: 800;
+        top: 10.3%;
+        left: 67.5%;
+        font-size: 17px;
+        position: absolute;
+        text-align: center;
+        width: 35px;
     }
     .skill-damage {
-       color: whitesmoke;
-       top: 16.6%;
-       left: 46.3%;
-       font-size: 17px;
-       position: absolute;
+        text-transform: uppercase;
+        color: red;
+        font-weight: 800;
+        top: 20.6%;
+        left: 65%;
+        font-size: 17px;
+        position: absolute;
+        text-align: center;
+        width: 35px;
     }
     .skill-heal {
-       color: whitesmoke;
-       top: 20.5%;
-       left: 46.3%;
-       font-size: 17px;
-       position: absolute;
+        text-transform: uppercase;
+        color: rgb(28, 172, 71);
+        font-weight: 800;
+        top: 29%;
+        left: 65%;
+        font-size: 17px;
+        position: absolute;
+        text-align: center;
+        width: 35px;
+    }
+    .skill-target {
+		color: whitesmoke;
+		top: 49%;
+		left: 32.8rem;
+		position: absolute;
+		text-transform: capitalize;
+    }
+
+	.skill-type {
+		color: whitesmoke;
+		top: 52%;
+		left: 32.8rem;
+		position: absolute;
+		text-transform: capitalize;
+    }
+    .unequip {
+        color: #f5d06c;
+        float: right;
+        line-height: 1.5;
+        padding-right: 5px;
+        cursor: pointer;
     }
 </style>
