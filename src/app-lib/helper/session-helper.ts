@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export enum storageNames {
     account = 'account',
-    character = 'character'
+    character = 'character',
+    inventory = 'inventory',
+    dungeons = 'dungeons',
+    skills = 'skills'
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -22,5 +25,5 @@ export const getSessionValue = <T>(name: string): T => {
 }
 
 export const clearAllSessionValues = (): void => {
-    Object.keys(storageNames).forEach(key => removeSessionValue(key));
+    sessionStorage.clear();
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IGameState } from "./modules/game/state";
 
 export enum StoreModule {
@@ -29,6 +30,16 @@ export enum ActivityStateOptions {
     Failed = 'failed'
 }
 
+export enum Stats {
+    health = 'health',
+    mana = 'mana',
+    off = 'off',
+    def = 'def',
+    agi = 'agi',
+    int = 'int',
+    luk = 'luk'
+}
+
 export interface IValidationError {
     error: string;
     name: string;
@@ -50,6 +61,11 @@ export interface IRootState {
 export interface INameIdPair {
     _id: string;
     name: string;
+}
+
+export interface InfoKeyValue {
+    key: string;
+    [key: string]: any;
 }
 
 export interface IAction {
@@ -148,6 +164,7 @@ export interface ISkills extends INameIdPair {
     target: string;
     cost: number;
     type: string;
+    equipped: boolean;
 }
 
 export interface IDungeon extends INameIdPair  {

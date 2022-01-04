@@ -4,16 +4,16 @@
         <div class="main-stage-layout center" >
             <div class="bg" :style="`background-image:url(${(screenBackground)});`">
                 <span class="char-name-container">
-                    <span class="char-name">TestName</span>
-                    <span class="char-level">Lv. 1</span>
+                    <span class="char-level">{{ 'Lv.' + character.level}}</span>
+                    <span class="char-name">{{ ' ' + character.name }}</span>
                 </span>
                 <button class="credit-button"></button>
                 <button class="bottom-menu-button char-button" @click="navigateToRoute('character')"></button>
                 <button class="bottom-menu-button skills-button" @click="navigateToRoute('skills')"></button>
                 <button class="bottom-menu-button inventory-button" @click="navigateToRoute('inventory')"></button>
                 <button class="side-menu-button auto-dungeon-button"></button>
-                <button class="side-menu-button select-dungeon-button"></button>
-                <button class="side-menu-button logout-button"></button>
+                <button class="side-menu-button select-dungeon-button" @click="showSelectDungeonModal=true"></button>
+                <button class="side-menu-button logout-button" @click="logout()"></button>
                 <div class="vuexie-side">
                     <img class="vuexie-img" :src="`${characterImage}`">
                 </div>
@@ -23,6 +23,7 @@
             </div>
         </div>
     </div>
+    <appSelectDungeonModal :show="showSelectDungeonModal" @closeSelectDungeonModal="showSelectDungeonModal=false" />
 </template>
 
 <script lang="ts">
@@ -30,6 +31,7 @@
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
     import { computed, defineComponent, ref } from "vue";
     import { useRouter } from "vue-router";
+    import SelectDungeon from "./SelectDungeon.vue";
 
     const screenBackground = require('@/assets/background/main-stage.png');
 	const backdropScreenImage = require('@/assets/background/vuexie-battle.jpg');
@@ -37,6 +39,9 @@
     const characterImage =  require('@/assets/hero/playerAqua-idle.gif');
 
 	const MainStageScreen = defineComponent({
+        components:{
+			appSelectDungeonModal: SelectDungeon
+		},
 		setup() {
             const gameRoute = `/game`;
             const service = useMonsterSlayerService();
@@ -44,13 +49,21 @@
             const navigateToRoute = (routeName: string) => {
 				router.push(`${gameRoute}/${routeName}`);
 			};
+            const showSelectDungeonModal = ref<boolean>(false);
+            const character = computed(() => {
+				return service.getCharacterDetails();
+			});
+            const logout = service.logout;
 
 			return {
                 backdropScreenImage,
                 screenBackground,
                 characterImage,
+                character,
                 logoImage,
-                navigateToRoute
+                navigateToRoute,
+                showSelectDungeonModal,
+                logout
 			};
 		}
 	})
@@ -99,7 +112,7 @@
     .char-name-container {
         position:absolute;
         top:5%;
-        left: 10.5%;
+        left: 7.5%;
         font-weight: 900;
         font-size: 18px;
     }

@@ -3,7 +3,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { useRouter } from 'vue-router';
-import * as helper from '@/app-lib/helper/session-helper';
+import * as sessionHelper from '@/app-lib/helper/session-helper';
+import * as helper from '@/app-lib/helper/helper';
 import Monsters from '@/app-lib/json/monsters.json';
 import Player from '@/app-lib/json/player.json';
 import { ActionTypes } from '@/store/modules/game/actions';
@@ -11,8 +12,8 @@ import { GetterTypes } from '@/store/modules/game/getters';
 import { MutationTypes } from '@/store/modules/game/mutations';
 /* eslint-disable @typescript-eslint/no-var-requires */
 import {
-	ActivityStateOptions, CharacterTypes, IAccount, IAccountResponse, ICharacter, IItem,
-	IPersonState, ISkills, PersonType
+	ActivityStateOptions, CharacterTypes, IAccount, IAccountResponse, ICharacter, IDungeonResponse, IInventory, IItem,
+	IPersonState, ISkills, PersonType, IStats, InfoKeyValue, Stats, IEquipment
 } from '@/store/types';
 
 import useMonsterSlayerRequest from './monster-slayer-request';
@@ -51,6 +52,12 @@ const monsterActionImages = {
     // Assign an image for failed attack
     [ActivityStateOptions.Failed]: monsterIdleStance
 };
+export interface ICharInfoDisplay {
+    key: string,
+    base: number,
+    bonus: number,
+    total: number
+}
 
 export interface IMonsterSlayerService {
     initFromSession: () => void;
@@ -58,17 +65,23 @@ export interface IMonsterSlayerService {
     randomAction: (limit: number) => number;
     initOptions: (person: IPersonState) => IPersonState;
     getRandomMonsters: () => IPersonState;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getCharacterImage: (personType: PersonType, type: ActivityStateOptions) => any;
     getCharacterTypeName: (characterTypeId: number) => string;
     getCharacterDetails: () => ICharacter;
     getCharacterSkills: () => ISkills[];
-    getCharacterEquipment: () => IItem[];
+    getCharacterEquipment: () => IEquipment;
     getWinner: () => boolean;
     gameReset: () => void;
     gameInit: () => void;
     gameResult: () => void;
     battleStart: () => boolean;
+    getDungeons: () => IDungeonResponse[];
+    getSkills: () => ISkills[];
+    getInventory: () => IInventory[];
+    getCharacterStats: () => InfoKeyValue[];
+    logout: () => void;
+    updateSkills: (skills: string[]) => Promise<void>;
+    skillTypeName: (type: string) => string;
 
     // Http Call
     signUp: (account: IAccount) => Promise<IAccountResponse | null>;
@@ -80,9 +93,10 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
     const store = useStore();
     const router = useRouter();
     const initFromSession = (): void => {
-        store.commit('game/' + MutationTypes.setAccount, helper.getSessionValue<IAccount>(helper.storageNames.account));
-        store.commit('game/' + MutationTypes.setCharacter, helper.getSessionValue<ICharacter>(helper.storageNames.character));
+        store.commit('game/' + MutationTypes.setAccount, sessionHelper.getSessionValue<IAccount>(sessionHelper.storageNames.account));
+        store.commit('game/' + MutationTypes.setCharacter, sessionHelper.getSessionValue<ICharacter>(sessionHelper.storageNames.character));
     };
+
     const randomAction = (limit: number): number => {
         return Math.floor(Math.random() * limit);
     };
@@ -152,23 +166,91 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
     };
     const battleStart = (): boolean => store.state.battleStart;
     const getCharacterDetails = (): ICharacter => {
-        const character = store.getters['game/' + GetterTypes.getState]('character');
+        let character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
+        if (!character || !character?._id) {
+            character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
+            store.commit('game/' + MutationTypes.setCharacter, character);
+        }
         return character;
     };
-    const getCharacterSkills = (): ISkills[] => {
-        const character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
-        return character.skills;
+    const getCharacterStats = (): InfoKeyValue[] => {
+        const allStats: ICharInfoDisplay[] = [];
+        let character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
+        if (!character || !character?._id) {
+            character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
+            store.commit('game/' + MutationTypes.setCharacter, character);
+        }
+        const weaponBonus: IStats = character.equipment.weapon.bonus;
+        const armorBonus: IStats = character.equipment.armor.bonus;
+        Object.keys(Stats).map(key => {
+            const info = {
+                key,
+                base: character.stats[key],
+                bonus: weaponBonus[key] + armorBonus[key],
+                total: character.stats[key] + weaponBonus[key] + armorBonus[key]
+            } as ICharInfoDisplay;
+            allStats.push(info);
+        });
+        return allStats;
     };
-    const getCharacterEquipment = (): IItem[] => {
-        const character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
-        return Object.keys(character.equipment).map(key => character.equipment[key]);
+    const getCharacterSkills = (): ISkills[] => {
+        let character = store.getters['game/' + GetterTypes.getState]('character');
+        if (!character || !character?._id) {
+            character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
+            store.commit('game/' + MutationTypes.setCharacter, character);
+        }
+        return character.skills.sort((a,b) => helper.stringCompare(a.name, b.name));
+    };
+    const getCharacterEquipment = (): IEquipment => {
+        let character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
+        if (!character || !character?._id) {
+            character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
+            store.commit('game/' + MutationTypes.setCharacter, character);
+        }
+        return character.equipment;
+    };
+    const getDungeons = (): IDungeonResponse[] => {
+        let dungeons: IDungeonResponse[] = store.getters['game/' + GetterTypes.getDungeons]();
+        if (!dungeons || !dungeons?.length) {
+            dungeons = sessionHelper.getSessionValue(sessionHelper.storageNames.dungeons) as IDungeonResponse[];
+            store.commit('game/' + MutationTypes.setDungeons, dungeons);
+        }
+        return dungeons;
+    };
+    const getSkills = (): ISkills[] => {
+        let skills: ISkills[] = store.getters['game/' + GetterTypes.getSkills]();
+        if (!skills || !skills?.length) {
+            skills = sessionHelper.getSessionValue(sessionHelper.storageNames.skills) as ISkills[];
+            store.commit('game/' + MutationTypes.setSkills, skills);
+        }
+        return skills.sort((a,b) => helper.stringCompare(a.name, b.name));
+    };
+    const updateSkills = (skills: string[]): Promise<void> => {
+        const character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
+        return store.dispatch('game/' + ActionTypes.updateSkillAsync, { characterId: character._id, skills})
+        .then(() => store.dispatch('game/' + ActionTypes.loadCharacterAsync, { accountId: character.accountId }));
+    };
+
+    const skillTypeName = (type: string): string => type === 'P' ? 'Physical' : 'Magic';
+
+    const getInventory = (): IInventory[] => {
+        let inventory: IInventory[] = store.getters['game/' + GetterTypes.getInventory]();
+        if (!inventory || !inventory?.length) {
+            inventory = sessionHelper.getSessionValue(sessionHelper.storageNames.inventory) as IInventory[];
+            store.commit('game/' + MutationTypes.setInventory, inventory);
+        }
+        return inventory;
     };
     const getWinner = ():boolean => {
         return store.getters['game' + GetterTypes.isWinner]();
     };
-    const gameReset = (): void => store.commit(MutationTypes.reset, getDefaultPerson);
+    const gameReset = (): void => store.commit('game/' + MutationTypes.reset, getDefaultPerson);
     const gameResult = (): void => {
         router.push('/game/fightresult');
+    };
+    const logout = () => {
+        sessionHelper.clearAllSessionValues();
+        setTimeout(() => router.push('/'), 1000);
     };
 
     return {
@@ -183,12 +265,18 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         getCharacterDetails,
         getCharacterSkills,
         getCharacterEquipment,
+        getCharacterStats,
+        getDungeons,
+        getSkills,
+        getInventory,
         getWinner,
         gameReset,
         gameInit,
         gameResult,
+        skillTypeName,
+        updateSkills,
 
-        // Http Call
+        logout,
         signUp,
         loginRequest
     }

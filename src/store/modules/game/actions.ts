@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ActionTree, useStore } from 'vuex';
 import useMonsterSlayerRequest from '@/services/monster-slayer-request';
-import { IAccount, IRootState } from '../../types';
+import { IAccount, InfoKeyValue, IRootState, ISkills } from '../../types';
 import { MutationTypes } from './mutations';
 import { IGameState } from './state';
 
@@ -12,6 +12,7 @@ export enum ActionTypes {
     loadEnemyAsync = 'LOAD_ENEMY_ASYNC',
     loadDungeonAsync = 'LOAD_DUNGEON_ASYNC',
     enterDungeonAsync = 'ENTER_DUNGEON_ASYNC',
+    updateSkillAsync = 'UPDATE_SKILL_ASYNC',
 }
 
 export enum CharacterInfo {
@@ -19,11 +20,6 @@ export enum CharacterInfo {
     inventory = 'inventory',
     skills = 'skills',
     dungeon = 'dungeon'
-}
-
-export interface InfoKeyValue {
-    key: string;
-    [key: string]: any;
 }
 
 // type AugmentedActionContext = Omit<ActionContext<IGameState, IGameState>, 'commit'> & {
@@ -38,35 +34,44 @@ export interface GameActions {
     // [ActionTypes.loadEnemyAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
     // [ActionTypes.loadDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
     // [ActionTypes.enterDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
+    [ActionTypes.updateSkillAsync]({ commit }, payload: ISkills): Promise<any>;
 }
 
 export const actions: ActionTree<IGameState, IRootState> & GameActions= {
     [ActionTypes.loadCharacterAsync]: ({ commit }, payload?: IAccount): Promise<boolean> => {
         const accountId = payload.accountId;
         const promiseMap: InfoKeyValue[] = [
-            { key: 'character' , value: request.getCharacter },
             { key: 'inventory' , value: request.getInventory },
             { key: 'skills' , value: request.getSkills },
             { key: 'dungeon' , value: request.getDungeons }
         ];
-        return Promise.all(
-            promiseMap.map(async info => {
-                return {
-                    key: info.key,
-                    [info.key]: await info.value(accountId)
-                } as InfoKeyValue;
-            })
-        ).then(val => {
-            commit(MutationTypes.setCharacter, val.find(_ => _.key === CharacterInfo.character)[CharacterInfo.character] );
-            commit(MutationTypes.setSkills, val.find(_ => _.key === CharacterInfo.skills)[CharacterInfo.skills] );
-            commit(MutationTypes.setInventory, val.find(_ => _.key === CharacterInfo.inventory)[CharacterInfo.inventory] );
-            commit(MutationTypes.setDungeons, val.find(_ => _.key === CharacterInfo.dungeon)[CharacterInfo.dungeon] );
+        if (accountId)
+        return request.getCharacter(accountId)
+        .then(charInfo => {
+            commit(MutationTypes.setCharacter, charInfo);
+            return Promise.all(
+                promiseMap.map(async info => {
+                    return {
+                        key: info.key,
+                        [info.key]: await info.value(charInfo._id)
+                    } as InfoKeyValue;
+                })
+            )
+        })
+        .then(val => {
+            commit(MutationTypes.setSkills, val.find(_ => _.key === CharacterInfo.skills)[CharacterInfo.skills]);
+            commit(MutationTypes.setInventory, val.find(_ => _.key === CharacterInfo.inventory)[CharacterInfo.inventory]);
+            commit(MutationTypes.setDungeons, val.find(_ => _.key === CharacterInfo.dungeon)[CharacterInfo.dungeon]);
             return true;
         }).catch(err => {
             console.log(err);
             return false;
         });
+        else return new Promise<boolean>(() => false);
     },
+    [ActionTypes.updateSkillAsync]: ({ commit }, payload: any): Promise<any> => {
+        return request.putSkills(payload.characterId, payload.skills);
+    }
     // [ActionTypes.loadEnemyAsync]: ({ commit }, payload: any): Promise<void> => {
 
     // },

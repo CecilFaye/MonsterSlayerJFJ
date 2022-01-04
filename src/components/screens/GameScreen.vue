@@ -24,7 +24,6 @@
 			const screenImage = battleScreenImage;
 			const gameRoute = `/game/${props.id}`;
 
-			// Lifecycle Hooks
 			onBeforeMount(() => {
 				service.initFromSession();
 			});

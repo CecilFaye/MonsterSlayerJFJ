@@ -22,9 +22,8 @@
 
 <script lang="ts">
 	import { defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
+	import { useRouter } from "vue-router";
 	import { mapMutations } from "vuex";
-	import { useStore } from "vuex";
 	import Login from './security/Login.vue';
 	import SignUp from './security/SignUp.vue';
 

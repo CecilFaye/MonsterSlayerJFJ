@@ -7,6 +7,7 @@ import {
 } from '@/store/types';
 
 import { IGameState } from './state';
+import { storageNames } from '@/app-lib/helper/session-helper';
 
 export enum MutationTypes {
     setAccount = 'SET_ACCOUNT',
@@ -44,20 +45,23 @@ export const mutations: MutationTree<IGameState> = {
         state.currentScreen = payload;
     },
     [MutationTypes.setAccount](state, payload: IAccount) {
-        helper.saveSession('account', payload);
+        helper.saveSession(storageNames.account, payload);
         state.account = payload;
     },
     [MutationTypes.setCharacter](state, payload: ICharacter) {
-        helper.saveSession('character', payload);
+        helper.saveSession(storageNames.character, payload);
         state.character = payload;
     },
     [MutationTypes.setSkills](state, payload: ISkills[]) {
+        helper.saveSession(storageNames.skills, payload);
         state.skills = payload;
     },
     [MutationTypes.setInventory](state, payload: IInventory[]) {
+        helper.saveSession(storageNames.inventory, payload);
         state.inventory = payload;
     },
     [MutationTypes.setDungeons](state, payload: IDungeonResponse[]) {
+        helper.saveSession(storageNames.dungeons, payload);
         state.dungeon = payload;
     },
     [MutationTypes.initializePlayer](state, payload: IPersonState) {
