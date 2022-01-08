@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ActionTree, useStore } from 'vuex';
 import useMonsterSlayerRequest from '@/services/monster-slayer-request';
-import { IAccount, InfoKeyValue, IRootState, ISkills } from '../../types';
+import { IAccount, IEquipmentRequest, InfoKeyValue, IRootState, ISkills } from '../../types';
 import { MutationTypes } from './mutations';
 import { IGameState } from './state';
 
@@ -13,6 +13,9 @@ export enum ActionTypes {
     loadDungeonAsync = 'LOAD_DUNGEON_ASYNC',
     enterDungeonAsync = 'ENTER_DUNGEON_ASYNC',
     updateSkillAsync = 'UPDATE_SKILL_ASYNC',
+    updateEquipmentAsync = 'UPDATE_EQUIPMENT_ASYNC',
+    deleteEquipmentAsync = 'DELETE_SKILLS_ASYNC',
+    refreshInventoryAsync = 'REFRESH_INVENTORY_ASYNC'
 }
 
 export enum CharacterInfo {
@@ -35,6 +38,7 @@ export interface GameActions {
     // [ActionTypes.loadDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
     // [ActionTypes.enterDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
     [ActionTypes.updateSkillAsync]({ commit }, payload: ISkills): Promise<any>;
+    [ActionTypes.updateEquipmentAsync]({ commit }, payload: IEquipmentRequest): Promise<any>;
 }
 
 export const actions: ActionTree<IGameState, IRootState> & GameActions= {
@@ -69,8 +73,18 @@ export const actions: ActionTree<IGameState, IRootState> & GameActions= {
         });
         else return new Promise<boolean>(() => false);
     },
+    [ActionTypes.refreshInventoryAsync]: ({ commit }, payload: string): Promise<any> => {
+        return request.getInventory(payload)
+        .then(inventory => commit(MutationTypes.setInventory, inventory));
+    },
     [ActionTypes.updateSkillAsync]: ({ commit }, payload: any): Promise<any> => {
         return request.putSkills(payload.characterId, payload.skills);
+    },
+    [ActionTypes.updateEquipmentAsync]: ({ commit }, payload: any): Promise<any> => {
+        return request.putEquipment(payload.characterId, payload.equipments);
+    },
+    [ActionTypes.deleteEquipmentAsync]: ({ commit }, payload: any): Promise<any> => {
+        return request.deleteItem(payload.characterId, payload.itemId);
     }
     // [ActionTypes.loadEnemyAsync]: ({ commit }, payload: any): Promise<void> => {
 

@@ -13,7 +13,7 @@ import { MutationTypes } from '@/store/modules/game/mutations';
 /* eslint-disable @typescript-eslint/no-var-requires */
 import {
 	ActivityStateOptions, CharacterTypes, IAccount, IAccountResponse, ICharacter, IDungeonResponse, IInventory, IItem,
-	IPersonState, ISkills, PersonType, IStats, InfoKeyValue, Stats, IEquipment
+	IPersonState, ISkills, PersonType, IStats, InfoKeyValue, Stats, IEquipment, IEquipmentRequest
 } from '@/store/types';
 
 import useMonsterSlayerRequest from './monster-slayer-request';
@@ -81,6 +81,8 @@ export interface IMonsterSlayerService {
     getCharacterStats: () => InfoKeyValue[];
     logout: () => void;
     updateSkills: (skills: string[]) => Promise<void>;
+    updateEquipment: (equipments: IEquipmentRequest) => Promise<void>;
+    deleteEquipment: (itemId: string) => Promise<void>;
     skillTypeName: (type: string) => string;
 
     // Http Call
@@ -180,14 +182,17 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
             character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
             store.commit('game/' + MutationTypes.setCharacter, character);
         }
-        const weaponBonus: IStats = character.equipment.weapon.bonus;
-        const armorBonus: IStats = character.equipment.armor.bonus;
+        const weaponBonus: IStats = character.equipment.weapon?.bonus;
+        const armorBonus: IStats = character.equipment.armor?.bonus;
+
         Object.keys(Stats).map(key => {
+            const wb = weaponBonus ? weaponBonus[key] ?? 0 : 0;
+            const ab = armorBonus ? armorBonus[key] ?? 0 : 0;
             const info = {
                 key,
                 base: character.stats[key],
-                bonus: weaponBonus[key] + armorBonus[key],
-                total: character.stats[key] + weaponBonus[key] + armorBonus[key]
+                bonus: wb + ab,
+                total: character.stats[key] + wb + ab
             } as ICharInfoDisplay;
             allStats.push(info);
         });
@@ -229,6 +234,18 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         const character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
         return store.dispatch('game/' + ActionTypes.updateSkillAsync, { characterId: character._id, skills})
         .then(() => store.dispatch('game/' + ActionTypes.loadCharacterAsync, { accountId: character.accountId }));
+    };
+
+    const updateEquipment = (equipments: IEquipmentRequest): Promise<void> => {
+        const character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
+        return store.dispatch('game/' + ActionTypes.updateEquipmentAsync, { characterId: character._id, equipments})
+        .then(() => store.dispatch('game/' + ActionTypes.loadCharacterAsync, { accountId: character.accountId }));
+    };
+
+    const deleteEquipment = (itemId: string): Promise<void> => {
+        const character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
+        return store.dispatch('game/' + ActionTypes.deleteEquipmentAsync, { characterId: character._id, itemId })
+        .then(() => store.dispatch('game/' + ActionTypes.refreshInventoryAsync, character.accountId ));
     };
 
     const skillTypeName = (type: string): string => type === 'P' ? 'Physical' : 'Magic';
@@ -275,6 +292,8 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         gameResult,
         skillTypeName,
         updateSkills,
+        updateEquipment,
+        deleteEquipment,
 
         logout,
         signUp,

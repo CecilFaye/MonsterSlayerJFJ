@@ -156,6 +156,7 @@ export interface IItem extends INameIdPair {
 export interface IInventory extends INameIdPair  {
     characterId: string;
     item: IItem;
+    equipped: boolean;
 }
 
 export interface ISkills extends INameIdPair {
@@ -186,6 +187,23 @@ export interface IEnemy extends INameIdPair {
     level: number;
     stats: IStats;
     skills: ISkills[];
+}
+
+
+export interface IEquipmentRequest {
+    weaponId: string;
+    armorId: string;
+}
+
+export interface IEnterDungeonRequest {
+    characterId: string;
+    dungeonId: string;
+}
+
+export interface IBattleRequest {
+    characterId: string;
+    dungeonId: string;
+    enemyId: string;
 }
 
 

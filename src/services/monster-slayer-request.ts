@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IAccount, IAccountResponse, ICharacter, IDungeonResponse, IEquipment, IInventory, IItem, ISkills } from "@/store/types";
+import { IAccount, IAccountResponse, ICharacter, IDungeonResponse, IEquipment, IEquipmentRequest, IInventory, IItem, ISkills } from "@/store/types";
 import { useMonsterSlayerService } from "@/services/monster-slayer-service";
 import axios from "axios";
 import { apiUrl } from "@/app-lib/constant/app-config";
@@ -11,9 +11,9 @@ export interface IMonsterSlayerRequest {
     getSkills: (accountId: string) => Promise<ISkills[]>;
     getInventory: (accountId: string) => Promise<IInventory[]>;
     getDungeons: (accountId: string) => Promise<IDungeonResponse[]>;
-    putEquipment: (accountId: string, equipment: IEquipment) => Promise<boolean>;
+    putEquipment: (characterId: string, equipment: IEquipmentRequest) => Promise<boolean>;
     putSkills: (characterId: string, skills: string[]) => Promise<boolean>;
-    deleteItem: (accountId: string, itemId: string) => Promise<boolean>;
+    deleteItem: (characterId: string, itemId: string) => Promise<boolean>;
 }
 
 const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
@@ -89,8 +89,8 @@ const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
                 return err.response.data;
             });
         },
-        putEquipment: (accountId: string, equipment: IEquipment): Promise<boolean> => {
-            return axios.put(`${apiUrl}/character/${accountId}/equipment`, equipment)
+        putEquipment: (characterId: string, equipment: IEquipmentRequest): Promise<boolean> => {
+            return axios.put(`${apiUrl}/character/${characterId}/equipment`, equipment)
             .then(result => result.status === 200)
             .catch(err => {
                 return err.response.data;
@@ -103,8 +103,8 @@ const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
                 return err.response.data;
             });
         },
-        deleteItem: (accountId: string, itemId: string): Promise<boolean> => {
-            return axios.delete(`${apiUrl}/character/${accountId}/inventory/${itemId}`)
+        deleteItem: (characterId: string, itemId: string): Promise<boolean> => {
+            return axios.delete(`${apiUrl}/character/${characterId}/inventory/${itemId}`)
             .then(result => result.status === 200)
             .catch(err => {
                 return err.response.data;
