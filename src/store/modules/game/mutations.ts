@@ -38,8 +38,8 @@ export interface GameMutations {
     [MutationTypes.actionLog](state: IGameState, payload: IAction): void;
     [MutationTypes.changeScreen](state: IGameState, payload: string): void;
 }
-const store = useStore();
 
+const store = useStore();
 export const mutations: MutationTree<IGameState> = {
     [MutationTypes.changeScreen](state, payload: string) {
         state.currentScreen = payload;
@@ -121,16 +121,17 @@ export const mutations: MutationTree<IGameState> = {
         state.battleStart = true;
     },
     [MutationTypes.reset](state, getDefaultPerson: (type: PersonType) => IPersonState) {
-
+        const store = useStore();
         // TODO: Change this code once the monster API is available
         state.fightLogs = [];
         state.player.turn = false;
         state.battleStart = false;
-        store.commit(MutationTypes.initializePlayer, getDefaultPerson(PersonType.Player));
-        store.commit(MutationTypes.initializeMonster, getDefaultPerson(PersonType.Monsters));
+        store.commit('game/' + MutationTypes.initializePlayer, getDefaultPerson(PersonType.Player));
+        store.commit('game/' + MutationTypes.initializeMonster, getDefaultPerson(PersonType.Monsters));
 
     },
     [MutationTypes.action](state, payload: { work: IAction, reset: () => void }) {
+
         const act = payload.work;
         const actor = act.personType as PersonType;
         const receiver = actor === PersonType.Player ? PersonType.Monsters : PersonType.Player;
@@ -151,6 +152,7 @@ export const mutations: MutationTree<IGameState> = {
         const actorActualHealth = (actorHealth/100)*actorMaxHealth;
         const receiverActualHealth = (receiverHealth/100)*receiverMaxHealth;
 
+
         if (actorActualMana > manaCost) {
             const remainingReceiverHealth = receiverActualHealth - act.actionTaken.damage;
             const remainingActorMana = actorActualMana - act.actionTaken.manaCost;
@@ -159,6 +161,12 @@ export const mutations: MutationTree<IGameState> = {
             state[actor].currentState.activityState = act.actionTaken.skillType;
             state[receiver].currentState.health = remainingHealthPercentage <= 0 ? 0 : remainingHealthPercentage;
             state[actor].currentState.mana = remainingActorManaPercentage <= 0 ? 0 : remainingActorManaPercentage;
+
+            if (healthIncrement || manaIncrement) {
+                state[actor].toSelf = true;
+            } else {
+                state[actor].toSelf = false;
+            }
 
             if (healthIncrement) {
                 const healthTotal = actorActualHealth + act.actionTaken.healthIncrement;
@@ -170,13 +178,17 @@ export const mutations: MutationTree<IGameState> = {
                 const manaTotalPercentage = (manaTotal/actorMaxMana)*100;
                 state[actor].currentState.mana = manaTotalPercentage > 100 ? 100 : manaTotalPercentage;
             }
-            store.commit(MutationTypes.actionLog, act);
+
+            state[actor].attacking = true;
+
+            store?.commit('game/' + MutationTypes.actionLog, act);
             setTimeout(() =>{
                 if (state[receiver].currentState.health < 1) {
                     payload.reset();
                 } else  {
                     state[actor].currentState.activityState = ActivityStateOptions.Idle;
                     state[actor].turn = false;
+                    state[actor].attacking = false;
                     state[receiver].turn = true;
                 }
             }, act.actionTaken.timeout);

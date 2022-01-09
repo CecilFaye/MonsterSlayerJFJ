@@ -221,7 +221,9 @@ export interface IPersonState extends IStats {
     focus: ISkill;
     skills: ISkill[];
     turn: boolean;
+    attacking: boolean;
     currentState: IStatus;
+    toSelf: boolean;
 }
 
 export interface ISkill {

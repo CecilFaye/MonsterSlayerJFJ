@@ -28,7 +28,7 @@
 <style scoped>
     .mana-bar-container {
         height: 1rem;
-        margin: 0.1rem 6rem;
+        /* margin: 0.1rem 6rem; */
         opacity: 0.8;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.86);
     }

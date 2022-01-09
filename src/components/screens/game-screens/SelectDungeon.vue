@@ -14,7 +14,7 @@
                                 <span v-bind:class="{level: dungeon.locked, 'enabled-level': !dungeon.locked  }">{{'Lv. ' + dungeon.recommendedLevel}}</span>
                                 <span v-bind:class="{ 'disabled-name': dungeon.locked }">{{ ' - ' + dungeon.name}}</span>
                             </span>
-                            <button v-if="!dungeon.locked">
+                            <button v-if="!dungeon.locked" @click="enterDungeon(dungeon)" >
                                 ENTER
                             </button><br>
                             <img v-if="!dungeon.locked" class="cards-img" :src="`${sampleDungeon}`">
@@ -32,8 +32,7 @@
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	import { defineComponent, Prop, computed, ref } from "vue";
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
-	import { useRouter } from "vue-router";
-    import * as helper from "@/app-lib/helper/helper";
+    import { IDungeonResponse } from "@/store/types";
 
     const anyBg = require('@/assets/background/axie-dungeon.jpg');
     const field = require('@/assets/background/field.jpg');
@@ -56,15 +55,21 @@
 		},
 		setup(props, context) {
 			const service = useMonsterSlayerService();
-			const router = useRouter();
 			const onModalClose = () => { context.emit('closeSelectDungeonModal') };
             const dungeons = computed(() => {
-				const dungeonList = service.getDungeons();
-				return dungeonList?.sort((a,b) => a.recommendedLevel - b.recommendedLevel);
+				return getDungeons();
 			});
+            const getDungeons = () => {
+                const dungeonList = service.getDungeons();
+				return dungeonList?.sort((a,b) => a.recommendedLevel - b.recommendedLevel);
+            };
+            const enterDungeon = (dungeon: IDungeonResponse): void => {
+                service.enterDungeon(dungeon._id);
+            };
 
 			return {
 				onModalClose,
+                enterDungeon,
                 dungeons
 			}
 		}

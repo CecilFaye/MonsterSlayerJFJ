@@ -13,7 +13,7 @@ import { MutationTypes } from '@/store/modules/game/mutations';
 /* eslint-disable @typescript-eslint/no-var-requires */
 import {
 	ActivityStateOptions, CharacterTypes, IAccount, IAccountResponse, ICharacter, IDungeonResponse, IInventory, IItem,
-	IPersonState, ISkills, PersonType, IStats, InfoKeyValue, Stats, IEquipment, IEquipmentRequest
+	IPersonState, ISkills, PersonType, IStats, InfoKeyValue, Stats, IEquipment, IEquipmentRequest, IEnterDungeonRequest, IEnterDungeonResponse, IBattleRequest
 } from '@/store/types';
 
 import useMonsterSlayerRequest from './monster-slayer-request';
@@ -84,6 +84,10 @@ export interface IMonsterSlayerService {
     updateEquipment: (equipments: IEquipmentRequest) => Promise<void>;
     deleteEquipment: (itemId: string) => Promise<void>;
     skillTypeName: (type: string) => string;
+    isAttacking: (pType: PersonType) => boolean;
+    toSelf: (pType: PersonType) => boolean;
+    enterDungeon: (dungeonId: string) => Promise<void>;
+    dungeonRaidResult: () => Promise<void>;
 
     // Http Call
     signUp: (account: IAccount) => Promise<IAccountResponse | null>;
@@ -164,7 +168,7 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         })
     };
     const gameInit = (): void => {
-        store.commit(MutationTypes.initFirstTurn, null);
+        store.commit('game/' + MutationTypes.initFirstTurn, null);
     };
     const battleStart = (): boolean => store.state.battleStart;
     const getCharacterDetails = (): ICharacter => {
@@ -258,6 +262,33 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         }
         return inventory;
     };
+    const isAttacking = (pType: PersonType): boolean => {
+        return store.state.game[pType].attacking;
+    };
+    const toSelf = (pType: PersonType): boolean => {
+        return store.state.game[pType].toSelf;
+    };
+    const enterDungeon = (dungeonId: string): Promise<void> => {
+        const character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
+        return  store.dispatch('game/' + ActionTypes.enterDungeonAsync, { characterId: character._id, dungeonId } as IEnterDungeonRequest)
+        .then((res: IEnterDungeonResponse) => {
+            if (res) {
+                router.push(`/game/transition`);
+            }
+            return res;
+        })
+        .then(res => sessionHelper.saveSession(sessionHelper.storageNames.onGoingDungeon, {
+            characterId: character._id,
+            dungeonId,
+            enemyId: res.enemy._id
+        } as IBattleRequest ));
+    };
+    const dungeonRaidResult = (): Promise<void> => {
+        const battleInfo = sessionHelper.getSessionValue(sessionHelper.storageNames.onGoingDungeon) as string;
+        const character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
+        return  store.dispatch('game/' + ActionTypes.dungeonRaidResultAsync, battleInfo)
+        .finally(() => store.dispatch('game/' + ActionTypes.loadCharacterAsync, { accountId: character.accountId }));
+    };
     const getWinner = ():boolean => {
         return store.getters['game' + GetterTypes.isWinner]();
     };
@@ -294,6 +325,10 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         updateSkills,
         updateEquipment,
         deleteEquipment,
+        isAttacking,
+        toSelf,
+        enterDungeon,
+        dungeonRaidResult,
 
         logout,
         signUp,

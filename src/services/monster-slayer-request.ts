@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IAccount, IAccountResponse, ICharacter, IDungeonResponse, IEquipment, IEquipmentRequest, IInventory, IItem, ISkills } from "@/store/types";
+import { IAccount, IAccountResponse, IBattleRequest, IBattleResponse, ICharacter, IDungeonResponse, IEnterDungeonResponse, IEquipment, IEquipmentRequest, IInventory, IItem, ISkills } from "@/store/types";
 import { useMonsterSlayerService } from "@/services/monster-slayer-service";
 import axios from "axios";
 import { apiUrl } from "@/app-lib/constant/app-config";
@@ -14,6 +14,8 @@ export interface IMonsterSlayerRequest {
     putEquipment: (characterId: string, equipment: IEquipmentRequest) => Promise<boolean>;
     putSkills: (characterId: string, skills: string[]) => Promise<boolean>;
     deleteItem: (characterId: string, itemId: string) => Promise<boolean>;
+    enterDungeon: (dungeon: IEnterDungeonResponse) => Promise<IEnterDungeonResponse>;
+    batleDungeon: (dungeon: IBattleRequest) => Promise<IBattleResponse>;
 }
 
 const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
@@ -105,6 +107,20 @@ const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
         },
         deleteItem: (characterId: string, itemId: string): Promise<boolean> => {
             return axios.delete(`${apiUrl}/character/${characterId}/inventory/${itemId}`)
+            .then(result => result.status === 200)
+            .catch(err => {
+                return err.response.data;
+            });
+        },
+        enterDungeon: (dungeon: IEnterDungeonResponse): Promise<IEnterDungeonResponse> => {
+            return axios.post(`${apiUrl}/dungeon/enter`, dungeon)
+            .then(result => result.status === 200)
+            .catch(err => {
+                return err.response.data;
+            });
+        },
+        batleDungeon: (dungeon: IBattleRequest): Promise<IBattleResponse> => {
+            return axios.post(`${apiUrl}/dungeon/battle`, dungeon)
             .then(result => result.status === 200)
             .catch(err => {
                 return err.response.data;

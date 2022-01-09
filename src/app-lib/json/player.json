@@ -43,18 +43,6 @@
             "manaIncrement": 0
         },
         {
-            "id": 4,
-            "skillType": "skill1",
-            "name": "Tail Slap",
-            "image": "../../assets/hero/playerBeast-attack.gif",
-            "timeout": 1000,
-            "manaCost": 10,
-            "icon": "",
-            "damage": 15,
-            "healthIncrement": 0,
-            "manaIncrement": 0
-        },
-        {
             "id": 5,
             "name": "Vegetal Bite",
             "skillType": "skill3",

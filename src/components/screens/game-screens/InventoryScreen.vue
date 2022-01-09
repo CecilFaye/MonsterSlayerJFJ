@@ -3,7 +3,7 @@
 	<div class="inventory-layout">
         <div class="grid-container">
             <div class="left-side-grid">
-                <div class="label">EQUIPMENT</div>
+                <div class="label">EQUIPMENTS</div>
                  <p class="item-class" v-for="(item, index) in inventoryList" :key="`skill-${index}`"> <img class="item-img" :src="`${partsImg}`" >
                     <span class="item-description" @click="itemInfo(item.item)">
                         {{item?.item?.name ?? ''}}

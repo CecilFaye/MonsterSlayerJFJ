@@ -2,48 +2,97 @@
 <template>
     <div class="main-stage-container" :style="`background-image:url(${(backdropScreenImage)});`">
         <div class="main-stage-layout center" >
+            <transition name="fade">
             <div class="bg" :style="`background-image:url(${(screenBackground)});`">
-                <span class="char-name-container">
+                <div class="char-name-container">
                     <span class="char-level">{{ 'Lv.' + character.level}}</span>
                     <span class="char-name">{{ ' ' + character.name }}</span>
-                </span>
-                <span class="mons-name-container">
+                    <div class="char-bars">
+                        <HealthBarWidget :personType="'player'"/>
+                        <ManaBarWidget :personType="'player'"/>
+                    </div>
+                </div>
+                <div class="mons-name-container">
                     <span class="mons-name">{{ ' ' + character.name }}</span>
                     <span class="mons-level">{{ 'Lv.' + character.level}}</span>
-                </span>
-                <div class="vuexie-left-side">
-                    <img class="vuexie-img" :src="`${characterImage}`">
+                    <div class="mons-bars">
+                        <HealthBarWidget :personType="'player'"/>
+                        <ManaBarWidget :personType="'player'"/>
+                    </div>
                 </div>
-                 <div class="vuexie-right-side">
-                    <img class="vuexie-img" :src="`${monsterImage}`">
+                <div class="vuexie-left-side" v-bind:class="{ 'char-attacking': charAttacking && !charToSelf }">
+                    <img class="vuexie-img" :src="`${ charAttacking ? (charToSelf ? characterImageHeal : characterImageAttacking) : characterImage }`">
+                </div>
+                <div class="vuexie-right-side" v-bind:class="{ 'mons-attacking': monsAttacking && !monsToSelf }">
+                    <img class="vuexie-img" :src="`${ monsAttacking ? (monsToSelf ? monsterImageHeal : monsterImageAttacking) : monsterImage }`">
+                </div>
+                <div class="player-controls">
+                    <BattleControlWidget/>
+                </div>
+                <div class="logs">
+                    <LogsWidget/>
                 </div>
             </div>
+            </transition>
         </div>
     </div>
 </template>
 <script lang="ts">
     /* eslint-disable @typescript-eslint/no-var-requires */
-	import useMonsterSlayerService from "@/services/monster-slayer-service";
-    import { computed, defineComponent, ref } from "vue";
+	import BattleControlWidget from "@/components/widget/BattleControls.vue";
+    import HealthBarWidget from "@/components/widget/HealthBar.vue";
+    import LogsWidget from "@/components/widget/Logs.vue";
+    import ManaBarWidget from "@/components/widget/ManaBar.vue";
+    import useMonsterSlayerService from "@/services/monster-slayer-service";
+    import { ActivityStateOptions, PersonType } from "@/store/types";
+    import { computed, defineComponent, onBeforeMount, ref } from "vue";
     import { useRouter } from "vue-router";
 
-    const screenBackground = require('@/assets/background/loading-fight.png');
+    const screenBackground = require('@/assets/background/inside-castle.jpg');
 	const backdropScreenImage = require('@/assets/background/vuexie-battle.jpg');
     const logoImage = require('@/assets/logo/vuexie-logo.png');
-    const characterImage =  require('@/assets/hero/playerAqua-idle.gif');
-    const monsterImage =  require('@/assets/monster/monsterPlant-idle.gif');
 
-	const TransitionScreen = defineComponent({
+    const characterImage =  require('@/assets/hero/playerAqua-idle.gif');
+    const characterImageAttacking =  require('@/assets/hero/playerBeast-attack.gif');
+    const characterImageHeal =  require('@/assets/hero/playerBeast-focus.gif');
+
+    const monsterImage =  require('@/assets/monster/monsterPlant-idle.gif');
+    const monsterImageAttacking =  require('@/assets/monster/monsterPlant-attack.gif');
+    const monsterImageHeal =  require('@/assets/monster/monsterPlant-focus.gif');
+
+	const FightScreen = defineComponent({
+        components: {
+			HealthBarWidget,
+			ManaBarWidget,
+            BattleControlWidget,
+            LogsWidget
+		},
 		setup() {
             const gameRoute = `/game`;
             const service = useMonsterSlayerService();
             const router = useRouter();
+            onBeforeMount(() => {
+				service.gameReset();
+			});
             const navigateToRoute = (routeName: string) => {
 				router.push(`${gameRoute}/${routeName}`);
 			};
             const character = computed(() => {
 				return service.getCharacterDetails();
 			});
+            const charAttacking = computed(() => {
+				return service.isAttacking(PersonType.Player);
+			});
+            const monsAttacking = computed(() => {
+				return service.isAttacking(PersonType.Monsters);
+			});
+            const charToSelf = computed(() => {
+				return service.toSelf(PersonType.Player);
+			});
+            const monsToSelf = computed(() => {
+				return service.toSelf(PersonType.Monsters);
+			});
+            const getCharacterImage = (type: ActivityStateOptions, propsType: PersonType) => service.getCharacterImage(propsType, type);
 
             setTimeout(() => {
                 navigateToRoute('fight');
@@ -55,11 +104,20 @@
                 characterImage,
                 character,
                 logoImage,
-                monsterImage
+                monsterImage,
+                monsAttacking,
+                charAttacking,
+                getCharacterImage,
+                characterImageAttacking,
+                characterImageHeal,
+                monsterImageAttacking,
+                monsterImageHeal,
+                charToSelf,
+                monsToSelf
 			};
 		}
 	})
-	export default TransitionScreen;
+	export default FightScreen;
 </script>
 <style scoped>
     button::-moz-focus-inner {
@@ -108,13 +166,29 @@
         font-weight: 900;
         font-size: 18px;
     }
+    .char-bars, .mons-bars {
+        width: 300px;
+    }
+    .player-controls {
+        width: 50%;
+        height: 30%;
+        position: absolute;
+        top: 70%;
+        /* background:lightskyblue; */
+    }
+    .logs {
+        width: 50%;
+        height: 30%;
+        position: absolute;
+        top: 70%;
+        left: 50%;
+    }
     .mons-name-container {
         position: absolute;
         top: 5%;
-        left: 65%;
+        left: 69%;
         font-weight: 900;
         font-size: 18px;
-        width: 28rem;
         text-align: right;
     }
     .mons-name {
@@ -201,24 +275,28 @@
         background-size: cover;
         z-index: -1;
     }
-    .vuexie-img {
-		/* height:500px; */
-	}
+
 	.vuexie-left-side {
 		text-align: left;
         top: 20%;
         position: absolute;
         height: 42em;
-        width: 72em;
+        width: 86em;
 	}
+    .char-attacking {
+        text-align: right;
+    }
     .vuexie-right-side {
 		text-align: right;
         top: 20%;
-        left: 30%;
+        left: 17.5%;
         position: absolute;
         height: 42em;
-        width: 72em;
+        width: 86em;
 	}
+    .mons-attacking {
+        text-align: left;
+    }
     .vuexie-logo-img {
 		height:100px;
 	}

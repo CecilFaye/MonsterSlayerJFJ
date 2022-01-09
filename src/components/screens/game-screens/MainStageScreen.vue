@@ -11,7 +11,7 @@
                 <button class="bottom-menu-button char-button" @click="navigateToRoute('character')"></button>
                 <button class="bottom-menu-button skills-button" @click="navigateToRoute('skills')"></button>
                 <button class="bottom-menu-button inventory-button" @click="navigateToRoute('inventory')"></button>
-                <button class="side-menu-button auto-dungeon-button"></button>
+                <button class="side-menu-button auto-dungeon-button" @click="randomDungeon()"></button>
                 <button class="side-menu-button select-dungeon-button" @click="showSelectDungeonModal=true"></button>
                 <button class="side-menu-button logout-button" @click="logout()"></button>
                 <div class="vuexie-side">
@@ -53,6 +53,16 @@
             const character = computed(() => {
 				return service.getCharacterDetails();
 			});
+            const getDungeons = () => {
+                const dungeonList = service.getDungeons();
+				return dungeonList?.sort((a,b) => a.recommendedLevel - b.recommendedLevel);
+            };
+            const randomDungeon = (): void  => {
+                const duns = getDungeons()?.filter(dun => !dun.locked);
+                if (duns && duns.length) {
+                    service.enterDungeon(duns.reverse()[0]?._id);
+                }
+            };
             const logout = service.logout;
 
 			return {
@@ -63,6 +73,7 @@
                 logoImage,
                 navigateToRoute,
                 showSelectDungeonModal,
+                randomDungeon,
                 logout
 			};
 		}

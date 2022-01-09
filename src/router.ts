@@ -110,6 +110,12 @@ const router: Router = createRouter({
 					props: true
 				},
 				{
+					name: 'fight',
+					path: '/game/fight',
+					component: () => import('@/components/screens/game-screens/FightScreen.vue'),
+					props: true
+				},
+				{
 					name: 'fightresult',
 					path: '/game/fightresult',
 					component: () => import('@/components/screens/game-screens/FightResultScreen.vue'),
