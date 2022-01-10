@@ -19,10 +19,11 @@
 <script lang="ts">
 	/* eslint-disable @typescript-eslint/no-empty-function */
 	/* eslint-disable @typescript-eslint/no-var-requires */
+	import useBattleEngine, { ActionResult, IActionResultStatus } from "@/services/battle-engine";
+	import useMonsterEngine from "@/services/monster-engine";
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
 	import { GetterTypes } from "@/store/modules/game/getters";
-import { MutationTypes } from "@/store/modules/game/mutations";
-    import { ActivityStateOptions, IAction, ISkill, PersonType } from "@/store/types";
+    import { IAction, ISkills, PersonType } from "@/store/types";
     import { computed, defineComponent, watch } from "vue";
     import { useStore } from "vuex";
 	const cardsImg = require('@/assets/skills/archer-arrowAssault.png');
@@ -30,27 +31,31 @@ import { MutationTypes } from "@/store/modules/game/mutations";
 		props: [],
 		setup() {
             const service = useMonsterSlayerService();
+			const battleEngine = useBattleEngine();
+			const monsterEngine = useMonsterEngine();
 			const store = useStore();
 
             // Methods
-			const attack = (skill: ISkill): void =>  action(skill, PersonType.Player);
+			const attack = (skill: ISkills): void =>  action(skill, PersonType.Player);
 
 			watch(() => store.state.game[`${PersonType.Monsters}`].turn, (value, oldValue) => {
 				if (value) {
 					setTimeout(() => {
-						const skills: ISkill[] = store.getters['game/' + GetterTypes.getCharacterSkills](PersonType.Monsters);
-						const monsterAttack = skills.filter(skill => skill.skillType !== ActivityStateOptions.Idle)[service.randomAction(skills.length-1)];
-						action(monsterAttack, PersonType.Monsters);
+						action(monsterEngine.prepareAttack(), PersonType.Monsters);
 					}, 2000);
 				}
 			});
-
-			const action = (skill: ISkill, type: PersonType) => {
-				store.commit('game/' + MutationTypes.action,
-				{
-					work: { personType: type, actionTaken: skill} as IAction,
-					reset: service.gameResult
-				});
+			const skillTypeName = (type: string): string => service.skillTypeName(type);
+			const action = (skill: ISkills, type: PersonType) => {
+				battleEngine.action({
+					personType: type,
+					actionTaken: {
+						skill,
+						result: ActionResult.success,
+						damage: 0,
+						isCritical: false
+					} as IActionResultStatus
+				} as IAction);
 			};
 			const getClassName = (className: string, index: number) => {
 				return `${className}-${index}`;
@@ -58,8 +63,8 @@ import { MutationTypes } from "@/store/modules/game/mutations";
 
 			// Computed
 			const actionSkills = computed(() => {
-				const skills: ISkill[] = store.getters['game/' + GetterTypes.getCharacterSkills]('player');
-				return skills.filter(skill => skill.skillType !== ActivityStateOptions.Idle);
+				const skills: ISkills[] = store.getters['game/' + GetterTypes.getCharacterSkills]('player');
+				return skills;
 			});
 			const playerTurn = computed(() => {
 				return store.state.game.player.turn;
@@ -74,7 +79,8 @@ import { MutationTypes } from "@/store/modules/game/mutations";
 				battleStart,
                 actionSkills,
 				cardsImg,
-				getClassName
+				getClassName,
+				skillTypeName
 			}
         }
 	})

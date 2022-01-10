@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IAccount, IAccountResponse, IBattleRequest, IBattleResponse, ICharacter, IDungeonResponse, IEnterDungeonResponse, IEquipment, IEquipmentRequest, IInventory, IItem, ISkills } from "@/store/types";
+import { IAccount, IAccountResponse, IBattleRequest, IBattleResponse, ICharacter, IDungeonResponse, IEnterDungeonRequest, IEnterDungeonResponse, IEquipment, IEquipmentRequest, IInventory, IItem, ISkills } from "@/store/types";
 import { useMonsterSlayerService } from "@/services/monster-slayer-service";
 import axios from "axios";
 import { apiUrl } from "@/app-lib/constant/app-config";
@@ -9,12 +9,12 @@ export interface IMonsterSlayerRequest {
     login: (username: string, password: string) => Promise<any>;
     getCharacter: (accountId: string) => Promise<ICharacter>;
     getSkills: (accountId: string) => Promise<ISkills[]>;
-    getInventory: (accountId: string) => Promise<IInventory[]>;
+    getInventory: (characterId: string) => Promise<IInventory[]>;
     getDungeons: (accountId: string) => Promise<IDungeonResponse[]>;
     putEquipment: (characterId: string, equipment: IEquipmentRequest) => Promise<boolean>;
     putSkills: (characterId: string, skills: string[]) => Promise<boolean>;
     deleteItem: (characterId: string, itemId: string) => Promise<boolean>;
-    enterDungeon: (dungeon: IEnterDungeonResponse) => Promise<IEnterDungeonResponse>;
+    enterDungeon: (dungeon: IEnterDungeonRequest) => Promise<IEnterDungeonResponse>;
     batleDungeon: (dungeon: IBattleRequest) => Promise<IBattleResponse>;
 }
 
@@ -59,8 +59,10 @@ const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
             return axios.get(`${apiUrl}/character/${accountId}/inventory`)
             .then(result => {
                 if (result.status === 200) {
+                    console.log('SUCCESS GET INVENTORY');
                     return result.data as IInventory[];
                 }
+                console.log('ERROR GET INVENTORY');
                 return [];
             })
             .catch(err => {
@@ -112,16 +114,24 @@ const useMonsterSlayerRequest = (): IMonsterSlayerRequest => {
                 return err.response.data;
             });
         },
-        enterDungeon: (dungeon: IEnterDungeonResponse): Promise<IEnterDungeonResponse> => {
-            return axios.post(`${apiUrl}/dungeon/enter`, dungeon)
-            .then(result => result.status === 200)
+        enterDungeon: (dungeon: IEnterDungeonRequest): Promise<IEnterDungeonResponse> => {
+            return axios.post(`${apiUrl}/dungeons/enter`, dungeon)
+            .then(result => {
+                if(result.status === 200) {
+                    return result.data;
+                }
+            })
             .catch(err => {
                 return err.response.data;
             });
         },
         batleDungeon: (dungeon: IBattleRequest): Promise<IBattleResponse> => {
-            return axios.post(`${apiUrl}/dungeon/battle`, dungeon)
-            .then(result => result.status === 200)
+            return axios.post(`${apiUrl}/dungeons/battle`, dungeon)
+            .then(result => {
+                if(result.status === 200) {
+                    return result.data;
+                }
+            })
             .catch(err => {
                 return err.response.data;
             });

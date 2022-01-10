@@ -4,12 +4,12 @@
         <div class="main-stage-layout center" >
             <div class="bg" :style="`background-image:url(${(screenBackground)});`">
                 <span class="char-name-container">
-                    <span class="char-level">{{ 'Lv.' + character.level}}</span>
-                    <span class="char-name">{{ ' ' + character.name }}</span>
+                    <span class="char-level">{{ 'Lv.' + character?.level}}</span>
+                    <span class="char-name">{{ ' ' + character?.name }}</span>
                 </span>
                 <span class="mons-name-container">
-                    <span class="mons-name">{{ ' ' + character.name }}</span>
-                    <span class="mons-level">{{ 'Lv.' + character.level}}</span>
+                    <span class="mons-name">{{ ' ' + monster?.name }}</span>
+                    <span class="mons-level">{{ 'Lv.' + monster?.level}}</span>
                 </span>
                 <div class="vuexie-left-side">
                     <img class="vuexie-img" :src="`${characterImage}`">
@@ -23,7 +23,8 @@
 </template>
 <script lang="ts">
     /* eslint-disable @typescript-eslint/no-var-requires */
-	import useMonsterSlayerService from "@/services/monster-slayer-service";
+    import { useMonsterEngine } from "@/services/monster-engine";
+    import useMonsterSlayerService from "@/services/monster-slayer-service";
     import { computed, defineComponent, ref } from "vue";
     import { useRouter } from "vue-router";
 
@@ -37,12 +38,16 @@
 		setup() {
             const gameRoute = `/game`;
             const service = useMonsterSlayerService();
+            const monsService = useMonsterEngine();
             const router = useRouter();
             const navigateToRoute = (routeName: string) => {
 				router.push(`${gameRoute}/${routeName}`);
 			};
             const character = computed(() => {
 				return service.getCharacterDetails();
+			});
+            const monster = computed(() => {
+				return monsService.genMonsterData();
 			});
 
             setTimeout(() => {
@@ -54,6 +59,7 @@
                 screenBackground,
                 characterImage,
                 character,
+                monster,
                 logoImage,
                 monsterImage
 			};

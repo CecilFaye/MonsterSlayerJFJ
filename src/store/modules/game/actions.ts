@@ -74,7 +74,11 @@ export const actions: ActionTree<IGameState, IRootState> & GameActions= {
     },
     [ActionTypes.refreshInventoryAsync]: ({ commit }, payload: string): Promise<any> => {
         return request.getInventory(payload)
-        .then(inventory => commit(MutationTypes.setInventory, inventory));
+        .then(inventory => {
+            if (inventory && inventory.length) {
+                commit(MutationTypes.setInventory, inventory)
+            }
+        });
     },
     [ActionTypes.updateSkillAsync]: ({ commit }, payload: any): Promise<any> => {
         return request.putSkills(payload.characterId, payload.skills);

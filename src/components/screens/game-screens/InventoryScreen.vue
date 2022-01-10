@@ -10,9 +10,8 @@
 
                     </span>
                     <span class="item-delete" @click="item.equipped ? () => {} : deleteItem(item)" v-bind:class="{ 'disabled-equip': item.equipped }">X</span>
-                    <span class="item-equip" @click="equipItem(item.item)" v-if="!item.equipped" v-bind:class="{ 'disabled-equip': isInvalid(item.item) }">EQUIP</span>
-                    <span class="item-equipped" v-if="item.equipped">EQUIPPED</span>
-
+                    <span class="item-equip" @click="equipItem(item.item)" v-if="!item.equipped && !isInvalid(item.item)" v-bind:class="{ 'disabled-equip': isInvalid(item.item) }">EQUIP</span>
+                    <!-- <span class="item-equipped" v-if="item.equipped">EQUIPPED</span> -->
                 </p>
             </div>
             <div class="right-side-grid">
@@ -76,7 +75,7 @@
                         inv.equipped = false;
                     }
                 })
-                return inventory.value;
+                return inventory.value.filter(inv => !inv.equipped);
             });
             const itemType = computed((): string => {
                 const type = itemDetails.value?.type;

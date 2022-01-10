@@ -2,17 +2,42 @@
 <template>
 	<div class="fight-result-screen" :style="`background-image:url(${(screenImage)});`">
 		<transition>
-			<div v-show="isVictor" class="result-container"  >
-				<img :src="victoryGif" >
-				<button class="btn1" @click="anotherGame">Play Again!</button>
-				<button class="btn2" @click="navigateToHome">Back To Character Information</button>
+			<div v-show="isVictor" class="fight-result-layout center" :style="`background-image:url(${(overallBg)});`">
+				<img :src="victoryImage" >
+				<div>
+					<span v-if="latestFightResult.lvlUp">LEVEL UP!</span><br>
+					<span>Exp. Gain: {{latestFightResult.exp}}</span><br>
+					<span v-if="latestFightResult.drop">Drop Gain: {{latestFightResult.drop}}</span><br>
+					<span v-if="latestFightResult.newSkills?.length">
+						New Skills: <br>
+						<p class="skills-class" v-for="(skill, index) in latestFightResult.newSkills" :key="`skill-${index}`">{{skill ?? ''}}<br></p>
+					</span>
+					<span v-if="latestFightResult.unlockedDungeons?.length">
+						Dungeon Unlocked: <br>
+						<p class="skills-class" v-for="(dun, index) in latestFightResult.unlockedDungeons" :key="`dun-${index}`">{{dun ?? ''}}<br></p>
+					</span>
+				</div>
+				<button class="btn2" @click="navigateToHome">Back To Main</button>
 			</div>
 		</transition>
 		<transition>
-			<div v-show="!isVictor" class="result-container" >
-				<img class="img2" :src="gameOverGif">
-				<button class="btn3" @click="anotherGame">Play Again!</button>
-				<button class="btn4" @click="navigateToHome">Back To Character Information</button>
+			<div v-show="!isVictor" class="fight-result-layout center" :style="`background-image:url(${(overallBg)});`">
+				<img class="img2" :src="defeatImage">
+				<div>
+					<span v-if="latestFightResult.lvlUp">LEVEL UP!</span><br>
+					<span>Exp. Gain: {{latestFightResult.exp}}</span><br>
+					<span v-if="latestFightResult.drop">Drop Gain: {{latestFightResult.drop}}</span><br>
+					<span v-if="latestFightResult.newSkills?.length">
+						New Skills: <br>
+						<p class="skills-class" v-for="(skill, index) in latestFightResult.newSkills" :key="`skill-${index}`">{{skill ?? ''}}<br></p>
+					</span>
+					<span v-if="latestFightResult.unlockedDungeons?.length">
+						Dungeon Unlocked: <br>
+						<p class="skills-class" v-for="(dun, index) in latestFightResult.unlockedDungeons" :key="`dun-${index}`">{{dun ?? ''}}<br></p>
+					</span>
+				</div>
+				<button class="btn3" @click="anotherGame">Retry?</button>
+				<button class="btn4" @click="navigateToHome">Back To Main</button>
 			</div>
 		</transition>
 	</div>
@@ -25,8 +50,9 @@
 	import { useRouter } from "vue-router";
 	import { mapMutations } from "vuex";
 
-	const gameOverGif = require('@/assets/background/GameOver2.gif');
-	const victoryGif = require('@/assets/background/YouWin2.gif');
+	const victoryImage = require('@/assets/background/victory.png');
+	const defeatImage = require('@/assets/background/defeat.png');
+	const overallBg = require('@/assets/background/login-bg.png');
 	const gameRoute = `/game`;
 
 	const FightResultScreen = defineComponent({
@@ -35,17 +61,22 @@
 			const router = useRouter();
 			const isVictor = computed(() =>  service.getWinner());
 			const navigateToHome = () => {
-				router.push(`${gameRoute}/character`);
+				router.push(`${gameRoute}/mainstage`);
 			};
 			const anotherGame = () => {
-				router.push(`${gameRoute}/battle`);
+				router.push(`${gameRoute}/transition`);
 			};
+			const latestFightResult = computed(() => {
+				return service.getLatestFightResult();
+			});
             return {
-				gameOverGif,
-				victoryGif,
+				victoryImage,
+				defeatImage,
+				overallBg,
 				isVictor,
 				navigateToHome,
-				anotherGame
+				anotherGame,
+				latestFightResult
 			}
         },
 		methods: {
@@ -70,13 +101,35 @@
 		text-align: center;
 		height: 100vh;
 	}
+	.center {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+	img {
+		width: inherit;
+		margin-top: 10%;
+	}
 
-	.result-container img {
+	.fight-result-layout {
+		position: relative;
+        height: 700px;
+        width: 1250px;
+        background: lightgray;
+		background-repeat: no-repeat;
+		background-size: cover;
+        box-shadow: 0px 2px 15px 7px #2c8cdb;
+	}
+
+	.result-container {
 		width: 100%;
 		height: auto;
 	}
 
-	.result-container .img2 {
+	.result-container {
 		height: 100vh;
 	}
 

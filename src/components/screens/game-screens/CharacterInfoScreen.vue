@@ -172,7 +172,7 @@
 	}
 	.equipment-container, .skills-container, p {
 		padding: 0;
-		margin: 0.5em;
+		margin: 0.3em;
 		color: #5f330e;
 	}
 	.skills-container, .equipment-container {

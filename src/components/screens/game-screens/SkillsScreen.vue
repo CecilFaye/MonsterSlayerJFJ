@@ -49,7 +49,7 @@
 	const SkillsScreen = defineComponent({
 		setup() {
             const service = useMonsterSlayerService();
-            const skills = ref<ISkills[]>(service.getCharacterSkills());
+            const skills = ref<ISkills[]>(service.getCharacterDetails().skills);
             const allSkills = ref<ISkills[]>(service.getSkills());
             const skillDetails = ref<ISkills>();
 			const skillList = computed(() => {
@@ -94,7 +94,7 @@
             };
             const removeSkill = (skill: ISkills): void => {
                 if (!skill) return;
-                if (confirm("Continue delete?")) {
+                if (confirm("Continue unequip?")) {
                     const skillIndex = skills.value.findIndex(s => s._id === skill._id);
                     skills.value.splice(skillIndex, 1);
                     const skillUpdates = skills.value.map(s => s._id);

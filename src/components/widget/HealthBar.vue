@@ -19,6 +19,7 @@
 
             // Computed
 			const health = computed(() => {
+                console.log(props.personType + '  ' + store.state.game[`${props.personType}`].currentState.health);
                 const currentHealth = store.state.game[`${props.personType}`].currentState.health;
                 return currentHealth < 1 ? 0 : currentHealth;
             });
@@ -32,7 +33,6 @@
 <style scoped>
     .health-bar-container {
         height: 2rem;
-        /* margin: 0.1rem 6rem; */
         opacity: 0.8;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.86);
     }

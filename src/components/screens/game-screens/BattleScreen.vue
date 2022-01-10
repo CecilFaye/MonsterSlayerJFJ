@@ -69,7 +69,7 @@
 			};
 
 			onBeforeMount(() => {
-				service.gameReset();
+				// service.gameReset();
 			});
 
 			setTimeout(() => {
@@ -81,13 +81,13 @@
 				if (!value) {
 					setTimeout(() => {
 						showFightImage.value = false;
-						setTimeout(() => service.gameInit(), 1000);
+						// setTimeout(() => service.gameInit(), 1000);
 					}, 2000);
 				}
 			});
 
 			const battleStart = computed(() => {
-				return service.battleStart();
+				return false; //service.battleStart();
 			});
 
 			return {

@@ -37,7 +37,6 @@
 		font-size: 1rem;
 		font-weight: 800;
 		display: block;
-		text-align: center;
 		color: whitesmoke;
 	}
 	p:nth-of-type(3n+0) {

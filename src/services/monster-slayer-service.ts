@@ -13,11 +13,12 @@ import { MutationTypes } from '@/store/modules/game/mutations';
 /* eslint-disable @typescript-eslint/no-var-requires */
 import {
 	ActivityStateOptions, CharacterTypes, IAccount, IAccountResponse, ICharacter, IDungeonResponse, IInventory, IItem,
-	IPersonState, ISkills, PersonType, IStats, InfoKeyValue, Stats, IEquipment, IEquipmentRequest, IEnterDungeonRequest, IEnterDungeonResponse, IBattleRequest
+	IPersonState, ISkills, PersonType, IStats, InfoKeyValue, Stats, IEquipment, IEquipmentRequest, IEnterDungeonRequest, IEnterDungeonResponse, IBattleRequest, IEnemy, IBattleResponse
 } from '@/store/types';
 
 import useMonsterSlayerRequest from './monster-slayer-request';
 import { useStore } from 'vuex';
+import { AttackType, IActionStat, IFightStat } from './battle-engine';
 
 const heroIdleStance = require('@/assets/hero/playerAqua-idle.gif');
 const heroAttackStance = require('@/assets/hero/playerBeast-attack.gif');
@@ -34,11 +35,7 @@ const playerActionImages = {
     [ActivityStateOptions.Idle]: heroIdleStance,
     [ActivityStateOptions.Attack]: heroAttackStance,
     [ActivityStateOptions.Focus]: heroFocusStance,
-    [ActivityStateOptions.Skill1]: heroSkillStance,
-    [ActivityStateOptions.Skill2]: heroFocusStance,
-    [ActivityStateOptions.Skill3]: heroSkillStance,
-    // Assign an image for failed attack
-    [ActivityStateOptions.Failed]: heroIdleStance
+    [ActivityStateOptions.Heal]: heroFocusStance,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -46,11 +43,7 @@ const monsterActionImages = {
     [ActivityStateOptions.Idle]: monsterIdleStance,
     [ActivityStateOptions.Attack]: monsterAttackStance,
     [ActivityStateOptions.Focus]: monsterFocusStance,
-    [ActivityStateOptions.Skill1]: monsterSkillStance,
-    [ActivityStateOptions.Skill2]: monsterSkillStance,
-    [ActivityStateOptions.Skill3]: monsterSkillStance,
-    // Assign an image for failed attack
-    [ActivityStateOptions.Failed]: monsterIdleStance
+    [ActivityStateOptions.Heal]: monsterFocusStance,
 };
 export interface ICharInfoDisplay {
     key: string,
@@ -59,35 +52,34 @@ export interface ICharInfoDisplay {
     total: number
 }
 
+
 export interface IMonsterSlayerService {
     initFromSession: () => void;
-    getDefaultPerson: (type: PersonType) => IPersonState;
     randomAction: (limit: number) => number;
-    initOptions: (person: IPersonState) => IPersonState;
-    getRandomMonsters: () => IPersonState;
+    getRandomMonsters: () => IEnemy;
     getCharacterImage: (personType: PersonType, type: ActivityStateOptions) => any;
     getCharacterTypeName: (characterTypeId: number) => string;
     getCharacterDetails: () => ICharacter;
     getCharacterSkills: () => ISkills[];
     getCharacterEquipment: () => IEquipment;
     getWinner: () => boolean;
-    gameReset: () => void;
-    gameInit: () => void;
     gameResult: () => void;
-    battleStart: () => boolean;
     getDungeons: () => IDungeonResponse[];
     getSkills: () => ISkills[];
     getInventory: () => IInventory[];
-    getCharacterStats: () => InfoKeyValue[];
+    getCharacterStats: () => ICharInfoDisplay[];
     logout: () => void;
     updateSkills: (skills: string[]) => Promise<void>;
     updateEquipment: (equipments: IEquipmentRequest) => Promise<void>;
     deleteEquipment: (itemId: string) => Promise<void>;
     skillTypeName: (type: string) => string;
-    isAttacking: (pType: PersonType) => boolean;
-    toSelf: (pType: PersonType) => boolean;
+
     enterDungeon: (dungeonId: string) => Promise<void>;
     dungeonRaidResult: () => Promise<void>;
+    getLatestFightResult: () => IBattleResponse;
+
+    damageCompute: (charType: PersonType, char: ICharacter | IEnemy, stat: IActionStat) => IActionStat;
+    statCompute: (charType: PersonType, char: ICharacter | IEnemy) => IFightStat;
 
     // Http Call
     signUp: (account: IAccount) => Promise<IAccountResponse | null>;
@@ -102,27 +94,40 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         store.commit('game/' + MutationTypes.setAccount, sessionHelper.getSessionValue<IAccount>(sessionHelper.storageNames.account));
         store.commit('game/' + MutationTypes.setCharacter, sessionHelper.getSessionValue<ICharacter>(sessionHelper.storageNames.character));
     };
-
     const randomAction = (limit: number): number => {
         return Math.floor(Math.random() * limit);
     };
-    const getDefaultPerson = (type: PersonType): IPersonState => {
-        let personState: IPersonState;
-        switch(type) {
-            case PersonType.Player:
-                personState = Player as IPersonState;
-                personState.turn = true;
-                break;
-            case PersonType.Monsters:
-                personState = getRandomMonsters();
-                personState.turn = false;
-                break;
-        }
-        return initOptions(personState);
+    const statCompute = (charType: PersonType, char: ICharacter | IEnemy): IFightStat => {
+        const stat = {} as IFightStat;
+        const equipment = charType === PersonType.Player ? (char as ICharacter).equipment : null;
+
+        const agi = char.stats.agi + (equipment?.armor?.bonus?.agi ?? 0 ) + (equipment?.weapon?.bonus?.agi ?? 0);
+        const luk = char.stats.agi + (equipment?.armor?.bonus?.agi ?? 0 ) + (equipment?.weapon?.bonus?.agi ?? 0);
+        const def = char.stats.agi + (equipment?.armor?.bonus?.agi ?? 0 ) + (equipment?.weapon?.bonus?.agi ?? 0);
+
+        stat.evaHitRatePercentage = ((agi/150)*char.level) + (agi*0.08);
+        stat.critRatePercentage = ((luk/150)*char.level) + (luk*0.08);
+        stat.defReductionPercentage = ((def/150)*char.level) + (def*0.08);
+        return stat;
     };
-    const getRandomMonsters = (): IPersonState => {
-        const monsters = Monsters as IPersonState[];
-        return monsters[randomAction(Monsters.length-1)];
+    const damageCompute = (charType: PersonType, char: ICharacter | IEnemy, stat: IActionStat): IActionStat => {
+        const equipment = charType === PersonType.Player ? (char as ICharacter).equipment : null;
+        if (stat.skill.type === 'P') {
+            const off = char.stats.off + (equipment?.armor?.bonus?.off ?? 0 ) + (equipment?.weapon?.bonus?.off ?? 0);
+            stat.normalDamage = off * (stat.skill.damage/100);
+        } else {
+            const int = char.stats.int + (equipment?.armor?.bonus?.int ?? 0 ) + (equipment?.weapon?.bonus?.int ?? 0);
+            stat.normalDamage = int * (stat.skill.damage/100);
+        }
+        stat.critDamage = stat.normalDamage * 1.5;
+        return stat;
+    };
+    const getRandomMonsters = (): IEnemy => {
+        const dungeonInfo = sessionHelper.getSessionValue(sessionHelper.storageNames.onGoingDungeon) as IEnterDungeonResponse;
+        return dungeonInfo.enemy;
+    };
+    const getCharacterImage = (personType: PersonType, type: ActivityStateOptions): any => {
+        return personType === PersonType.Player ? playerActionImages[type] : monsterActionImages[type];
     };
     const getCharacterTypeName = (characterTypeId: number): string => {
         let stringName = '';
@@ -133,24 +138,9 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         });
         return stringName;
     };
-    const initOptions = (person: IPersonState): IPersonState => {
-        person.currentState = {
-            health: person.maxHealth,
-            mana: person.maxMana,
-
-            activityState: ActivityStateOptions.Idle,
-            activityStateOptions: Object.keys(ActivityStateOptions).map(_ => _) as ActivityStateOptions[]
-        };
-        return person;
-    };
-    const getCharacterImage = (personType: PersonType, type: ActivityStateOptions): any => {
-        return personType === PersonType.Player ? playerActionImages[type] : monsterActionImages[type];
-    };
-
     const signUp = (account: IAccount): Promise<IAccountResponse | null> => {
         return request.signup(account);
     };
-
     const loginRequest = (username: string, password: string): Promise<IAccountResponse> => {
         return request.login(username, password)
         .then(result => {
@@ -167,10 +157,6 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
             return result;
         })
     };
-    const gameInit = (): void => {
-        store.commit('game/' + MutationTypes.initFirstTurn, null);
-    };
-    const battleStart = (): boolean => store.state.battleStart;
     const getCharacterDetails = (): ICharacter => {
         let character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
         if (!character || !character?._id) {
@@ -179,15 +165,15 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         }
         return character;
     };
-    const getCharacterStats = (): InfoKeyValue[] => {
+    const getCharacterStats = (): ICharInfoDisplay[] => {
         const allStats: ICharInfoDisplay[] = [];
         let character: ICharacter = store.getters['game/' + GetterTypes.getState]('character');
         if (!character || !character?._id) {
             character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
             store.commit('game/' + MutationTypes.setCharacter, character);
         }
-        const weaponBonus: IStats = character.equipment.weapon?.bonus;
-        const armorBonus: IStats = character.equipment.armor?.bonus;
+        const weaponBonus: IStats = character?.equipment?.weapon?.bonus;
+        const armorBonus: IStats = character?.equipment?.armor?.bonus;
 
         Object.keys(Stats).map(key => {
             const wb = weaponBonus ? weaponBonus[key] ?? 0 : 0;
@@ -249,7 +235,7 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
     const deleteEquipment = (itemId: string): Promise<void> => {
         const character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
         return store.dispatch('game/' + ActionTypes.deleteEquipmentAsync, { characterId: character._id, itemId })
-        .then(() => store.dispatch('game/' + ActionTypes.refreshInventoryAsync, character.accountId ));
+        .then(() => store.dispatch('game/' + ActionTypes.refreshInventoryAsync, character._id ));
     };
 
     const skillTypeName = (type: string): string => type === 'P' ? 'Physical' : 'Magic';
@@ -262,37 +248,39 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         }
         return inventory;
     };
-    const isAttacking = (pType: PersonType): boolean => {
-        return store.state.game[pType].attacking;
-    };
-    const toSelf = (pType: PersonType): boolean => {
-        return store.state.game[pType].toSelf;
-    };
+
     const enterDungeon = (dungeonId: string): Promise<void> => {
         const character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
         return  store.dispatch('game/' + ActionTypes.enterDungeonAsync, { characterId: character._id, dungeonId } as IEnterDungeonRequest)
         .then((res: IEnterDungeonResponse) => {
+            sessionHelper.saveSession(sessionHelper.storageNames.onGoingDungeon, res )
+            return res;
+        })
+        .then((res: IEnterDungeonResponse) => {
             if (res) {
                 router.push(`/game/transition`);
             }
-            return res;
-        })
-        .then(res => sessionHelper.saveSession(sessionHelper.storageNames.onGoingDungeon, {
-            characterId: character._id,
-            dungeonId,
-            enemyId: res.enemy._id
-        } as IBattleRequest ));
+        });
     };
     const dungeonRaidResult = (): Promise<void> => {
-        const battleInfo = sessionHelper.getSessionValue(sessionHelper.storageNames.onGoingDungeon) as string;
         const character = sessionHelper.getSessionValue(sessionHelper.storageNames.character) as ICharacter;
-        return  store.dispatch('game/' + ActionTypes.dungeonRaidResultAsync, battleInfo)
+        const dungeonInfo = sessionHelper.getSessionValue(sessionHelper.storageNames.onGoingDungeon) as IEnterDungeonResponse;
+        const battleRequest = {
+            characterId: character._id,
+            dungeonId: dungeonInfo.dungeon._id,
+            enemyId: dungeonInfo.enemy._id
+        } as IBattleRequest;
+
+        return  store.dispatch('game/' + ActionTypes.dungeonRaidResultAsync, battleRequest)
+        .then((result: IBattleResponse) => sessionHelper.saveSession(sessionHelper.storageNames.latestFightResult, result))
         .finally(() => store.dispatch('game/' + ActionTypes.loadCharacterAsync, { accountId: character.accountId }));
     };
     const getWinner = ():boolean => {
-        return store.getters['game' + GetterTypes.isWinner]();
+        return store.getters['game/' + GetterTypes.isWinner];
     };
-    const gameReset = (): void => store.commit('game/' + MutationTypes.reset, getDefaultPerson);
+    const getLatestFightResult = (): IBattleResponse => {
+        return sessionHelper.getSessionValue(sessionHelper.storageNames.latestFightResult) as IBattleResponse;
+    };
     const gameResult = (): void => {
         router.push('/game/fightresult');
     };
@@ -304,9 +292,6 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
     return {
         initFromSession,
         randomAction,
-        initOptions,
-        battleStart,
-        getDefaultPerson,
         getRandomMonsters,
         getCharacterImage,
         getCharacterTypeName,
@@ -318,17 +303,17 @@ export const useMonsterSlayerService = (): IMonsterSlayerService => {
         getSkills,
         getInventory,
         getWinner,
-        gameReset,
-        gameInit,
         gameResult,
         skillTypeName,
         updateSkills,
         updateEquipment,
         deleteEquipment,
-        isAttacking,
-        toSelf,
         enterDungeon,
         dungeonRaidResult,
+        getLatestFightResult,
+
+        statCompute,
+        damageCompute,
 
         logout,
         signUp,

@@ -13,11 +13,11 @@
                     </div>
                 </div>
                 <div class="mons-name-container">
-                    <span class="mons-name">{{ ' ' + character.name }}</span>
-                    <span class="mons-level">{{ 'Lv.' + character.level}}</span>
+                    <span class="mons-name">{{ ' ' + monster.name }}</span>
+                    <span class="mons-level">{{ 'Lv.' + monster.level}}</span>
                     <div class="mons-bars">
-                        <HealthBarWidget :personType="'player'"/>
-                        <ManaBarWidget :personType="'player'"/>
+                        <HealthBarWidget :personType="'monster'"/>
+                        <ManaBarWidget :personType="'monster'"/>
                     </div>
                 </div>
                 <div class="vuexie-left-side" v-bind:class="{ 'char-attacking': charAttacking && !charToSelf }">
@@ -43,9 +43,11 @@
     import HealthBarWidget from "@/components/widget/HealthBar.vue";
     import LogsWidget from "@/components/widget/Logs.vue";
     import ManaBarWidget from "@/components/widget/ManaBar.vue";
+    import { useBattleEngine } from "@/services/battle-engine";
+    import useMonsterEngine from "@/services/monster-engine";
     import useMonsterSlayerService from "@/services/monster-slayer-service";
     import { ActivityStateOptions, PersonType } from "@/store/types";
-    import { computed, defineComponent, onBeforeMount, ref } from "vue";
+    import { computed, defineComponent, onBeforeMount, onMounted, ref } from "vue";
     import { useRouter } from "vue-router";
 
     const screenBackground = require('@/assets/background/inside-castle.jpg');
@@ -70,27 +72,35 @@
 		setup() {
             const gameRoute = `/game`;
             const service = useMonsterSlayerService();
+            const battleEngine = useBattleEngine();
+            const monsService = useMonsterEngine();
             const router = useRouter();
             onBeforeMount(() => {
-				service.gameReset();
+				battleEngine.initBattle();
 			});
+            onMounted(() => {
+                battleEngine.battleStart();
+            });
             const navigateToRoute = (routeName: string) => {
 				router.push(`${gameRoute}/${routeName}`);
 			};
             const character = computed(() => {
 				return service.getCharacterDetails();
 			});
+            const monster = computed(() => {
+				return monsService.genMonsterData();
+			});
             const charAttacking = computed(() => {
-				return service.isAttacking(PersonType.Player);
+				return battleEngine.isAttacking(PersonType.Player);
 			});
             const monsAttacking = computed(() => {
-				return service.isAttacking(PersonType.Monsters);
+				return battleEngine.isAttacking(PersonType.Monsters);
 			});
             const charToSelf = computed(() => {
-				return service.toSelf(PersonType.Player);
+				return battleEngine.toSelf(PersonType.Player);
 			});
             const monsToSelf = computed(() => {
-				return service.toSelf(PersonType.Monsters);
+				return battleEngine.toSelf(PersonType.Monsters);
 			});
             const getCharacterImage = (type: ActivityStateOptions, propsType: PersonType) => service.getCharacterImage(propsType, type);
 
@@ -113,7 +123,8 @@
                 monsterImageAttacking,
                 monsterImageHeal,
                 charToSelf,
-                monsToSelf
+                monsToSelf,
+                monster
 			};
 		}
 	})
@@ -197,7 +208,7 @@
         max-width: 200px;
     }
     .mons-level {
-        color: rgb(37, 20, 13);
+        color: rgb(100, 34, 6);
     }
     .char-name {
         padding-right: 5px;

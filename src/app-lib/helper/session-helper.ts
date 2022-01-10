@@ -5,7 +5,8 @@ export enum storageNames {
     inventory = 'inventory',
     dungeons = 'dungeons',
     skills = 'skills',
-    onGoingDungeon = 'onGoingDungeon'
+    onGoingDungeon = 'onGoingDungeon',
+    latestFightResult = 'latestFightResult'
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
