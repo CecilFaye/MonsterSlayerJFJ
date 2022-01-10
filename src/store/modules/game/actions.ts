@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ActionTree, useStore } from 'vuex';
 import useMonsterSlayerRequest from '@/services/monster-slayer-request';
-import { IAccount, InfoKeyValue, IRootState, ISkills } from '../../types';
+import { IAccount, IBattleResponse, IEnterDungeonRequest, IEnterDungeonResponse, IEquipmentRequest, InfoKeyValue, IRootState, ISkills } from '../../types';
 import { MutationTypes } from './mutations';
 import { IGameState } from './state';
 
@@ -10,9 +10,12 @@ const request = useMonsterSlayerRequest();
 export enum ActionTypes {
     loadCharacterAsync = 'LOAD_CHARACTER_ASYNC',
     loadEnemyAsync = 'LOAD_ENEMY_ASYNC',
-    loadDungeonAsync = 'LOAD_DUNGEON_ASYNC',
+    dungeonRaidResultAsync = 'RESULT_DUNGEON_ASYNC',
     enterDungeonAsync = 'ENTER_DUNGEON_ASYNC',
     updateSkillAsync = 'UPDATE_SKILL_ASYNC',
+    updateEquipmentAsync = 'UPDATE_EQUIPMENT_ASYNC',
+    deleteEquipmentAsync = 'DELETE_SKILLS_ASYNC',
+    refreshInventoryAsync = 'REFRESH_INVENTORY_ASYNC'
 }
 
 export enum CharacterInfo {
@@ -31,10 +34,10 @@ export enum CharacterInfo {
 
 export interface GameActions {
     [ActionTypes.loadCharacterAsync]({ commit }, payload?: IAccount): Promise<boolean>;
-    // [ActionTypes.loadEnemyAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
-    // [ActionTypes.loadDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
-    // [ActionTypes.enterDungeonAsync]({ commit }: AugmentedActionContext, payload: IAccount): Promise<void>;
+    [ActionTypes.dungeonRaidResultAsync]({ commit }, payload: IAccount): Promise<IBattleResponse>;
+    [ActionTypes.enterDungeonAsync]({ commit }, payload: IAccount): Promise<IEnterDungeonResponse>;
     [ActionTypes.updateSkillAsync]({ commit }, payload: ISkills): Promise<any>;
+    [ActionTypes.updateEquipmentAsync]({ commit }, payload: IEquipmentRequest): Promise<any>;
 }
 
 export const actions: ActionTree<IGameState, IRootState> & GameActions= {
@@ -69,16 +72,27 @@ export const actions: ActionTree<IGameState, IRootState> & GameActions= {
         });
         else return new Promise<boolean>(() => false);
     },
+    [ActionTypes.refreshInventoryAsync]: ({ commit }, payload: string): Promise<any> => {
+        return request.getInventory(payload)
+        .then(inventory => {
+            if (inventory && inventory.length) {
+                commit(MutationTypes.setInventory, inventory)
+            }
+        });
+    },
     [ActionTypes.updateSkillAsync]: ({ commit }, payload: any): Promise<any> => {
         return request.putSkills(payload.characterId, payload.skills);
+    },
+    [ActionTypes.updateEquipmentAsync]: ({ commit }, payload: any): Promise<any> => {
+        return request.putEquipment(payload.characterId, payload.equipments);
+    },
+    [ActionTypes.deleteEquipmentAsync]: ({ commit }, payload: any): Promise<any> => {
+        return request.deleteItem(payload.characterId, payload.itemId);
+    },
+    [ActionTypes.enterDungeonAsync]: ({ commit }, payload: any): Promise<IEnterDungeonResponse> => {
+        return request.enterDungeon(payload);
+    },
+    [ActionTypes.dungeonRaidResultAsync]: ({ commit }, payload: any): Promise<IBattleResponse> => {
+        return request.batleDungeon(payload);
     }
-    // [ActionTypes.loadEnemyAsync]: ({ commit }, payload: any): Promise<void> => {
-
-    // },
-    // [ActionTypes.loadDungeonAsync]: ({ commit }, payload: any): Promise<void> => {
-
-    // },
-    // [ActionTypes.enterDungeonAsync]: ({ commit }, payload: any): Promise<void> => {
-
-    // }
 }

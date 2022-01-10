@@ -27,8 +27,8 @@
 						<div class="grid-itemTitle">EXP.</div>
 						<div class="grid-itemTitle">NEXT LVL UP.</div>
 						<div class="grid-item"><span class="class-type">{{ character.classTypeName }}</span></div>
-						<div class="grid-item"><img class="icon-img" :src="`${healthImage}`"><span class="info-class">{{ character.stats["health"]}}</span></div>
-						<div class="grid-item"><img class="icon-img" :src="`${manaImage}`"><span class="info-class">{{ character.stats["mana"]}}</span></div>
+						<div class="grid-item"><img class="icon-img" :src="`${healthImage}`"><span class="info-class">{{ totalHealth }}</span></div>
+						<div class="grid-item"><img class="icon-img" :src="`${manaImage}`"><span class="info-class">{{ totalMana }}</span></div>
 						<div class="grid-item"><img class="icon-img" :src="`${expImage}`"><span class="info-class">{{ character.totalExp }}</span></div>
 						<div class="grid-item"><img class="icon-img" :src="`${nxtLvlImage}`"><span class="info-class">{{ character.nextLevelExp }}</span></div>
 					</div>
@@ -46,7 +46,7 @@
 	import { defineComponent, onBeforeMount, computed, ref } from "vue";
 	import { useRouter } from "vue-router";
 	import * as helper from "@/app-lib/helper/session-helper";
-	import useMonsterSlayerService from "@/services/monster-slayer-service";
+	import useMonsterSlayerService, { ICharInfoDisplay } from "@/services/monster-slayer-service";
 	import { navArrangement } from "@/app-lib/constant/app-config"
 
 	const characterScreenImage = require('@/assets/background/vuexie-character-layout.jpg');
@@ -88,9 +88,15 @@
 				setTimeout(() => router.push('/'), 1000);
 			};
 			const character = service.getCharacterDetails();
-			const stats = computed(() => {
-				const character = service.getCharacterDetails();
-				return Object.keys(character.stats).map(key => Object.assign({}, { key, value: character.stats[key] }));
+			const totalHealth = computed(() => {
+				const charStats = service.getCharacterStats();
+				const healthVal = charStats.find(k => k.key = 'health');
+				return healthVal.total;
+			});
+			const totalMana = computed(() => {
+				const charStats = service.getCharacterStats();
+				const manaVal = charStats.find(k => k.key = 'mana');
+				return manaVal.total;
 			});
 			onBeforeMount(() => {
 				service.initFromSession();
@@ -103,7 +109,8 @@
 				expImage,
 				nxtLvlImage,
 				character,
-				stats,
+				totalHealth,
+				totalMana,
 				currentRoute,
 				navigate,
 				navigateToMain,

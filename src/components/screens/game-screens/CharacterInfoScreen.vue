@@ -26,22 +26,31 @@
 			<div class="equip-skills">
 				<div class="equipments">
 					<div class="label">Equipments</div>
-					<p class="parts-class" @click="getInfo(equipment.armor)">
+					<p class="parts-class" >
 						<span class="sub-label">Armor:</span>
-						<img class="item-img" :src="`${partsImg}`">
-						{{equipment.armor?.name ?? ''}}
+						<img v-if="!!equipment.armor?.name" class="item-img" :src="`${partsImg}`">
+						<span
+							v-bind:class="{ 'description-hover' : !!equipment.armor?.name }"
+							@click="getInfo(equipment.armor)">{{equipment.armor?.name ?? ' ---'}}
+						</span>
 					</p>
-					<p class="parts-class" @click="getInfo(equipment.weapon)">
+					<p class="parts-class">
 						<span class="sub-label">Weapon:</span>
-						<img class="item-img" :src="`${partsImg}`" >
-						<span>{{equipment.weapon?.name ?? ''}}</span>
+						<img v-if="!!equipment.weapon?.name" class="item-img" :src="`${partsImg}`" >
+						<span
+							v-bind:class="{ 'description-hover' : !!equipment.weapon?.name }"
+							@click="getInfo(equipment.weapon)">{{equipment.weapon?.name ?? ' ---'}}
+						</span>
 					</p>
 				</div>
 				<div class="skills">
 					<div class="label">Skills</div>
-					<p class="parts-class" v-for="(skill, index) in skills" :key="`skill-${index}`" @click="getInfo(skill)">
+					<p class="parts-class" v-for="(skill, index) in skills" :key="`skill-${index}`" >
 						<img class="skill-img" :src="`${cardslogo}`" >
-						{{skill?.name ?? ''}}
+						<span
+							v-bind:class="{ 'description-hover' : !!skill?.name }"
+							@click="getInfo(skill)">{{skill?.name ?? ''}}
+						</span>
 					</p>
 				</div>
 			</div>
@@ -101,7 +110,7 @@
 			});
 			const getInfo = (item: IItem | ISkills): void => {
 				// eslint-disable-next-line no-prototype-builtins
-				if (item.hasOwnProperty('bonus')) {
+				if (item?.hasOwnProperty('bonus')) {
 					itemDetails.value = {...item} as IItem;
 					isItemClicked.value = true;
 				} else {
@@ -163,10 +172,10 @@
 	}
 	.equipment-container, .skills-container, p {
 		padding: 0;
-		margin: 0.5em;
+		margin: 0.3em;
 		color: #5f330e;
 	}
-	.skills-container {
+	.skills-container, .equipment-container {
 		text-align: center;
 	}
 	.equipment-container, .skills-container, .default-display {
@@ -225,16 +234,16 @@
 		font-family: "AxieFont";
 	}
 	.parts-class{
-        cursor: pointer;
         text-decoration: none;
         color: #5f330e;
     }
-	.parts-class:hover {
-		color: #fff;
-	}
     .parts-description{
         font-size: 17px;
     }
+	.description-hover:hover {
+		color: rgb(245, 201, 79);
+		cursor: pointer;
+	}
     .item-img {
 		height: 10%;
 		width: 15%;

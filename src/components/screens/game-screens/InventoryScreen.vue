@@ -1,59 +1,62 @@
 
 <template>
 	<div class="inventory-layout">
-         <div class="grid-container">
-            <div class="item1">
-                <span class="label-class"> PARTS</span>
-                <p class="parts-class" @click="itemInfo(armor)">
-                    <img class="logo-img" :src="`${partsImg}`" >
-                    <span class="parts-description">{{armor?.name ?? ''}}</span>
-                    <span class="parts-equip">EQUIP</span>
-                </p>
-                <p class="parts-class"  @click="itemInfo(weapon)">
-                    <img class="logo-img" :src="`${partsImg}`">
-                    <span class="parts-description">{{weapon?.name ?? ''}}</span>
-                    <span class="parts-equip">EQUIP</span>
+        <div class="grid-container">
+            <div class="left-side-grid">
+                <div class="label">EQUIPMENTS</div>
+                 <p class="item-class" v-for="(item, index) in inventoryList" :key="`skill-${index}`"> <img class="item-img" :src="`${partsImg}`" >
+                    <span class="item-description" @click="itemInfo(item.item)">
+                        {{item?.item?.name ?? ''}}
+
+                    </span>
+                    <span class="item-delete" @click="item.equipped ? () => {} : deleteItem(item)" v-bind:class="{ 'disabled-equip': item.equipped }">X</span>
+                    <span class="item-equip" @click="equipItem(item.item)" v-if="!item.equipped && !isInvalid(item.item)" v-bind:class="{ 'disabled-equip': isInvalid(item.item) }">EQUIP</span>
+                    <!-- <span class="item-equipped" v-if="item.equipped">EQUIPPED</span> -->
                 </p>
             </div>
-            <div class="item2">
-                <span class="label-class"> DETAILS</span> <br>
-                <div v-show="!!itemDetails?.name">
-                <span>{{`Name: `}}<span class="item-text">{{itemDetails?.name ?? ''}}</span></span><br>
-                <span>{{`Type: `}}<span class="item-text">{{itemType ?? ''}}</span></span><br>
-                <span>{{`Class: `}}<span class="item-text">{{itemClass ?? ''}}</span></span>
-                  <div v-bind:style="{marginTop: '2rem'}" class="arrangement">
-                    <span class="item-text">STATS BONUS</span>
-                    <span  v-for="(stat, index) in itemStatBonus" class='log' :key="`stat-${index}`">{{`${stat.key}: ${Math.abs(stat.value ?? 0)}`}}</span>
+            <div class="right-side-grid">
+                <div class="details">
+                    <div class="label">DETAILS</div>
+                    <div class="details-content" v-show="!!itemDetails?.name" >
+                        <span class="sub-label"  >{{`Name: `}}</span>{{itemDetails?.name ?? ''}}<br>
+                        <span  class="sub-label">{{`Type: `}}</span>{{itemType}} <br>
+                        <span  class="sub-label">{{`Class: `}}</span>{{itemClass}}
+                        <div v-bind:style="{paddingTop: '1rem'}">
+                            <span  class="label">STATS BONUS</span>
+                            <p class="bonus" v-for="(stat, index) in Object.keys(itemDetails?.bonus ?? [])" :key="`stat-${index}`">
+                                <span class="sub-label">{{`${stat}: `}}</span>
+                                {{`${Math.abs(itemDetails?.bonus[stat] ?? 0)}`}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="details-content" v-show="!itemDetails?.name">
+                        <p class="default-details">Click item to show details.</p>
+                    </div>
                 </div>
+                <div class="equipped">
+                    <div class="label">EQUIPPED</div>
+                    <p>
+                        <span class="sub-label">Armor:</span>
+                        <img v-if="!!equipment.armor?.name" class="item-img" :src="`${partsImg}`">
+                        <span v-bind:class="{ 'item-desc-small': !!equipment.armor?.name }"  @click="itemInfo(equipment.armor)">{{equipment.armor?.name ?? ' ---'}}</span>
+                        <span class="unequip" @click="removeItem(equipment?.armor)">{{equipment.armor?.name ? 'X' : ''}}</span>
+                    </p>
+                    <p>
+                        <span class="sub-label">Weapon:</span>
+                        <img v-if="!!equipment.weapon?.name" class="item-img" :src="`${partsImg}`" >
+                        <span v-bind:class="{ 'item-desc-small': !!equipment.weapon?.name }" @click="itemInfo(equipment.weapon)">{{equipment.weapon?.name ?? ' ---'}}</span>
+                        <span class="unequip" @click="removeItem(equipment?.weapon)">{{equipment.weapon?.name ? 'X' : ''}}</span>
+                    </p>
                 </div>
-            </div>
-            <div class="item3">
-                <span class="label-class"> EQUIPPED</span>
             </div>
         </div>
-        <!-- <div class="division">
-            <ul>
-                <li v-for="(equip, index) in equipments" :key="`equip-${index}`"><span @click="itemInfo(equip)">{{equip?.name ?? ''}}</span></li>
-            </ul>
-        </div> -->
-         <!-- <div class="division">
-             <div v-show="!!itemDetails?.name" class="arrangement">
-                <span>{{`Name: `}}<span class="item-text">{{itemDetails?.name ?? ''}}</span></span>
-                <span>{{`Type: `}}<span class="item-text">{{itemType ?? ''}}</span></span>
-                <span>{{`Class: `}}<span class="item-text">{{itemClass ?? ''}}</span></span>
-                <div v-bind:style="{marginTop: '2rem'}" class="arrangement">
-                    <span class="item-text">STATS BONUS</span>
-                    <span  v-for="(stat, index) in itemStatBonus" class='log' :key="`stat-${index}`">{{`${stat.key}: ${Math.abs(stat.value ?? 0)}`}}</span>
-                </div>
-            </div>
-        </div> -->
 	</div>
 </template>
 
 <script lang="ts">
     /* eslint-disable @typescript-eslint/no-var-requires */
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
-    import { IEquipment, IItem } from "@/store/types";
+    import { IEquipment, IEquipmentRequest, IInventory, IItem } from "@/store/types";
     import { computed, defineComponent, ref } from "vue";
 
     const partsImg = require('../../../assets/inventory/sampleParts.png');
@@ -61,17 +64,23 @@
 	const InventoryScreen = defineComponent({
 		setup() {
             const service = useMonsterSlayerService();
-			const equipments: IEquipment = service.getCharacterEquipment();
-            const armor: IItem = equipments.armor;
-            const weapon: IItem = equipments.weapon;
+			const equipment = ref<IEquipment>(service.getCharacterEquipment());
+            const inventory = ref<IInventory[]>(service.getInventory());
             const itemDetails = ref<IItem>();
-            const itemInfo = (item: IItem): void => {
-                itemDetails.value = {...item};
-            };
+			const inventoryList = computed(() => {
+                inventory.value?.forEach(inv => {
+                    if (equipment.value?.weapon?._id === inv.item._id || equipment.value?.armor?._id === inv.item._id) {
+                        inv.equipped = true;
+                    } else {
+                        inv.equipped = false;
+                    }
+                })
+                return inventory.value.filter(inv => !inv.equipped);
+            });
             const itemType = computed((): string => {
                 const type = itemDetails.value?.type;
                 if (type) {
-                    return itemDetails.value.type.toUpperCase() === 'WPN' ? 'WEAPON' : 'ARMOR';
+                    return itemDetails.value.type.toUpperCase() === 'WPN' ? 'Weapon' : 'Armor';
                 } else {
                     return '';
                 }
@@ -79,19 +88,75 @@
             const itemClass = computed((): string => {
                 return service.getCharacterTypeName(itemDetails.value?.classId ?? 0)
             });
-            const itemStatBonus = computed(() => {
-				const bonus = itemDetails.value?.bonus;
-				return bonus ? Object.keys(bonus).map(key => Object.assign({}, { key, value: bonus[key] })) : [];
-			});
+
+            const itemInfo = (item: IItem): void => {
+                itemDetails.value = {...item};
+            };
+            const equipItem = (item: IItem): void => {
+                if (!item || isInvalid(item)) return;
+                if (confirm("Continue equip?")) {
+                    const cur: IEquipmentRequest = {
+                        weaponId: equipment.value?.weapon?._id ?? null,
+                        armorId: equipment.value?.armor?._id ?? null
+                    };
+                    if (item.type === "WPN") {
+                        cur.weaponId = item._id;
+                    } else {
+                        cur.armorId = item._id;
+                    }
+                    updateEquipment(cur);
+                }
+            };
+            const updateEquipment = (update: IEquipmentRequest): void => {
+                service.updateEquipment(update)
+                .then(() => {
+                    equipment.value = service.getCharacterEquipment();
+                    inventory.value = service.getInventory();
+                });
+            };
+            const removeItem = (item: IItem): void => {
+                if (!item) return;
+                if (confirm("Continue unequip item?")) {
+                    const cur: IEquipmentRequest = {
+                        weaponId: equipment.value?.weapon?._id ?? null,
+                        armorId: equipment.value?.armor?._id ?? null
+                    };
+                    if (item.type === "WPN") {
+                        cur.weaponId = null;
+                    } else {
+                        cur.armorId = null;
+                    }
+                    updateEquipment(cur);
+                }
+            };
+            const deleteItem = (item: IInventory): void => {
+                if (!item) return;
+                if (item.equipped) {
+                    alert('Item is currently equipped!');
+                    return;
+                }
+                if (confirm("Continue delete?")) {
+                    service.deleteEquipment(item._id)
+                    .finally(() => inventory.value = service.getInventory());
+                }
+            };
+
+            const isInvalid = (item: IItem): boolean => {
+                const char = service.getCharacterDetails();
+                return item.classId !== char.classType;
+            };
+
 			return {
-                equipments,
-                armor,
-                weapon,
-                itemInfo,
                 partsImg,
-                itemType,
+                inventoryList,
+                equipment,
+                itemInfo,
+                equipItem,
+                removeItem,
+                isInvalid,
+                deleteItem,
                 itemClass,
-                itemStatBonus,
+                itemType,
                 itemDetails
 			};
 		}
@@ -100,83 +165,132 @@
 </script>
 <style scoped>
 	.inventory-layout {
-		background-repeat: no-repeat;
-		background-size: cover;
-		text-align: center;
-		overflow: hidden !important;
+		background:transparent;
 		margin: auto;
-        background:transparent;
-        flex-direction: row;
 	}
-    .label-class {
-        color: white;
-        margin-left: 8px;
-        font-size: 17px;
+    p {
+        padding:0;
+        margin: 1rem;
+        color: #5f330e;
     }
-    .arrangement {
-        display: flex;
-        flex-direction: column;
+    .bonus {
+        padding:0;
+        margin: 0;
     }
-    span {
-		font-size: 11px;
-		font-weight: 800;
-	}
-	.header-stat {
-		padding: 10px 0;
-	}
-    li {
-        cursor: pointer;
-        text-decoration: none;
-    }
-    p:hover {
-        color: whitesmoke;
+    .details-content {
+        margin: 1rem;
+        color: #5f330e;
     }
     .grid-container {
         display: grid;
         grid-template-columns: 3fr 2fr;
-        grid-template-rows: 5fr 3fr;
         height: 37.7em;
         width: inherit;
         border: 2px solid #5f330e;
     }
-    .item1 {
-        grid-row-start: 1;
-        grid-row-end: 3;
+    .grid-container .label {
+        margin: 5px 0px;
+    }
+    .right-side-grid {
+        display: grid;
+        grid-template-rows: 2fr 1.8fr;
+    }
+    .details {
+        border-bottom: 2px solid #5f330e;
+        text-align: center;
+    }
+    .equipped {
+        border-top: 2px solid #5f330e;
     }
     .grid-container > div {
         border: 2px solid #5f330e;
-        font-size: 30px;
         text-align: left;
     }
-    .item-text {
+    .left-side-grid {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    .item-img {
+		height: 10%;
+		width: 10%;
+		vertical-align: middle;
+    }
+    .label {
+		text-align: center;
+		margin: auto;
+		width: 100%;
+		font-weight: 900;
+		text-transform: uppercase;
+		color:saddlebrown;
+		font-family: "AxieFont";
+	}
+    .sub-label {
+        color:#5f330e;
+    }
+    .item-class{
+        text-decoration: none;
+        color: #5f330e;
+        margin-left: 10px;
+    }
+    .item-equip {
+        font-size: 9px;
+        color: #f5d06c;
+        float: right;
+        font-weight: bolder;
+        cursor: pointer;
+    }
+    .item-equipped {
+        font-size: 9px;
+        color: rgb(11, 102, 38);
+        float: right;
+        cursor: default;
+        font-weight: bolder;
+    }
+    .item-delete {
+        font-size: 9px;
+        color: maroon;
+        float: right;
+        cursor: pointer;
+        font-weight:900;
+        margin-left: 1rem;
+    }
+    .item-description {
+        text-transform: uppercase;
+        font-weight: 800;
+        vertical-align: middle;
+    }
+    .item-description:hover, .item-desc-small:hover {
+        color: #f5d06c;
+        cursor: pointer;
+    }
+    .none:hover {
+        color: inherit;
+        cursor:default;
+    }
+    .sub-label {
+		text-transform: uppercase;
+        font-weight: 800;
+	}
+    .item-title {
         text-transform: uppercase;
         color: whitesmoke;
+        font-weight: 800;
+        top: 11.5%;
+        left: 74%;
+        font-size: 10px;
+        position: absolute;
+        text-align: center;
+        width: 93px;
     }
-    p {
-		font-size: 20px;
-		font-weight: 800;
-	}
-    .parts-class{
-        cursor: pointer;
-        text-decoration: none;
-        margin-top: 17px;
-        color: #5f330e;
-        padding:10px;
-    }
-    .parts-description{
-        margin-left: 72px;
-        font-size: 17px;
-    }
-    .parts-equip {
+    .unequip {
         color: #f5d06c;
-        position: absolute;
-        left: 39%;
-        font-size: 12px;
+        float: right;
+        line-height: 1.2;
+        padding-right: 5px;
+        cursor: pointer;
     }
-    .logo-img {
-        position: absolute;
-        height: 7%;
-        left: 16%;
-        top: 12%;
+    .disabled-equip {
+        color:gray;
+        cursor: default;
     }
 </style>

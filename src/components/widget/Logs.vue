@@ -1,5 +1,6 @@
 <template>
-	<div class="logs-container" v-show="battleStart">
+	<!-- <div class="logs-container" v-show="battleStart"> -->
+	<div class="logs-container">
       <p v-for="(log, index) in logs" class='log' :key="`log-${index}`">{{log}}</p>
     </div>
 </template>
@@ -36,7 +37,6 @@
 		font-size: 1rem;
 		font-weight: 800;
 		display: block;
-		text-align: center;
 		color: whitesmoke;
 	}
 	p:nth-of-type(3n+0) {
@@ -48,9 +48,8 @@
 	.logs-container {
 		margin: 1rem;
 		white-space: normal;
-		overflow: hidden ;
-		height: 140px;
-		width: 460px;
-		max-width: 460px;
+		overflow: hidden;
+		height: 89%;
+		width: 96%;
 	}
 </style>

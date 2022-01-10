@@ -12,12 +12,12 @@
                         <div v-for="(dungeon, index) in dungeons" :key="`dun-${index}`" class="dungeon-option" >
                             <span>
                                 <span v-bind:class="{level: dungeon.locked, 'enabled-level': !dungeon.locked  }">{{'Lv. ' + dungeon.recommendedLevel}}</span>
-                                {{' - '}}
-                                <span v-bind:class="{ 'disabled-name': dungeon.locked }">{{dungeon.name}}</span>
+                                <span v-bind:class="{ 'disabled-name': dungeon.locked }">{{ ' - ' + dungeon.name}}</span>
                             </span>
-                            <button v-if="!dungeon.locked">
+                            <button v-if="!dungeon.locked" @click="enterDungeon(dungeon)" >
                                 ENTER
-                            </button>
+                            </button><br>
+                            <img v-if="!dungeon.locked" class="cards-img" :src="`${sampleDungeon}`">
                         </div>
                     </div>
 				</div>
@@ -32,11 +32,10 @@
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	import { defineComponent, Prop, computed, ref } from "vue";
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
-	import { useRouter } from "vue-router";
-    import * as helper from "@/app-lib/helper/helper";
+    import { IDungeonResponse } from "@/store/types";
 
-	const home = require('@/assets/background/login-bg.png');
-    const dungeon = require('@/assets/background/axie-dungeon.jpg')
+    const anyBg = require('@/assets/background/axie-dungeon.jpg');
+    const field = require('@/assets/background/field.jpg');
 	const closeIcon = require('@/assets/background/close-icon.png');
 
 	const SelectDungeon = defineComponent({
@@ -49,22 +48,28 @@
 		data()
 		{
 			return {
-				screenImage: dungeon,
-                sampleDungeon: dungeon,
+				screenImage: anyBg,
+                sampleDungeon: field,
 				closeIcon
 			}
 		},
 		setup(props, context) {
 			const service = useMonsterSlayerService();
-			const router = useRouter();
 			const onModalClose = () => { context.emit('closeSelectDungeonModal') };
             const dungeons = computed(() => {
-				const dungeonList = service.getDungeons();
-				return dungeonList?.sort((a,b) => a.recommendedLevel - b.recommendedLevel);
+				return getDungeons();
 			});
+            const getDungeons = () => {
+                const dungeonList = service.getDungeons();
+				return dungeonList?.sort((a,b) => a.recommendedLevel - b.recommendedLevel);
+            };
+            const enterDungeon = (dungeon: IDungeonResponse): void => {
+                service.enterDungeon(dungeon._id);
+            };
 
 			return {
 				onModalClose,
+                enterDungeon,
                 dungeons
 			}
 		}
@@ -104,6 +109,12 @@
         top: 0%;
         cursor: pointer;
     }
+    .cards-img {
+        height: 100%;
+        width: 100%;
+        border: 1px solid saddlebrown;
+        margin-top:0.9rem;
+    }
     .dungeon-options-list {
         display: flex;
         /* align-items: center;
@@ -119,7 +130,7 @@
 
     .dungeon-option {
         border: 2px solid #FFFF;
-        color: #FFFF;
+        color: #f5d06c;
         padding: 10px;
         font-size: 15px;
         font-weight: 800;
@@ -152,7 +163,7 @@
     }
 
     .disabled-name {
-        color: gray;
+        color: saddlebrown;
     }
 
     .modal-form {

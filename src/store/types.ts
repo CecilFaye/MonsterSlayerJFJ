@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { IActionResultStatus } from "@/services/battle-engine";
 import { IGameState } from "./modules/game/state";
 
 export enum StoreModule {
@@ -21,13 +22,8 @@ export enum ScreenStateOptions {
 export enum ActivityStateOptions {
     Idle = 'idle',
     Attack = 'attack',
-    Focus = 'focus',
-    Skill1 = 'skill1',
-    Skill2 = 'skill2',
-    Skill3 = 'skill3',
-
-    // Failed Attack if Mana < Mana Cost
-    Failed = 'failed'
+    Heal = 'heal',
+    Focus = 'focus'
 }
 
 export enum Stats {
@@ -70,7 +66,7 @@ export interface InfoKeyValue {
 
 export interface IAction {
     personType: PersonType;
-    actionTaken: ISkill;
+    actionTaken: IActionResultStatus;
 }
 
 export interface StyleInterface {
@@ -156,6 +152,7 @@ export interface IItem extends INameIdPair {
 export interface IInventory extends INameIdPair  {
     characterId: string;
     item: IItem;
+    equipped: boolean;
 }
 
 export interface ISkills extends INameIdPair {
@@ -189,21 +186,34 @@ export interface IEnemy extends INameIdPair {
 }
 
 
-// ##############################################
-// OLD
+export interface IEquipmentRequest {
+    weaponId: string;
+    armorId: string;
+}
+
+export interface IEnterDungeonRequest {
+    characterId: string;
+    dungeonId: string;
+}
+
+export interface IBattleRequest {
+    characterId: string;
+    dungeonId: string;
+    enemyId: string;
+}
 
 export interface IPersonState extends IStats {
+    _raw: ICharacter | IEnemy;
     id: number;
     name: string;
     personType: PersonType;
     image: string;
     maxHealth: number;
     maxMana: number;
-    attack: ISkill;
-    focus: ISkill;
-    skills: ISkill[];
     turn: boolean;
+    attacking: boolean;
     currentState: IStatus;
+    toSelf: boolean;
 }
 
 export interface ISkill {

@@ -1,11 +1,11 @@
 <template>
 	<div class="skills-layout">
         <div class="grid-container">
-            <div class="skills-list">
+            <div class="left-side-grid">
                 <div class="label"> SKILLS</div>
                 <p class="skills-class" v-for="(skill, index) in skillList" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" >
                     <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span>
-                    <span class="skills-equip" @click="equipSkill(skill)" v-if="!skill.equipped" v-bind:class="{ 'disabled-equip': currentSkills?.lenght > 2 }">EQUIP</span>
+                    <span class="skills-equip" @click="equipSkill(skill)" v-if="!skill.equipped" v-bind:class="{ 'disabled-equip': isInvalid(skill) }">EQUIP</span>
                     <span class="skills-equipped" v-if="skill.equipped">EQUIPPED</span>
                 </p>
             </div>
@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <div class="equipped">
-                    <div class="label">EQUIPPED (3 Skills Max)</div>
+                    <div class="label">EQUIPPED (4 Skills Max)</div>
                     <p class="skills-class" v-for="(skill, index) in currentSkills" :key="`skill-${index}`"> <img class="logo-img" :src="`${cardslogo}`" >
                         <span class="skills-description" @click="skillInfo(skill)">{{skill?.name ?? ''}}</span>
                         <span class="unequip" @click="removeSkill(skill)">X</span>
@@ -49,7 +49,7 @@
 	const SkillsScreen = defineComponent({
 		setup() {
             const service = useMonsterSlayerService();
-            const skills = ref<ISkills[]>(service.getCharacterSkills());
+            const skills = ref<ISkills[]>(service.getCharacterDetails().skills);
             const allSkills = ref<ISkills[]>(service.getSkills());
             const skillDetails = ref<ISkills>();
 			const skillList = computed(() => {
@@ -72,7 +72,7 @@
             };
 
             const equipSkill = (skill: ISkills): void => {
-                if (skills.value?.length >= 3) return;
+                if (!skill || isInvalid(skill)) return;
                 if (confirm("Continue equip?")) {
                     const skillsUpdate: string[] = [skill._id];
                     skills.value.forEach(s => {
@@ -80,6 +80,10 @@
                     });
                     updateSkills(skillsUpdate);
                 }
+            };
+            const isInvalid = (skill: ISkills): boolean => {
+                const char = service.getCharacterDetails();
+                return skill.classId !== char.classType || skills.value?.length >= 4;
             };
             const updateSkills = (update: string[]): void => {
                 service.updateSkills(update)
@@ -89,7 +93,8 @@
                 });
             };
             const removeSkill = (skill: ISkills): void => {
-                if (confirm("Continue delete?")) {
+                if (!skill) return;
+                if (confirm("Continue unequip?")) {
                     const skillIndex = skills.value.findIndex(s => s._id === skill._id);
                     skills.value.splice(skillIndex, 1);
                     const skillUpdates = skills.value.map(s => s._id);
@@ -108,6 +113,7 @@
                 equipSkill,
                 removeSkill,
                 skillTypeName,
+                isInvalid,
                 skillDetails
 			};
 		}
@@ -150,7 +156,7 @@
         border: 2px solid #5f330e;
         text-align: left;
     }
-    .skills-list {
+    .left-side-grid {
         overflow-x: hidden;
         overflow-y: auto;
     }
@@ -187,7 +193,7 @@
         cursor: pointer;
     }
     .skills-description:hover {
-        color: whitesmoke;
+        color: #f5d06c;
     }
     .skills-equip {
         font-size: 9px;

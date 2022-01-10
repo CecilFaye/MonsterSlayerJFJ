@@ -1,37 +1,41 @@
 <template>
-	<div v-show="showEntrance" >
-		<img class="entrance-screen" :src="screenGif" >
-	</div>
-	<transition name="fade">
-		<div v-if="!showEntrance" class="game-screen" :style="`background-image:url(${(screenBackground)});`">
-			<button class="back-button" @click="navigateToHome">Back to Character Info.</button>
-			<div class="main-container">
-				<div class="people-container">
-					<div class="person-container player">
-						<Character :personType="'player'"/>
-					</div>
-					<div class="person-container center-images">
-						<transition name="fade">
-							<img class="versus"  v-show="battleStart" :src="`${vsGif}`">
-						</transition>
-						<transition name="fade">
-							<img v-show="showFightImage" :src="`${fightGif}`">
-						</transition>
-					</div>
-					<div class="person-container monster">
-						<Character :personType="'monster'"/>
-					</div>
-				</div>
-				<div class="center-notif">
-
-				</div>
-				<div class="main-controls">
-					<BattleControlWidget/>
-					<LogsControlWidget/>
-				</div>
+	<div class="battle-stage-container" :style="`background-image:url(${(backdropScreenImage)});`">
+		<div class="battle-stage-layout center" >
+			<div v-show="showEntrance" >
+				<img class="entrance-screen" :src="screenGif" >
 			</div>
+			<transition name="fade">
+				<div v-if="!showEntrance" class="game-screen" :style="`background-image:url(${(screenBackground)});`">
+					<button class="back-button" @click="navigateToHome">Back to Character Info.</button>
+					<div class="main-container">
+						<div class="people-container">
+							<div class="person-container player">
+								<Character :personType="'player'"/>
+							</div>
+							<div class="person-container center-images">
+								<transition name="fade">
+									<img class="versus"  v-show="battleStart" :src="`${vsGif}`">
+								</transition>
+								<transition name="fade">
+									<img v-show="showFightImage" :src="`${fightGif}`">
+								</transition>
+							</div>
+							<div class="person-container monster">
+								<Character :personType="'monster'"/>
+							</div>
+						</div>
+						<div class="center-notif">
+
+						</div>
+						<div class="main-controls">
+							<BattleControlWidget/>
+							<LogsControlWidget/>
+						</div>
+					</div>
+				</div>
+			</transition>
 		</div>
-	</transition>
+	</div>
 </template>
 
 <script lang="ts">
@@ -65,7 +69,7 @@
 			};
 
 			onBeforeMount(() => {
-				service.gameReset();
+				// service.gameReset();
 			});
 
 			setTimeout(() => {
@@ -77,13 +81,13 @@
 				if (!value) {
 					setTimeout(() => {
 						showFightImage.value = false;
-						setTimeout(() => service.gameInit(), 1000);
+						// setTimeout(() => service.gameInit(), 1000);
 					}, 2000);
 				}
 			});
 
 			const battleStart = computed(() => {
-				return service.battleStart();
+				return false; //service.battleStart();
 			});
 
 			return {
@@ -102,6 +106,25 @@
 </script>
 
 <style scoped>
+	.battle-stage-container {
+        height: 100vh;
+    }
+	.battle-stage-layout {
+        position: relative;
+        height: 700px;
+        width: 1250px;
+        background: lightgray;
+        box-shadow: 0px 2px 15px 7px #2c8cdb;
+    }
+
+    .center {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
 	.main-container {
 		padding: 5rem;
 		margin: auto;
@@ -121,7 +144,7 @@
 		background: white;
 
 		/* Full height */
-		height: 100vh;
+		/* height: 100vh; */
 
 		/* Center and scale the image nicely */
 		background-position: center;

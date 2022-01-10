@@ -25,6 +25,7 @@
 	import HealthBarWidget from "../widget/HealthBar.vue";
 	import useMonsterSlayerService from "@/services/monster-slayer-service";
 	import ManaBarWidget from "../widget/ManaBar.vue";
+import { GetterTypes } from "@/store/modules/game/getters";
 
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const arrowDown = require('../../assets/background/arrow-down.gif');
@@ -43,7 +44,7 @@
 			const service = useMonsterSlayerService();
 
 			// Computed
-			const personSkills = computed(() => store.getters['game/getSkills'](props.personType));
+			const personSkills = computed(() => store.getters['game/' + GetterTypes.getCharacterSkills](props.personType));
 			const personInfo = computed(() => store.state.game[`${props.personType}`]);
 			const personState = computed(() => store.state.game[`${props.personType}`].currentState.activityState);
 			const getCharacterImage = (type: ActivityStateOptions) => service.getCharacterImage(props.personType as PersonType, type);

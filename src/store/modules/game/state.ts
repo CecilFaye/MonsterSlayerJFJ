@@ -1,6 +1,7 @@
 import {
+    ActivityStateOptions,
 	CharacterTypes, IAccount, ICharacter, ICharacterState, IDungeonResponse, IInventory,
-	IPersonState, ISkills, ScreenStateOptions
+	IPersonState, ISkill, ISkills, PersonType, ScreenStateOptions
 } from '@/store/types';
 
 export interface IGameState {
@@ -31,13 +32,10 @@ export const gameState = {
 	currentScreen: 'homeScreen',
     fightLogs: [],
     battleStart: false,
-
     account: {} as IAccount,
     character: {} as ICharacter,
-    characterState: {} as ICharacterState,
-    // NOTE: This is to assume that there will only be 1 enemy at a given battle
-    enemyState: {} as ICharacterState,
-
-	player: null,
-    monster: null
+	// Player State
+	player: {} as IPersonState,
+    // Monster State
+    monster: {} as IPersonState
 } as IGameState;
